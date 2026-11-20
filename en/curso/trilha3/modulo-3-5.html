@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>3.5 Distillation: recover the brain | The Hidden Manual of AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @keyframes wf-dash { to { stroke-dashoffset: -28; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+      .wf-flow { stroke-dasharray: 6 8; animation: wf-dash 1.6s linear infinite; }
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* tabela em tema claro */
+    html:not(.dark) thead.tbl-head { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .tbl-row-alt { background-color: #f9fafb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/modulo-3-5.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/modulo-3-5.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/modulo-3-5.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/modulo-3-5.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-3-5.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha3/modulo-3-5.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-purple-400 transition-colors" href="../../index.html">Beginning</a>
+<span>/</span>
+<a class="hover:text-purple-400 transition-colors" href="index.html">Track 3</a>
+<span>/</span>
+<span class="text-purple-400">Module 3.5</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl">
+          🧠
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MODULE 3.5</span>
+<span class="text-xs text-neutral-500">Track 3 — Advanced</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🧠 Distillation: recover the brain</h1>
+<p class="text-neutral-300 leading-relaxed">
+            This is the story that gives the course its soul. A good model appeared for a few days—and then it was gone. You will never have the
+            <strong class="text-purple-400">weights</strong> of it. But there are the <strong class="text-purple-400">logs</strong>: every conversation recorded,
+            turn by turn. And the logs contain enough behavior to reconstruct the <em>disposition</em> — the way of working — without the mind.
+            This module distills the “Fable brain” back out: from raw JSONL files to a reusable behavior guide.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">📋</span><span>6 topics</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⏱</span><span>~50 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">🎯</span><span>Advanced</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⭐</span><span>Key module</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: o pipeline de destilação — logs → script → perfil → guia → modelo novo -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagram of the behavioral distillation pipeline: conversation JSONL logs feed a Python script that reduces noise and filters for the target agent; the result becomes a behavioral profile with measured numbers; the profile is synthesized into a disposition guide that contains the decision loop; finally, a new session with another model is pointed to this guide, inheriting the method without inheriting the weights." class="w-full h-auto" role="img" viewbox="0 0 960 400">
+<defs>
+<lineargradient id="m35-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="m35-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m35-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="2"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m35-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#c084fc" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m35-ah" markerheight="10" markerwidth="10" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="m35-ahc" markerheight="10" markerwidth="10" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m35-grid)" height="400" rx="16" width="960" x="0" y="0"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="480" y="28">the DISTILLATION PIPELINE — from raw log to reusable method</text>
+<!-- ETAPA 1: logs JSONL -->
+<rect fill="#0d1117" height="150" rx="14" stroke="#374151" stroke-width="1.5" width="150" x="40" y="120"></rect>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="115" y="146">① the LOGS</text>
+<text fill="#6b7280" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle" x="115" y="162">*.jsonl (raw)</text>
+<!-- linhas de log empilhadas -->
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="176"></rect>
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="194"></rect>
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="212"></rect>
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="230"></rect>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="115" y="256">noise · cheap to keep</text>
+<!-- ETAPA 2: script Python -->
+<rect fill="#0e1b26" height="150" rx="14" stroke="#38bdf8" stroke-width="1.6" width="150" x="234" y="120"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="309" y="146">② PYTHON script</text>
+<text fill="#6b7280" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle" x="309" y="162">extracts 5 fields</text>
+<rect fill="#0a1620" height="78" rx="7" stroke="#1f3a4d" stroke-width="1" width="114" x="252" y="174"></rect>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="190">timestamp</text>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="203">project · session</text>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700" x="262" y="216">model  ←key</text>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="229">user_msg</text>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="242">assistant_msg</text>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="309" y="263">filter model == fable</text>
+<!-- ETAPA 3: perfil comportamental -->
+<rect fill="#1a1430" height="150" rx="14" stroke="#a855f7" stroke-width="1.6" width="150" x="428" y="120"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="503" y="146">③ the PROFILE</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="503" y="162">429 measured turns</text>
+<!-- mini barras dos números -->
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="8" x="448" y="184">reasoning</text>
+<rect fill="#2a1f44" height="7" rx="3" width="110" x="448" y="188"></rect>
+<rect class="wf-a" fill="url(#m35-grad-pu)" height="7" rx="3" width="107" x="448" y="188"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="8" x="448" y="208">before the 1st action</text>
+<rect fill="#2a1f44" height="7" rx="3" width="110" x="448" y="212"></rect>
+<rect class="wf-a" fill="url(#m35-grad-pu)" height="7" rx="3" width="92" x="448" y="212"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="8" x="448" y="232">reassesses</text>
+<rect fill="#2a1f44" height="7" rx="3" width="110" x="448" y="236"></rect>
+<rect class="wf-a" fill="url(#m35-grad-pu)" height="7" rx="3" width="96" x="448" y="236"></rect>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="503" y="262">disposition, in numbers</text>
+<!-- ETAPA 4: o guia (decision loop) — destaque com glow -->
+<g filter="url(#m35-glow)">
+<rect fill="#1a1430" height="150" rx="14" stroke="url(#m35-grad-pu)" stroke-width="2.4" width="150" x="622" y="120"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="697" y="146">④ the GUIDE</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="697" y="162">the decision loop</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="182">GROUND</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="196">REASON</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="210">ACT</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="224">OBSERVE</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="238">RE-EVALUATE</text>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="252">VERIFY · NARRATE</text>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="697" y="266">reusable method</text>
+<!-- ETAPA 5: o modelo novo apontado ao guia -->
+<rect fill="#0e1b26" height="90" rx="14" stroke="#38bdf8" stroke-width="1.6" width="106" x="816" y="150"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="869" y="176">⑤ session</text>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="869" y="191">NEW</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="869" y="208">another model</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="869" y="222">pointed to the guide</text>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="7.5" text-anchor="middle" x="869" y="234">inherits the method</text>
+<!-- setas do fluxo -->
+<path class="wf-flow" d="M192,195 L232,195" fill="none" marker-end="url(#m35-ahc)" stroke="#38bdf8" stroke-width="2"></path>
+<path class="wf-flow" d="M386,195 L426,195" fill="none" marker-end="url(#m35-ah)" stroke="#c084fc" stroke-width="2"></path>
+<path class="wf-flow" d="M580,195 L620,195" fill="none" marker-end="url(#m35-ah)" stroke="#c084fc" stroke-width="2"></path>
+<path class="wf-flow" d="M774,195 L814,195" fill="none" marker-end="url(#m35-ahc)" stroke="#38bdf8" stroke-width="2"></path>
+<!-- nota de fundo: sem os pesos -->
+<rect fill="#0d1117" height="46" rx="11" stroke="#4b5563" stroke-width="1.3" width="732" x="40" y="318"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10.5" font-weight="700" x="60" y="338">⛔ you don’t have the weights</text>
+<text fill="#94a3b8" font-family="Inter,sans-serif" font-size="9.5" x="60" y="354">…but the observed behavior is enough to reconstruct the disposition. We lost Fable; we recovered the method.</text>
+<!-- selo lateral -->
+<g filter="url(#m35-glow)">
+<rect fill="#1a1430" height="46" rx="11" stroke="url(#m35-grad-pu)" stroke-width="1.8" width="134" x="788" y="318"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10" font-weight="700" text-anchor="middle" x="855" y="338">the brain, back again</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="855" y="353">disposition ≠ weights</text>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">The premise: without the weights, but with the logs</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        For a few days, an exceptional model was available. Those who used it felt the difference—not in what it knew, but in
+        <em>how</em> worked: it reasoned before acting, read before changing anything, and checked what changed. Then it stepped aside. You
+        will never have the <strong class="text-purple-400">weights</strong> that made it work. But there’s a better question than “how do I recover
+        the weights?” <strong class="text-purple-400">how do I regain the willingness without them?</strong>
+</p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧠</span> The idea in one sentence</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          You don’t have the model’s weights—but you do have the <strong class="text-purple-400">logs</strong>. Every Claude Code session records a file
+          <span class="code-box text-purple-400">JSONL</span> with, per turn: <em>timestamp, the user's prompt, the model's response, the tool calls, the results</em> and — the detail that unlocks everything — <strong class="text-purple-400">the model ID per turn</strong>. There's enough behavior
+          there to reconstruct the <em>disposition</em> from the agent.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          The module’s big distinction: <strong class="text-purple-400">weights ≠ disposition</strong>. The weights are the mind, closed off and unrecoverable.
+          The disposition is the <em>way of working</em> — and the way of working leaves an observable trace. Traces can be read.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-purple-400 mb-3">What it is</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+<strong class="text-purple-400">Behavioral distillation</strong>: the process of turning an agent's real sessions into a
+          <em>reusable disposition guide</em>. You observe the recorded behavior, name the pattern, and turn it into an instruction. You don’t copy the mind—
+          you extract the method. It works for <strong class="text-purple-400">any agent whose log you have</strong>, not just Fable.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Why learn</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Because it’s <em>the method for creating the method</em>. The rest of the course teaches you to read lab prompts from the outside. This topic turns the camera
+          inward: you generate your own data every time you talk with an agent, and you’re throwing that gold away. Anyone who masters distillation doesn’t
+          depend on a model staying available — they save its behavior in a text file and point the next session to it.
+        </p>
+</div>
+<!-- Grid: a mente que se perde vs o método que se guarda -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>What is lost with the model</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The <strong>weights</strong> — the mind, closed and unrecoverable</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The model's intrinsic reasoning density</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Direct access ("god mode") to that cadence</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>What is kept from the logs</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>A <strong>disposition</strong> — the order in which it does things</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>O <em>decision loop</em> explicit, in reusable text</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Measured numbers that become goals for your session</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The log is already being generated</p>
+<p class="text-sm text-neutral-300">
+              You don’t need to <em>start</em> to collect data. The collection has been running for weeks, quietly, on your disk. Every good conversation you’ve had
+              with an agent is an archived sample of its behavior. Distillation isn’t an experiment you build from scratch — it’s reading a
+              record that already exists and that almost no one looks at.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Find the JSONL files — where the record lives</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Before analyzing anything, you need to locate the source. The logs aren’t on a distant server or locked away—they’re on your machine,
+        in a predictable directory. Every project you’ve worked on with Claude Code has its own session folder, and each session is a file
+        <span class="code-box text-purple-400">.jsonl</span> with one line per event.
+      </p>
+<!-- Caixa mono: o caminho -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-purple-400 mb-3">Where the logs live</div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box">
+          ~/.claude/projects/<span class="text-purple-400">&lt;projeto&gt;</span>/<span class="text-sky-300">*.jsonl</span>
+</blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed">
+          One folder per project; one file per session. Each line in the file is a JSON event — and inside the <em>blob</em> from the metadata is where the gold is:
+          what <strong class="text-neutral-200">you typed</strong>, what the <strong class="text-neutral-200">model responded</strong>, the tools
+          it called, and the <strong class="text-purple-400">model ID per turn</strong>.
+        </p>
+</div>
+<!-- Box Conceito Principal: os campos do JSONL -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center"><span class="mr-2">🗂️</span> What each turn records</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="code-box text-purple-400 text-xs mb-1">timestamp</div>
+<div class="text-neutral-300 text-xs">when the turn happened — gives order and a time window</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="code-box text-purple-400 text-xs mb-1">user prompt</div>
+<div class="text-neutral-300 text-xs">what you asked for—the stimulus in each turn</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="code-box text-purple-400 text-xs mb-1">assistant response</div>
+<div class="text-neutral-300 text-xs">the response, with reasoning blocks and tool calls</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 border border-purple-500/30">
+<div class="code-box text-purple-400 text-xs mb-1">model ID <span class="text-neutral-500">(per turn!)</span></div>
+<div class="text-neutral-300 text-xs">which model responded to each turn — the key to everything</div>
+</div>
+</div>
+<p class="text-neutral-300 leading-relaxed mt-4 text-sm">
+          O <strong class="text-purple-400">model ID per turn</strong> is what makes distillation possible. Without it, you’d have a jumble of
+          mixed conversations. With it, you can <em>track</em> exactly which turns came from the agent you want to study — and separate Fable from everything that isn’t Fable.
+        </p>
+</div>
+<!-- Grid: o que olhar vs o que ignorar -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>The signal you want</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Sequence of tools per turn (start with Bash? grep?)</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Presence of reasoning blocks before the 1st action</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>If you ran a check after editing</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>The model ID, to filter for the target agent</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>The noise you filter out</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>UUIDs, internal hashes, transport fields</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Lists of MCP servers and skills repeated every turn</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Huge tool output (logs inside the log)</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Everything it doesn't say <em>how the agent decided</em></span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🔎</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Confirm the state before processing</p>
+<p class="text-sm text-neutral-300">
+              True to the very method you’re distilling: <strong>ground yourself in reality first</strong>. List the directory, count the files,
+              see which projects have sessions before asking for any script. You don't want to discover halfway through the analysis that you were pointing to the wrong
+              folder. <em>Ground, then reason</em> — start here.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Reduce the noise — the script, not the context</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Here’s the technical decision that determines whether distillation is feasible or an expensive waste. The raw JSONL is huge and full of useless metadata.
+        A beginner’s temptation is to paste the entire file into the context and ask “analyze this.” <strong class="text-purple-400">Don’t do this.</strong>
+        You bloat the window, waste tokens, and drown out the signal with noise. The right move is to <em>process externally</em>: ask Claude Code itself to
+        write a Python script that extracts only the useful fields.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🐍</span> The rule: code processes; context receives the summary</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          The elegant move is the goal: <strong class="text-purple-400">ask the agent to write the extractor</strong>. It wasn't the person who opened the JSONL
+          and copied fields by hand—it was Claude Code that generated a Python file to do that. The script reads the raw files, strips out the noise, and returns
+          something lean: five fields per turn, still a bit of a "blob," but readable and inexpensive.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          General principle, valid far beyond this task: <strong class="text-purple-400">don’t dump large raw data into the context</strong>. Have the
+          code reduce it first. Context is precious; spend it on the distilled signal, not the raw dump.
+        </p>
+</div>
+<!-- Caixa mono: o passo do script (campos extraídos) -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-sky-300 mb-3">What the Python script extracts — <span class="font-normal text-neutral-500">from each JSONL line, only these fields</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-sky-500 rounded p-3.5 font-mono text-xs text-neutral-300 mb-3 code-box leading-relaxed">
+<span class="text-neutral-500"># for each turn in ~/.claude/projects/&lt;projeto&gt;/*.jsonl</span><br/>
+          record = {<br/>
+            <span class="text-sky-300">"timestamp"</span>:  turn[<span class="text-purple-400">"timestamp"</span>],<br/>
+            <span class="text-sky-300">"project"</span>:    turn[<span class="text-purple-400">"cwd"</span>],<br/>
+            <span class="text-sky-300">"session"</span>:    turn[<span class="text-purple-400">"sessionId"</span>],<br/>
+            <span class="text-sky-300">"model"</span>:      turn[<span class="text-purple-400">"message"</span>][<span class="text-purple-400">"model"</span>],  <span class="text-neutral-500"># ← the filter key</span><br/>
+            <span class="text-sky-300">"user_msg"</span>:   extract_user_text(turn),<br/>
+            <span class="text-sky-300">"assistant_msg"</span>: extract_assistant_text(turn),<br/>
+          }<br/>
+<span class="text-neutral-500"># discards: UUIDs, hashes, MCP/skills list, result blobs</span>
+</blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed">
+          Five fields. That’s enough to profile behavior without drowning the context. The output file still looks like a <em>blob</em>, but now each
+          entry fits in your head — and the whole set fits within the budget.
+        </p>
+</div>
+<!-- Grid: cru no contexto vs script fora -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Put raw JSONL in the context</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Fills the window with useless metadata</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Costs a lot and degrades the model's attention</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The signal gets lost in the noise</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Doesn’t scale to dozens of sessions</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Let the script process it externally</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>The code reads the raw data; the context gets the streamlined version</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>5 fields per turn, cheap to carry</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Scale to all projects at once</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>The agent writes the extractor—you just ask</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The meta-lesson</p>
+<p class="text-sm text-neutral-300">
+              Notice the poetic detail: you're using the <strong>Fable successor</strong> to rebuild Fable. The current model writes the script,
+              runs the analysis, puts together the guide—and then becomes <em>guided</em> based on the predecessor's behavior. The distillation tool and the
+              distilled object coexist in the same session. It's reflective, and that's what makes the technique accessible: you don't need infrastructure, just ask the right way.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Filter by target agent</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The reduced logs contain conversations from <em>several</em> mixed models — Opus 4.8, 4.6, 4.5, and Fable. To profile Fable, you need a
+        set that is <strong class="text-purple-400">Fable only</strong>. This is where the per-turn model ID earns its keep: you filter the records,
+        keeping only the turns where <span class="code-box text-purple-400">model == fable</span>, and discards everything else.
+      </p>
+<!-- Caixa mono: o filtro -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-purple-400 mb-3">The filter — <span class="font-normal text-neutral-500">isolate the agent you want to distill</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3.5 font-mono text-xs text-neutral-300 mb-3 code-box leading-relaxed">
+          turnos_fable = [<br/>
+            r <span class="text-purple-400">for</span> r <span class="text-purple-400">in</span> records<br/>
+            <span class="text-purple-400">if</span> <span class="text-sky-300">"fable"</span> <span class="text-purple-400">in</span> r[<span class="text-sky-300">"model"</span>]<br/>
+          ]<br/>
+<span class="text-neutral-500"># from dozens of sessions and thousands of turns…</span><br/>
+<span class="text-neutral-500"># …exactly the 429 Fable turns remain</span>
+</blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed">
+          Changing the filter criterion changes the distillation target. <span class="code-box text-purple-400">"fable"</span> today; tomorrow it could be the next
+          model you want to study. The pipeline is the same — only the string changes.
+        </p>
+</div>
+<!-- Timeline: o funil do filtro -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">📚</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">Everything mixed together</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Dozens of sessions over a four-day window, with responses of <strong>all</strong> the models used during the period. A rich,
+              but heterogeneous set — you can’t conclude anything about a specific agent from this.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 text-lg">🧲</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Filter <span class="code-box">model == fable</span></h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              One line of code separates the wheat from the chaff. Note the practical intention: using Fable was <em>front-loaded</em> on purpose—those
+              who knew the model was powerful focused the heavy work on it, generating a dense sample of exactly the agent that matters.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 text-lg">🎯</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">429 pure turns remain</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              A clean, homogeneous, measurable corpus—Fable only. It’s the foundation on which the behavioral profile in the next topic will be built.
+              <em>No</em> is one session; it’s the set of model responses, counted turn by turn.
+            </p>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧬</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">The sample is only as good as the filter</p>
+<p class="text-sm text-neutral-300">
+              If the filter is loose (accidentally including turns from another model), the profile mixes behaviors and the conclusion is tainted.
+              <strong>Confirm what's left</strong> before profiling: count the turns, check that all model IDs match the target. An impure corpus
+              produces a guide that describes an agent that never existed.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Profile the behavior — the numbers</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        With the raw corpus in hand, you ask for a quantitative analysis <em>e</em> qualitative. The result is the
+        <strong class="text-purple-400">Fable 5's behavioral profile over the 429 turns</strong> — a disciplined, reasoning-first,
+        autonomous agent with broad dynamic range. A typical turn is compact, but when authorized, it can sustain enormous autonomous builds in a single turn.
+        And best of all, all of this becomes <strong class="text-purple-400">number</strong>, comparable to the baseline.
+      </p>
+<!-- TABELA DOS 429 TURNOS -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl overflow-hidden mb-5">
+<div class="px-5 pt-5 pb-3">
+<h3 class="text-lg font-semibold text-purple-400 flex items-center"><span class="mr-2">📊</span> The profile in numbers—Fable 5, 429 real turns</h3>
+<p class="text-xs text-neutral-500 mt-1">Four-day window, compared over the same window against the baseline the model is supposed to improve on.</p>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="tbl-head bg-purple-500/10">
+<tr class="text-left">
+<th class="px-5 py-3 font-semibold text-purple-400">Habit</th>
+<th class="px-4 py-3 font-semibold text-purple-400 text-center">Fable <span class="text-neutral-500 font-normal">(source)</span></th>
+<th class="px-4 py-3 font-semibold text-neutral-300 text-center">Baseline</th>
+<th class="px-5 py-3 font-semibold text-sky-300">Reading</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-dark-600">
+<tr>
+<td class="px-5 py-3 text-neutral-200">turns containing reasoning</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">97%</td>
+<td class="px-4 py-3 text-center text-neutral-400">80%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">reasons on almost every turn</td>
+</tr>
+<tr class="tbl-row-alt bg-dark-900/30">
+<td class="px-5 py-3 text-neutral-200">reasons before the 1st action</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">84%</td>
+<td class="px-4 py-3 text-center text-neutral-400">73%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">the plan comes before the action</td>
+</tr>
+<tr>
+<td class="px-5 py-3 text-neutral-200">reassesses after a result</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">87%</td>
+<td class="px-4 py-3 text-center text-neutral-400">80%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">the observe → decide loop</td>
+</tr>
+<tr class="tbl-row-alt bg-dark-900/30">
+<td class="px-5 py-3 text-neutral-200">read the file before the 1st edit</td>
+<td class="px-4 py-3 text-center font-bold text-yellow-400">48%</td>
+<td class="px-4 py-3 text-center text-neutral-400">52%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">both are weak → aim for ~100%</td>
+</tr>
+<tr>
+<td class="px-5 py-3 text-neutral-200">runs <em>real check</em> after editing</td>
+<td class="px-4 py-3 text-center font-bold text-red-400">23%</td>
+<td class="px-4 py-3 text-center text-neutral-400">19%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">the common blind spot → fix it</td>
+</tr>
+<tr class="tbl-row-alt bg-dark-900/30">
+<td class="px-5 py-3 text-neutral-200">tool error rate</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">3,3%</td>
+<td class="px-4 py-3 text-center text-neutral-400">3,0%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">low; recovery is methodical</td>
+</tr>
+<tr>
+<td class="px-5 py-3 text-neutral-200">abandons a turn after an error</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">almost never</td>
+<td class="px-4 py-3 text-center text-neutral-400">almost never</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">diagnoses, doesn’t give up</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-5 py-3 border-t border-dark-600 text-xs text-neutral-500">
+          The analysis also profiles the <em>qualitative</em>: how it opens a task (the first <em>remove</em> reveals Bash → ToolSearch), its tool-use patterns,
+          verification discipline, error handling, autonomy/delegation, and communication style.
+        </div>
+</div>
+<!-- Box: como ler os números -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧭</span> The numbers aren't trophies—they're targets</h3>
+<p class="text-neutral-300 leading-relaxed mb-3 text-sm">
+          The first three lines (reasoning, plan first, reassessment) are where Fable <strong class="text-purple-400">shines</strong> and far exceeds the
+          baseline — it's the heart of the disposition. The next two (read-before-edit and check-after-edit) are where
+          <strong class="text-red-400">it fails</strong> — and the baseline too. This isn’t a minor detail: it’s the module’s most important instruction.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          You’re not copying a perfect hero. You’re inheriting the strengths <em>e</em> explicitly aiming beyond the weak points. The guide
+          you synthesize in the next section should say: "reason like it" <strong>e</strong> "verify better than it does".
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Measuring makes the willingness auditable</p>
+<p class="text-sm text-neutral-300">
+              "Fable reasoned well" is an impression. "97% of turns contained reasoning, versus 80% for the baseline" is a verifiable fact and a
+              <strong>actionable goal</strong>. Turning the vague into the measurable is what separates praising a model from <em>rebuild</em> a model. The
+              number is the bridge between admiration and method.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Synthesize the guide—the decision loop, pointed</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The final step closes the loop: you ask the agent to <strong class="text-purple-400">compare the profile with your current model</strong> (Opus 4.8)
+        and produce a <em>disposition guide</em> — a playbook that distills the behavior into a <strong class="text-purple-400">decision loop</strong>
+        explicit. Then, you <strong>points the new session to this guide</strong>. The successor starts operating with the predecessor's method in mind.
+        We lost Fable; we kept the loop.
+      </p>
+<!-- O decision loop, caixa mono -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-purple-400 mb-3">The distilled decision loop— <span class="font-normal text-neutral-500">the heart of the guide, run every turn</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3.5 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+<span class="text-purple-400">GROUND</span>      establish the actual state (git, grep, read, run-state)<br/>
+             │<br/>
+<span class="text-purple-400">REASON</span>      state the objective + hypothesis + plan before acting<br/>
+             │<br/>
+<span class="text-purple-400">ACT</span>         take the next step; group what's independent<br/>
+             │<br/>
+<span class="text-purple-400">OBSERVE</span>     really read what came back<br/>
+             │<br/>
+<span class="text-purple-400">RE-EVALUATE</span> update the plan based on the result, not the other way around<br/>
+             │        <span class="text-neutral-500">(repeat ACT..RE-EVALUATE until the goal is reached)</span><br/>
+<span class="text-sky-300">VERIFY</span>      run the <em>real check</em> in what you changed<br/>
+             │<br/>
+<span class="text-sky-300">NARRATE</span>     report what happened honestly
+        </blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed mt-3">
+          The tight inner cycle is <strong class="text-purple-400">ACT → OBSERVE → RE-EVALUATE</strong>. Skipping OBSERVE is how good plans produce
+          bad results. Note the last two steps in cyan: <span class="text-sky-300">VERIFY</span> e <span class="text-sky-300">NARRATE</span>
+          are exactly where the source is weak — and where your guide should require <em>more</em> that Fable did.
+        </p>
+</div>
+<!-- Grid: vanilla vs apontado ao guia -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Vanilla session (without the guide)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Each turn starts from scratch, with no fixed cadence</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Acts before establishing a foundation; skips observe</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Doesn’t inherit what the successor has already proven works</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Session pointed to the guide</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Adopts the decision loop as a permanent instruction</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Understands, reasons, reassesses — turn after turn</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Works "much better than expected" in practice</span></li>
+</ul>
+</div>
+</div>
+<!-- AS DUAS RESSALVAS HONESTAS -->
+<div class="bg-red-900/20 border border-red-500/30 rounded-xl p-6 mb-5">
+<h3 class="text-lg font-semibold text-red-400 mb-4 flex items-center"><span class="mr-2">⚠️</span> Two honest caveats—don't promise what you don't deliver</h3>
+<div class="space-y-4">
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 font-bold text-sm">①</span>
+<div>
+<p class="text-sm font-semibold text-neutral-200 mb-1">Reasoning density is partly intrinsic</p>
+<p class="text-sm text-neutral-300 leading-relaxed">
+                Those 97% of reasoning aren’t 100% reproducible through instructions alone — some of the cadence belongs to the source model. <strong class="text-purple-400">Pair the
+                guide with a larger reasoning budget</strong> (in Opus 4.8: <span class="code-box">effortLevel</span> in <span class="code-box">xhigh</span>/<span class="code-box">max</span>,
+                e <span class="code-box">alwaysThinkingEnabled</span> on) instead of waiting for the prose to close the gap. Disposition is the soft layer; effort is the hard guarantee.
+              </p>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 font-bold text-sm">②</span>
+<div>
+<p class="text-sm font-semibold text-neutral-200 mb-1">The verification is weak at the source — do better than it</p>
+<p class="text-sm text-neutral-300 leading-relaxed">
+                A real check after editing is weak <strong>in Fable (23%) and the baseline (19%)</strong>. This is the clearest place for you to be
+                <strong class="text-purple-400">better than the model it imitates</strong>, not just the same. Don’t distill the blind spot along with the virtue:
+                copy Fable’s reasoning and <em>fix</em> its verification. A hook <span class="code-box">PostToolUse</span> in <span class="code-box">Edit|Write</span>
+                forces the test that intent forgets.
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Box Conceito Principal: disposição + garantia dura -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🌉</span> The guide is the disposition layer — not the only layer</h3>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          The distilled guide shapes the <strong class="text-purple-400">disposition</strong>, and placement is best-effort by nature. That’s why it fits well in a
+          <span class="code-box text-purple-400">CLAUDE.md</span> (loads every session) — and <em>no</em> in auto-memory, whose recall is relevance-gated and
+          may not trigger the rule at the right turn. But the guide alone isn't enough: pair it with the <strong class="text-purple-400">hard guarantees</strong> that the harness actually enforces — <span class="code-box">effortLevel</span> for density, hooks <span class="code-box">PostToolUse</span> for verification.
+          It's the exact cue for the next module.
+        </p>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🗂️</div>
+<div class="text-xs font-semibold text-neutral-200">Logs</div>
+<div class="text-xs text-neutral-500 mt-1">JSONL per turn</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🐍</div>
+<div class="text-xs font-semibold text-neutral-200">Script</div>
+<div class="text-xs text-neutral-500 mt-1">reduces out of context</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">📊</div>
+<div class="text-xs font-semibold text-neutral-200">Profile</div>
+<div class="text-xs text-neutral-500 mt-1">429 measured turns</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🧭</div>
+<div class="text-xs font-semibold text-neutral-200">Guide</div>
+<div class="text-xs text-neutral-500 mt-1">the decision loop</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Module Summary</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">The premise:</strong> without the weights, but with the logs — the recorded behavior is enough to reconstruct the disposition</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Find the JSONL files:</strong> <span class="code-box">~/.claude/projects/&lt;projeto&gt;/*.jsonl</span> — with model ID per turn</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Reduce the noise:</strong> ask for a Python script that extracts 5 fields — never dump the raw JSONL into the context</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Filter the target:</strong> only the turns <span class="code-box">model == fable</span> → 429 pure turns remain</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Profile:</strong> 97% reasoning · 84% before the 1st action · 87% re-evaluates · 23% real check</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Synthesize:</strong> the decision loop in a guide, aimed at the new session — and be better at verification</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-purple-500/20">
+<h3 class="font-semibold text-purple-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Next Module</h3>
+<p class="text-neutral-300 text-sm">
+<strong>3.6 — ⚙️ Disposition × hard guarantee.</strong> You distilled the disposition into a guide—but disposition is best-effort. Now let’s lock in the
+          guarantees that the harness <em>factual strength</em>: <span class="code-box">effortLevel</span> for reasoning density, hooks
+          <span class="code-box">PostToolUse</span> for verification, and where each rule really belongs.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-purple-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Back to Track 3</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-3-6.html">
+<span>Next: 3.6 Disposition × hard guarantee</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">The AI's Hidden Manual</span> · Module 3.5 · Track 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

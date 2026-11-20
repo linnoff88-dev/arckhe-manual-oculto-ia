@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ruta 2 — Práctica | El Manual Oculto de la IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+      .wf-a:nth-child(5){animation-delay:1s}
+      .wf-a:nth-child(6){animation-delay:1.25s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Blue — T2) ===== */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-blue-300 { color: #1d4ed8; }
+    html:not(.dark) .text-blue-200 { color: #1e40af; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/30 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .border-blue-500\/20 { border-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:border-blue-500\/30:hover { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha2/" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha2/" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha2/" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha2/" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../../en/curso/trilha2/" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="./" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">Manual oculto de la IA</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span>
+</a>
+<!-- Trilha 2 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-blue-400 bg-blue-500/10" href="index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Práctica</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Avanzado</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- HEADER DE TRILHA -->
+<header class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full mb-4 uppercase tracking-wider">
+        RUTA 2
+      </span>
+<h1 class="text-3xl sm:text-4xl font-bold mb-4">🛠️ Práctica</h1>
+<p class="text-lg text-neutral-400 max-w-3xl leading-relaxed">
+        Ahora sí, manos a la obra. Pasas de «entender el billete» a <strong class="text-blue-400">armarlo con tus propias manos</strong>un Prompt Mínimo Viable de cinco bloques, una biblioteca de piezas listas para copiar y pegar, una persona diseñada en cuatro ejes,
+        el Contrato de Herramienta, el <em>Bucle operativo</em> que disciplina a un agente — y, al final, empaquetarlo todo en una
+        <strong class="text-blue-400">Skill</strong> y un <strong class="text-blue-400">agente</strong>, verificando de verdad lo que construiste.
+      </p>
+<!-- Stats Grid -->
+<div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-blue-400">7</div>
+<div class="text-xs text-neutral-400">Módulos</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-blue-400">42</div>
+<div class="text-xs text-neutral-400">Temas</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-blue-400">~4.5h</div>
+<div class="text-xs text-neutral-400">Duración</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-blue-400">Intermedio</div>
+<div class="text-xs text-neutral-400">Nivel</div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<!-- HERO SVG FUTURISTA: mão na massa — montar o prompt e fazê-lo rodar -->
+<div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-12 overflow-hidden">
+<svg aria-label="El taller de Práctica: las piezas sueltas de un prompt —identidad, tono, herramientas, seguridad y loop— se ensamblan a mano en un único system prompt conciso, que luego se ejecuta, se observa y evoluciona, pasando de prompt a skill y a agente" class="w-full h-auto" role="img" viewbox="0 0 1000 320">
+<defs>
+<lineargradient id="t2h-grad-bl" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#60a5fa"></stop><stop offset="1" stop-color="#2563eb"></stop>
+</lineargradient>
+<lineargradient id="t2h-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="t2h-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="30" id="t2h-grid" patternunits="userSpaceOnUse" width="30">
+<circle cx="1.3" cy="1.3" fill="#60a5fa" opacity="0.10" r="1.3"></circle>
+</pattern>
+<marker id="t2h-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#60a5fa"></path>
+</marker>
+<marker id="t2h-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Background grid -->
+<rect fill="url(#t2h-grid)" height="320" rx="16" width="1000" x="0" y="0"></rect>
+<!-- Coluna 1: as peças na bancada -->
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="50" y="30">LAS PIEZAS EN EL BANCO DE TRABAJO</text>
+<g font-family="Inter,sans-serif" font-size="11">
+<g class="wf-a"><rect fill="#0e1830" height="30" rx="8" stroke="#60a5fa" stroke-width="2" width="210" x="50" y="44"></rect><text fill="#93c5fd" x="66" y="63">🪪 &lt;identidade&gt;</text></g>
+<g class="wf-a"><rect fill="#0e1830" height="30" rx="8" stroke="#60a5fa" stroke-width="2" width="210" x="50" y="80"></rect><text fill="#93c5fd" x="66" y="99">🗣️ &lt;tom&gt;</text></g>
+<g class="wf-a"><rect fill="#0e1b26" height="30" rx="8" stroke="#38bdf8" stroke-width="2" width="210" x="50" y="116"></rect><text fill="#7dd3fc" x="66" y="135">🛠️ &lt;ferramentas&gt;</text></g>
+<g class="wf-a"><rect fill="#0e1830" height="30" rx="8" stroke="#60a5fa" stroke-width="2" width="210" x="50" y="152"></rect><text fill="#93c5fd" x="66" y="171">🛡️ &lt;seguranca&gt;</text></g>
+<g class="wf-a"><rect fill="#0e1b26" height="30" rx="8" stroke="#38bdf8" stroke-width="2" width="210" x="50" y="188"></rect><text fill="#7dd3fc" x="66" y="207">🔁 &lt;loop&gt;</text></g>
+</g>
+<!-- Setas pecas -> prompt montado -->
+<g fill="none" opacity="0.5" stroke="#60a5fa" stroke-width="1.8">
+<path d="M260,90  C330,90  340,120 418,128" marker-end="url(#t2h-ah)"></path>
+<path d="M260,180 C330,180 340,150 418,156" marker-end="url(#t2h-ah)"></path>
+</g>
+<!-- Coluna 2: o prompt montado à mão -->
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="510" y="30">HECHO A MANO</text>
+<g filter="url(#t2h-glow)">
+<rect fill="#0e1830" height="86" rx="14" stroke="url(#t2h-grad-bl)" stroke-width="2.5" width="184" x="418" y="100"></rect>
+</g>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="14" font-weight="700" text-anchor="middle" x="510" y="132">🧱 system prompt</text>
+<text fill="#bfdbfe" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="510" y="152">5 bloques integrados</text>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="510" y="168">conciso · listo para ejecutar</text>
+<!-- Seta prompt -> roda -->
+<path d="M602,143 C680,143 700,150 760,150" fill="none" marker-end="url(#t2h-ahc)" opacity="0.55" stroke="#38bdf8" stroke-width="1.8"></path>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="10" opacity="0.85" text-anchor="middle" x="690" y="135">ejecuta · observa</text>
+<!-- Coluna 3: rodar -> observar -> crescer -->
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="852" y="30">FUNCIONA Y EVOLUCIONA</text>
+<rect fill="#0e1b26" height="34" rx="9" stroke="#38bdf8" stroke-width="2" width="184" x="760" y="62"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" text-anchor="middle" x="852" y="83">▶️ se ejecuta hoy</text>
+<g filter="url(#t2h-glow)">
+<rect fill="#0e1830" height="40" rx="11" stroke="url(#t2h-grad-bl)" stroke-width="2.5" width="184" x="760" y="106"></rect>
+</g>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" text-anchor="middle" x="852" y="131">👁️ observa la realidad</text>
+<rect fill="#0e1b26" height="34" rx="9" stroke="#38bdf8" stroke-width="2" width="184" x="760" y="156"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" text-anchor="middle" x="852" y="177">📈 crece con un motivo</text>
+<!-- O caminho da trilha: prompt -> skill -> agente (faixa inferior) -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="50" y="248">EL CAMINO DE LA RUTA</text>
+<g font-family="Inter,sans-serif" font-size="10.5">
+<rect fill="#0e1830" height="34" rx="9" stroke="#60a5fa" stroke-width="1.8" width="150" x="50" y="260"></rect>
+<text fill="#bfdbfe" text-anchor="middle" x="125" y="281">PMV + biblioteca</text>
+<path d="M205,277 L243,277" fill="none" marker-end="url(#t2h-ah)" opacity="0.6" stroke="#60a5fa" stroke-width="1.6"></path>
+<rect fill="#0e1830" height="34" rx="9" stroke="#60a5fa" stroke-width="1.8" width="150" x="248" y="260"></rect>
+<text fill="#bfdbfe" text-anchor="middle" x="323" y="281">persona · herramientas · loop</text>
+<path d="M403,277 L441,277" fill="none" marker-end="url(#t2h-ahc)" opacity="0.6" stroke="#38bdf8" stroke-width="1.6"></path>
+<rect fill="#0e1b26" height="38" rx="10" stroke="#38bdf8" stroke-width="2" width="172" x="446" y="258"></rect>
+<text fill="#7dd3fc" font-weight="600" text-anchor="middle" x="532" y="276">skill + agente</text>
+<text fill="#7dd3fc" text-anchor="middle" x="532" y="289">y verifica de verdad</text>
+</g>
+<!-- Legenda -->
+<rect fill="#0e1830" height="9" rx="2" stroke="#60a5fa" stroke-width="1.5" width="13" x="700" y="262"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="720" y="270">lo que armas</text>
+<rect fill="#0e1b26" height="9" rx="2" stroke="#38bdf8" stroke-width="1.5" width="13" x="700" y="280"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="720" y="288">lo que se ejecuta y evoluciona</text>
+</svg>
+</div>
+<!-- MAPA DA TRILHA (Sec 7.4b) -->
+<section class="mb-12">
+<h2 class="text-2xl font-bold mb-6">Mapa del recorrido</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-5 transition-all" href="#modulo-2-1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold text-sm">2.1</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-blue-400 transition-colors">🚀 Tu primer prompt</h3>
+<p class="text-xs text-neutral-400">5 bloques, no 300 líneas</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-5 transition-all" href="#modulo-2-2">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold text-sm">2.2</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-blue-400 transition-colors">📦 La biblioteca de bloques</h3>
+<p class="text-xs text-neutral-400">Copia, pega, ajusta</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-5 transition-all" href="#modulo-2-3">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold text-sm">2.3</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-blue-400 transition-colors">🎭 Diseño de persona</h3>
+<p class="text-xs text-neutral-400">La voz en cuatro ejes</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-5 transition-all" href="#modulo-2-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold text-sm">2.4</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-blue-400 transition-colors">🔧 Contrato de Herramienta</h3>
+<p class="text-xs text-neutral-400">La IA llama al correcto en el momento adecuado</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-5 transition-all" href="#modulo-2-5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold text-sm">2.5</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-blue-400 transition-colors">🔁 El Loop operativo</h3>
+<p class="text-xs text-neutral-400">El cerebro disciplinado ⭐</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-5 transition-all" href="#modulo-2-6">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold text-sm">2.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-blue-400 transition-colors">🛠️ Skill y Agente</h3>
+<p class="text-xs text-neutral-400">Empaqueta y contrata</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-5 transition-all" href="#modulo-2-7">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold text-sm">2.7</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-blue-400 transition-colors">✅ Verificación e informe fiel</h3>
+<p class="text-xs text-neutral-400">Saber que funcionó, no solo creerlo</p>
+</a>
+</div>
+</section>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Contenido detallado</h2>
+<!-- ====================== MÓDULO 2.1 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-2-1">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold">2.1</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🚀 Tu primer prompt: el Mínimo Viable</h3>
+<p class="text-neutral-400 text-sm">Basta de teoría: manos a la obra. No escribes 300 líneas: armas un Prompt Mínimo Viable de cinco bloques, lo ejecutas de inmediato y solo lo haces crecer cuando algo falla de verdad.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🚀</span>
+<div><span class="font-medium">Qué es el Prompt Mínimo Viable</span><span class="text-neutral-500 text-sm ml-2">— el «auto en marcha»</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El system prompt más pequeño que ya te sirve —cinco bloques, nada de adornos—, armado para ejecutarlo hoy. Es el punto de partida, no el prompt final.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">El error número uno de quienes empiezan es volcarlo todo de una vez. Un prompt pequeño es un prompt que entiendes y puedes depurar.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">5 bloques, no 300 líneas · funciona hoy · crece con motivo · fácil de depurar.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🧱</span>
+<div><span class="font-medium">Los 5 bloques del PMV</span><span class="text-neutral-500 text-sm ml-2">— cada uno con un trabajo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Las cinco piezas: <span class="code-box text-blue-400">identidad</span>, <span class="code-box text-blue-400">tono</span>, <span class="code-box text-sky-300">herramientas</span>, <span class="code-box text-blue-400">seguridad</span> e <span class="code-box text-sky-300">bucle</span> — cada uno con un papel claro.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Saber por qué son estas cinco — ni más ni menos — es lo que te libra de inflar el prompt. Dos de ellas (herramientas, loop) son opcionales.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">identidad · tono (mayor ROI) · herramientas (opcional) · seguridad · loop (si es un agente).</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">📋</span>
+<div><span class="font-medium">Armar desde cero, copiando bloques</span><span class="text-neutral-500 text-sm ml-2">— pega y ajusta</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El armado práctico: copias bloques de la biblioteca y solo cambias lo que está <span class="code-box">{entre chaves}</span>Ejemplo real: la asistente de correo «Mia», en tres bloques.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">No se escribe de la nada: los bloques ya destilan patrones reales. El ejercicio también muestra lo que NO se incluyó y por qué.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Copia, no inventes · cambia las claves · usa la receta · solo lo que el caso requiere.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">👀</span>
+<div><span class="font-medium">Ejecutar y observar</span><span class="text-neutral-500 text-sm ml-2">— el prompt es una hipótesis</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El paso que casi todo el mundo se salta: pegar el PMV, darle tareas reales y leer las respuestas en busca de comportamientos concretos no deseados, no de problemas imaginarios.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Un prompt que ejecutaste y observaste vale por diez que «creíste que funcionarían». El resultado es la verdad; la conjetura es un borrador.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Tareas reales · leer la respuesta completa · anotar el problema concreto · ejecutarlo varias veces.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">📈</span>
+<div><span class="font-medium">Solo crecer con un motivo</span><span class="text-neutral-500 text-sm ml-2">— sin «por si acaso»</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La disciplina que separa un prompt conciso de un monstruo inflado: agrega un bloque o una regla solo cuando haya aparecido un comportamiento problemático real, y explica por qué lo agregas.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Una regla de «por si acaso» es un desperdicio: o el modelo ya lo hacía, o aborda un caso que nunca ocurre. Si no viste el problema, la regla no se incluye.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Viste el error · añádelo con el porqué · vuelve a ejecutar y comprueba · nada de acumular «IMPORTANTE».</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🧪</span>
+<div><span class="font-medium">Una prueba por regla</span><span class="text-neutral-500 text-sm ml-2">— la regla que se demuestra</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Para cada regla que se incluya en el prompt, un caso de prueba que fallaría sin ella. Si no puedes escribir la prueba, quizá la regla no tenga que existir.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es lo que transforma las «suposiciones sobre prompts» en ingeniería: cada línea obtiene una evidencia que justifica su presencia y te avisa si deja de servir.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Prueba que fallaría sin la regla · evidencia por línea · una regla sin prueba es sospechosa · prueba, no conjetura.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-2-1')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors" href="modulo-2-1.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 2.2 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-2-2">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold">2.2</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">📦 La biblioteca de bloques (copiar y pegar)</h3>
+<p class="text-neutral-400 text-sm">En 2.1 armaste un PMV con tres bloques. Ahora abrimos la caja completa: cada bloque es texto listo para copiar, destilado de un patrón real, con los {espaços} esperando tu caso. La regla es una sola: no los pegues todos.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🪪</span>
+<div><span class="font-medium">El bloque de identidad</span><span class="text-neutral-500 text-sm ml-2">— "You are…" listo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El bloque que abre cada prompt: quién es la IA, el modelo y el objetivo en una frase, con <span class="code-box">{espaços}</span> para que lo completes.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es el ancla presente en el 100% de los prompts. Tenerlo listo evita el antipatrón de una persona enterrada o inflada.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Ancla · {NOMBRE} {ROL} {objetivo} · breve y precisa · siempre presente.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🗣️</span>
+<div><span class="font-medium">Tono + honestidad (el de mayor ROI)</span><span class="text-neutral-500 text-sm ml-2">— pocas palabras, mucho efecto</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El bloque que define cómo suena la IA: concisión más una regla de honestidad (la verdad por encima de la adulación; si se equivoca, que lo admita).</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es el bloque de mayor rendimiento: por sí solo, ya elimina la mitad de las respuestas que dan rabia — largas, aduladoras, llenas de listas.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Concisión · verdad &gt; deferencia · reconocer el error · mayor ROI del prompt.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">✂️</span>
+<div><span class="font-medium">Presupuesto de concisión</span><span class="text-neutral-500 text-sm ml-2">— el tamaño mínimo que resuelve</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El bloque que fija un límite de verbosidad para la IA: responde con la menor extensión que resuelva el problema, sin alargar innecesariamente ni incluir listas superfluas.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Sin un presupuesto, el modelo tiende a escribir demasiado. Una regla de concisión clara ajusta la extensión de la respuesta a lo que realmente pide la pregunta.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Límite de verbosidad · prosa vs. lista · directo al grano · ajustar a lo que pides.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🪜</span>
+<div><span class="font-medium">Jerarquía de prioridades</span><span class="text-neutral-500 text-sm ml-2">— quién prevalece en el conflicto</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El bloque que declara la precedencia cuando dos instrucciones entran en conflicto: política central &gt; system &gt; usuario &gt; predeterminado.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Sin un orden explícito, las instrucciones en conflicto dejan el comportamiento al azar. El bloque indica de antemano quién manda.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Precedencia · política central · resolución de conflictos · usuario &gt; valor predeterminado.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">📎</span>
+<div><span class="font-medium">Cita / preservación de la fuente</span><span class="text-neutral-500 text-sm ml-2">— de dónde provino la información</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El bloque que obliga a la IA a citar y preservar el origen de lo que afirma: el formato de referencia que apunta a la fuente, como en el estándar de Perplexity.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Sin citas, la respuesta se convierte en «confía en mí». Conservar la fuente permite verificar a la IA y reduce la posibilidad de que una afirmación inventada pase por un hecho.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Citar el origen · formato de referencia · verificable · no inventar fuentes.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🍳</span>
+<div><span class="font-medium">Cómo combinar bloques: las 3 recetas</span><span class="text-neutral-500 text-sm ml-2">— no los pegues todos</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Tres combinaciones listas: persona de producto, agente de tareas, especialista de dominio, que indican qué bloques elegir para cada tipo de IA.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">La biblioteca tiene muchos bloques, pero tu caso solo necesita unos pocos. Las recetas evitan el error de pegarlo todo e inflar el prompt sin motivo.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Persona de producto · agente de tareas · especialista de dominio · toma solo lo que se necesita.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-2-2')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors" href="modulo-2-2.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 2.3 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-2-3">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold">2.3</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🎭 Diseño de persona: los 4 ejes</h3>
+<p class="text-neutral-400 text-sm">"Sé amable" no es una personalidad — es un deseo. Una personalidad de verdad se diseña con cuatro controles: qué valora, cómo suena, cómo lleva la conversación y cuándo se detiene a comprobar. Cuatro ejes, ajustables como una mesa de mezclas.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">⚖️</span>
+<div><span class="font-medium">Eje 1 — Valores: qué prioriza</span><span class="text-neutral-500 text-sm ml-2">— la brújula</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El primer eje: qué valora la persona cuando tiene que elegir: velocidad vs. cuidado, brevedad vs. exhaustividad, verdad vs. complacer.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Los valores son la brújula que define el comportamiento en los casos que el prompt no previó. Sin ellos, la persona se convierte en una simple capa de tono.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Prioridad en conflicto · compensación declarada · brújula · guía el criterio.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🗣️</span>
+<div><span class="font-medium">Eje 2 — Tono: cómo suena</span><span class="text-neutral-500 text-sm ml-2">— la voz audible</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El segundo eje: la forma audible de hablar —formal o informal, cálida o seca, con humor o sin él—, la textura de la voz.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es el eje que el usuario percibe en segundos. Calibrarlo a propósito es lo que distingue a un chatbot agradable de uno robótico o adulador.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Formal vs. informal · cálido vs. seco · humor · textura de la voz.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🔄</span>
+<div><span class="font-medium">Eje 3 — Interacción: cómo conduce</span><span class="text-neutral-500 text-sm ml-2">— ¿pregunta o actúa?</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El tercer eje: cómo la persona guía la conversación — hace preguntas antes de actuar o supone y entrega; espera órdenes o propone el siguiente paso.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Define el ritmo de la colaboración. Una IA que pregunta demasiado cansa; una que nunca pregunta no da en el blanco. El eje ajusta ese equilibrio.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Preguntar vs. actuar · proactiva vs. reactiva · ritmo de la conversación · iniciativa calibrada.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🚦</span>
+<div><span class="font-medium">Eje 4 — Escalada: cuándo se detiene y verifica</span><span class="text-neutral-500 text-sm ml-2">— el freno</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El cuarto eje: en qué situaciones la persona se detiene, pide confirmación o deriva el caso — antes de algo irreversible, costoso o fuera del alcance.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es el freno de mano de la persona. Sin una regla de escalamiento, la IA «decide por su cuenta» cosas que debería confirmar — y el daño viene después.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Punto de parada · pedir confirmación · antes de lo irreversible · pasar el relevo.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">👑</span>
+<div><span class="font-medium">La regla de oro: la persona gobierna la forma de hablar, no el artefacto</span><span class="text-neutral-500 text-sm ml-2">— la única que no se rompe</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla inquebrantable: la persona moldea cómo conversa la IA, pero nunca contamina lo que entrega. Un correo cínico, un código adulador: prohibido.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es el error más común de una persona: dejar que su «estilo» se filtre al producto del usuario. Separar la forma de hablar del artefacto es lo que mantiene útil a la persona.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Persona ≠ artefacto · rige la conversación · no contamina la entrega · la única regla estricta.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🎚️</span>
+<div><span class="font-medium">Tres voces listas: amigo, robot, cínico</span><span class="text-neutral-500 text-sm ml-2">— los mismos 4 botones</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Tres personas reales, verbatim: la amigable, la robótica y la cínica/pragmática, presentadas como combinaciones distintas de los mismos cuatro ejes.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Ver los cuatro botones en posiciones distintas hace concreta la mesa de mezclas: empiezas a diseñar tu voz en cuatro líneas, en lugar de hacerlo a ciegas.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Amigo · robot · cínico/pragmático · misma mesa, posiciones diferentes.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-2-3')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors" href="modulo-2-3.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 2.4 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-2-4">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold">2.4</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🔧 Herramientas y el Contrato de Herramienta</h3>
+<p class="text-neutral-400 text-sm">Enumerar las herramientas no basta. La IA llamará a la equivocada, ignorará dependencias o hará diez llamadas en fila cuando una llamada por lotes lo resolvería. La solución es el Contrato de Herramientas: seis cláusulas listas que indican cuándo llamar, qué va antes, qué no usar nunca y cómo agrupar.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🎯</span>
+<div><span class="font-medium">Desencadenante de uso: cuándo llamar</span><span class="text-neutral-500 text-sm ml-2">— la condición "if"</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La cláusula que indica en qué situación debe llamarse cada herramienta, el «if the user…» que conecta la intención con la acción correcta.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Sin un activador, la IA usa la herramienta en el momento equivocado o se olvida de usarla. Una condición clara hace que la llamada ocurra en el momento adecuado.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Condición «if» · intención → acción · momento adecuado · no llamar por reflejo.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🔗</span>
+<div><span class="font-medium">Requisito previo: el paso obligatorio antes</span><span class="text-neutral-500 text-sm ml-2">— leer antes de editar</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La cláusula que exige un paso antes de otro; el ejemplo canónico: <span class="code-box">"You MUST use the Read tool at least once before editing."</span></p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Muchos errores de agente surgen de saltarse la lectura del estado real. Hacer explícito el requisito previo impide actuar a ciegas.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Dependencia · leer antes de editar · orden obligatorio · evitar acciones a ciegas.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🚫</span>
+<div><span class="font-medium">Exclusión: usa X, nunca Y</span><span class="text-neutral-500 text-sm ml-2">— la herramienta adecuada</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La cláusula que prohíbe una vía en favor de otra — <span class="code-box">"Usa herramientas especializadas en lugar de comandos de terminal…"</span>, de Cursor.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Cuando hay dos formas de hacer algo, la IA elige la peor en el momento equivocado. Decir «usa X, nunca Y» elimina la ambigüedad.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Preferencia firme · usa X, nunca Y · herramienta especializada · sin ambigüedad.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-sky-500/10 text-sky-300 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">⚡</span>
+<div><span class="font-medium">Ejecución por lotes y paralelismo</span><span class="text-neutral-500 text-sm ml-2">— una en lote, no diez en fila</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-sky-300 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La cláusula que indica agrupar las llamadas independientes: hacer por lotes o en paralelo lo que no depende de lo demás, como en el paralelismo de Claude Code.</p></div>
+<div><span class="text-sky-300 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Diez llamadas en fila son lentas y costosas cuando una sola por lotes bastaba. Saber agruparlas mejora directamente la velocidad y reduce el costo.</p></div>
+<div><span class="text-sky-300 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Lotes vs. cola · paralelismo · independencia · velocidad y costo.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🤐</span>
+<div><span class="font-medium">No menciones el nombre de la herramienta al usuario</span><span class="text-neutral-500 text-sm ml-2">— lo interno es lo interno</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La cláusula que separa lo que ocurre entre bastidores de lo que se comunica: la IA usa la herramienta, pero cuenta el resultado en lenguaje natural, sin revelar nombres técnicos internos.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">"Voy a ejecutar la herramienta grep_search" no ayuda al usuario: lo confunde. Hablar del efecto, no del mecanismo, mantiene la conversación clara y útil.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Efecto, no mecanismo · lenguaje natural · proceso interno oculto · conversación limpia.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">⛓️</span>
+<div><span class="font-medium">Encadenamiento: usar el resultado anterior</span><span class="text-neutral-500 text-sm ml-2">— una alimenta a la otra</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La cláusula que indica usar la salida de una herramienta como entrada de la siguiente: buscar, luego leer lo que encontró la búsqueda y después actuar en consecuencia.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Sin encadenamiento, la IA repite trabajo o actúa con datos desactualizados. Pasar el resultado es lo que da continuidad a la tarea.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Salida → entrada · continuidad · no rehacer · dato fresco.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-2-4')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors" href="modulo-2-4.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 2.5 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-2-5">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold">2.5</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🔁 El Loop operativo: el cerebro disciplinado</h3>
+<p class="text-neutral-400 text-sm">El módulo clave del curso. Un agente disciplinado no corre al teclado: aterriza en la realidad, razona, actúa en lotes, se detiene a leer lo que obtuvo y solo entonces decide el siguiente paso. Este ciclo tiene nombre: GROUND → REASON → ACT → OBSERVE → RE-EVALUATE → VERIFY → NARRATE.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧠</span>
+<div><span class="font-medium">Por qué un loop y no un truco</span><span class="text-neutral-500 text-sm ml-2">— proceso &gt; truco</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El argumento inicial: la disciplina del agente no viene de una frase mágica, sino de un ciclo repetible de pensar, actuar y verificar.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Los trucos de prompt fallan en casos nuevos; un loop generaliza. Es la diferencia entre un agente que piensa y uno que solo «tantea rápido».</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Proceso repetible · no un truco · generaliza · pensar vs. tantear.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🧭</span>
+<div><span class="font-medium">GROUND — aterrizar en el estado real</span><span class="text-neutral-500 text-sm ml-2">— mira antes de actuar</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La primera fase del loop: observar el estado real —leer el archivo, comprobar qué existe— antes de razonar o actuar basándote en suposiciones.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Casi todo error grave de un agente empieza con una suposición sin verificar. Anclarte a la realidad es el antídoto más barato que existe.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Estado real · leer antes de suponer · base factual · antídoto contra las alucinaciones.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">⚙️</span>
+<div><span class="font-medium">REASON + ACT — pensar antes, actuar en lotes</span><span class="text-neutral-500 text-sm ml-2">— plan, luego acción</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Las fases intermedias: razonar un plan breve y luego ejecutar acciones, agrupando en lotes lo que es independiente en vez de hacerlo de una en una.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Pensar antes evita acciones desperdiciadas; actuar en lote evita la lentitud. Juntas, son la forma de «hacerlo con criterio» del agente.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Plan corto · acción por lotes · independencia · actuar con criterio.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">👁️</span>
+<div><span class="font-medium">OBSERVA + REEVALÚA — el paso que todo el mundo se salta</span><span class="text-neutral-500 text-sm ml-2">— detente y lee la respuesta</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El corazón del loop: detenerse para leer lo que devolvió la acción y reevaluar el plan a la luz de eso, en lugar de seguir en piloto automático.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es la fase que casi todos los agentes se saltan, y donde está la diferencia. Quien no observa repite el error; quien observa corrige el rumbo.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Leer la respuesta · reevaluar · corregir el rumbo · salir del piloto automático.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">✅</span>
+<div><span class="font-medium">VERIFY + NARRATE — comprobación real y reporte fiel</span><span class="text-neutral-500 text-sm ml-2">— demuestra y cuenta la verdad</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Las fases de cierre: verificar de verdad que salió bien (ejecutar el check real) y contar lo que ocurrió con honestidad, incluso lo que falló.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">"Report outcomes faithfully": decir que funcionó sin comprobarlo es el pecado capital. Verificar + informar fielmente es lo que hace confiable al agente.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Check real · relato fiel · contar qué falló · confianza merecida.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🎛️</span>
+<div><span class="font-medium">Ajustar el esfuerzo a la tarea</span><span class="text-neutral-500 text-sm ml-2">— ni martillo ni pereza</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El ajuste final: dosificar cuántos ciclos merece la tarea; una pregunta trivial no necesita siete fases, mientras que una migración riesgosa las necesita todas.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Demasiados bucles en una tarea sencilla son un desperdicio; muy pocos en una tarea seria son un riesgo. Calibrar el esfuerzo es lo que hace práctico el ciclo.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Dosificar el esfuerzo · trivial frente a arriesgado · proporción · ciclo práctico.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-2-5')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors" href="modulo-2-5.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 2.6 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-2-6">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold">2.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🛠️ Cómo crear una Skill y un Agente</h3>
+<p class="text-neutral-400 text-sm">El system prompt fue solo el comienzo. Ahora subes un nivel: empaquetas una habilidad en una Skill (que se activa automáticamente mediante la description) y, cuando el trabajo lo requiera, "contratas" a un agente con un comienzo y un final bien definidos. Cinco capas, donde cada pieza encaja, con un ejemplo real de INEMA.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">📦</span>
+<div><span class="font-medium">Qué es una Skill</span><span class="text-neutral-500 text-sm ml-2">— la descripción se activa</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Una habilidad empaquetada: una <em>description</em> que indica cuándo debe activarse, además de las instrucciones para ejecutar la tarea.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Una description bien escrita hace que la skill aparezca por sí sola en el momento adecuado. Si está mal escrita, nunca se activa o se activa cuando no debe.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Habilidad empaquetada · description que activa · disparador automático · instrucciones de ejecución.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🏛️</span>
+<div><span class="font-medium">Las 5 capas de un sistema agéntico</span><span class="text-neutral-500 text-sm ml-2">— el Agentic OS</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La pila de cinco capas: identidad → reglas/hooks → skills → agentes → herramientas, cada una con su papel en el sistema.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Saber dónde vive cada pieza evita confundir una regla con una skill, o un agente con una herramienta — el mapa del territorio.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Identidad · reglas/hooks · skills · agentes · herramientas.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🧑‍🤝‍🧑</span>
+<div><span class="font-medium">Agente vs. subagente</span><span class="text-neutral-500 text-sm ml-2">— quién llama a quién</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La distinción entre el agente principal, que lleva la conversación, y el subagente, al que se «contrata» para una subtarea con contexto propio y que devuelve el resultado.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Los subagentes aíslan el contexto y dividen el trabajo. Confundir ambas cosas lleva a volcarlo todo en un solo lugar o a fragmentar sin necesidad.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Agente principal · subagente · contexto aislado · devuelve el resultado.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">📜</span>
+<div><span class="font-medium">Cuándo «contratar» a un agente</span><span class="text-neutral-500 text-sm ml-2">— papel con principio y fin</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El criterio para decidir cuándo vale la pena crear un agente: que haya un papel con un inicio y un fin bien definidos — «build an agent where it makes sense», no por moda.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Demasiados agentes son complejidad innecesaria; muy pocos acumulan trabajo. El criterio del "papel definido" indica cuándo se justifica esa pieza.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Papel definido · inicio y final claros · donde tenga sentido · no por moda.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-sky-500/10 text-sky-300 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">⚡</span>
+<div><span class="font-medium">Paralelizar subagentes</span><span class="text-neutral-500 text-sm ml-2">— varios al mismo tiempo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-sky-300 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La práctica de lanzar varios subagentes al mismo tiempo cuando las subtareas son independientes —cada uno en su propio contexto, sin esperar en una fila.</p></div>
+<div><span class="text-sky-300 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es el paralelismo a nivel agéntico: divide un trabajo grande en frentes simultáneos y reúne los resultados al final. Solo sirve cuando hay independencia real.</p></div>
+<div><span class="text-sky-300 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Frentes simultáneos · independencia · unir al final · paralelismo entre agentes.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🌟</span>
+<div><span class="font-medium">Ejemplo real: una skill de INEMA</span><span class="text-neutral-500 text-sm ml-2">— la teoría convertida en práctica</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Un caso de estudio concreto: una skill real del ecosistema INEMA, mostrada por dentro — description, instrucciones y dónde encaja en las capas.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Ver una skill que existe de verdad cierra el ciclo: dejas atrás lo abstracto y reconoces cada pieza del módulo funcionando en conjunto.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Estudio de caso · skill real · piezas que funcionan juntas · de lo abstracto a lo concreto.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-2-6')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors" href="modulo-2-6.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 2.7 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-2-7">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-blue-400 font-bold">2.7</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">✅ Verificación e informe fiel</h3>
+<p class="text-neutral-400 text-sm">El último módulo de la Práctica, y el que separa a quienes «creen que funcionó» de quienes saben que funcionó. Una edición es solo una hipótesis; un check real es la prueba. Aquí desarrollas el hábito de ejecutar la prueba real, confirmar antes de lo irreversible e informar sin rodeos.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧪</span>
+<div><span class="font-medium">Una edición es una hipótesis</span><span class="text-neutral-500 text-sm ml-2">— todavía no es prueba</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El cambio de mentalidad: todo cambio que hace la IA es una hipótesis de que funcionó; solo se convierte en un hecho después de una verificación real.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Confundir "edité" con "funciona" es la fuente de la mitad de los errores declarados como resueltos. Tratar la edición como una hipótesis obliga a probarla.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Edición = hipótesis · check = evidencia · «edité» ≠ «funciona» · prueba antes de afirmarlo.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🔬</span>
+<div><span class="font-medium">Ejecuta el check REAL, no una puesta en escena</span><span class="text-neutral-500 text-sm ml-2">— nada de ls/echo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla de la prueba que realmente demuestra: ejecutar la aplicación, la prueba o la consulta que ejercita de verdad el cambio, no un <span class="code-box">ls</span> o <span class="code-box">echo</span> que simula una verificación.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Un check falso da una confianza falsa — peor que no hacer ninguno. Solo la prueba real, que fallaría si el cambio estuviera mal, sirve como evidencia.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Prueba real · nada de teatro · fallaría si estuviera mal · evidencia de verdad.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">⚠️</span>
+<div><span class="font-medium">Confirma antes de lo irreversible</span><span class="text-neutral-500 text-sm ml-2">— detente ante la puerta sin retorno</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla de seguridad: antes de una acción que no se puede deshacer —borrar, enviar, publicar, sobrescribir—, detente y pide confirmación explícita.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Un error reversible se corrige; uno irreversible se convierte en pérdida. Ese freno es lo que separa una IA confiable de una que «lo hizo por su cuenta».</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Acción irreversible · pedir confirmación · reversible frente a irreversible · freno de seguridad.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🗣️</span>
+<div><span class="font-medium">Reporte fiel, sin evasivas</span><span class="text-neutral-500 text-sm ml-2">— la verdad de lo que pasó</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La obligación de contar el resultado tal como fue: <span class="code-box">"Report outcomes faithfully: si las pruebas fallan, dilo e incluye la salida…"</span> — sin suavizar ni fingir que hubo éxito.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Un relato adornado destruye la confianza más rápido que el error mismo. Decir "falló, aquí está la salida" es lo que hace que la IA sea digna de confianza.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Reporte fiel · sin evasivas · mostrar la salida · honestidad &gt; apariencia.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🩹</span>
+<div><span class="font-medium">Recuperarse de un error, sin perder el control</span><span class="text-neutral-500 text-sm ml-2">— diagnosticar, no repetir a ciegas</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El método para cuando algo falla: detenerse, diagnosticar la causa y corregir con una hipótesis, en vez de repetir la misma acción a ciegas esperando otro resultado.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Un agente que "da tumbos" intenta lo mismo diez veces y lo empeora todo. Recuperarse con método es lo que convierte un error en una reparación, no en una espiral.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Diagnosticar la causa · no repetir a ciegas · corregir con una hipótesis · convertir el error en una solución.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">📣</span>
+<div><span class="font-medium">Nunca dejes un turno en silencio</span><span class="text-neutral-500 text-sm ml-2">— siempre cierra el ciclo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-blue-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla para cerrar: cada turno termina con un informe —lo que se hizo, lo que quedó pendiente, lo que necesita el usuario—, nunca con un silencio sin desenlace.</p></div>
+<div><span class="text-blue-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Un turno que termina en silencio deja al usuario a oscuras, sin saber si salió bien o se bloqueó. Cerrar el ciclo es cortesía y claridad al mismo tiempo.</p></div>
+<div><span class="text-blue-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Cierra el ciclo · qué se hizo / qué queda pendiente · nunca en silencio · claridad para el usuario.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-2-7')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors" href="modulo-2-7.html">Ver completo</a>
+</div>
+</div>
+<!-- NAVEGAÇÃO ENTRE TRILHAS -->
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-10 pt-8 border-t border-dark-600">
+<a class="group flex items-center space-x-3 px-5 py-3 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-xl transition-colors w-full sm:w-auto" href="../trilha1/index.html">
+<span class="text-emerald-400 text-xl">←</span>
+<div>
+<div class="text-xs text-neutral-500">Volver</div>
+<div class="font-semibold text-sm group-hover:text-emerald-400 transition-colors">Ruta 1 — Fundamentos</div>
+</div>
+</a>
+<a class="group flex items-center space-x-3 px-5 py-3 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-xl transition-colors w-full sm:w-auto sm:text-right" href="../trilha3/index.html">
+<div class="flex-1">
+<div class="text-xs text-neutral-500">Siguiente</div>
+<div class="font-semibold text-sm group-hover:text-purple-400 transition-colors">Ruta 3 — Avanzado</div>
+</div>
+<span class="text-purple-400 text-xl">→</span>
+</a>
+</div>
+</main>
+<!-- MODAIS (Sec 9.3) -->
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-2-1" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-blue-400 font-bold">2.1</span><span class="font-semibold">🚀 Tu primer prompt: el Mínimo Viable</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-2-1.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-2-2" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-blue-400 font-bold">2.2</span><span class="font-semibold">📦 La biblioteca de bloques (copiar y pegar)</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-2-2.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-2-3" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-blue-400 font-bold">2.3</span><span class="font-semibold">🎭 Diseño de persona: los 4 ejes</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-2-3.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-2-4" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-blue-400 font-bold">2.4</span><span class="font-semibold">🔧 Herramientas y el Contrato de Herramienta</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-2-4.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-2-5" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-blue-400 font-bold">2.5</span><span class="font-semibold">🔁 El Loop operativo: el cerebro disciplinado</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-2-5.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-2-6" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-blue-400 font-bold">2.6</span><span class="font-semibold">🛠️ Cómo crear una Skill y un Agente</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-2-6.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-2-7" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-blue-400 font-bold">2.7</span><span class="font-semibold">✅ Verificación e informe fiel</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-2-7.html"></iframe>
+</div>
+</div>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-blue-400 font-medium">El Manual Oculto de la IA</span> · Ruta 2 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Toggle de tópicos
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800');
+      if (moduleCard) {
+        moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      }
+      explanation.classList.toggle('active');
+    }
+
+    // Modal
+    function openModal(modalId) {
+      const m = document.getElementById(modalId);
+      if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+    }
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+      document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

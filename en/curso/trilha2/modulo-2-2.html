@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>2.2 The block library (copy-paste) | The Hidden Manual of AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Blue — T2) ===== */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-blue-300 { color: #1d4ed8; }
+    html:not(.dark) .text-blue-200 { color: #1e40af; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/30 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .border-blue-500\/20 { border-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:border-blue-500\/30:hover { border-color: rgba(37, 99, 235, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha2/modulo-2-2.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha2/modulo-2-2.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha2/modulo-2-2.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha2/modulo-2-2.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-2-2.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha2/modulo-2-2.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-blue-400 bg-blue-500/10" href="index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-blue-400 transition-colors" href="../../index.html">Beginning</a>
+<span>/</span>
+<a class="hover:text-blue-400 transition-colors" href="index.html">Track 2</a>
+<span>/</span>
+<span class="text-blue-400">Module 2.2</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 rounded-2xl border border-blue-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-2xl">
+          📦
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MODULE 2.2</span>
+<span class="text-xs text-neutral-500">Track 2 — Practice</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">📦 The block library (copy-paste)</h1>
+<p class="text-neutral-300 leading-relaxed">
+            In 2.1, you assembled an MVP with three blocks. Now we're opening the whole toolbox. Each block here is
+            <strong class="text-blue-400">text ready to copy</strong> — distilled from a real pattern — with the
+            <span class="code-box">{spaces}</span> waiting for your case. There’s just one rule for using it:
+            <strong class="text-blue-400">don’t paste them all.</strong> Pick only the ones your case calls for, and expand later.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">📋</span><span>6 topics</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">⏱</span><span>~35 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">📦</span><span>Copy-paste</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">🧱</span><span>5 blocks + 3 recipes</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: blocos tipo lego se encaixando num prompt -->
+<div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagram of a block library: on the left, five Lego-like interlocking pieces—identity, tone, concision, priority, and citation—each with its own pegs; on the right, the selected pieces fit together to form a single assembled prompt, like building blocks snapped together" class="w-full h-auto" role="img" viewbox="0 0 960 360">
+<defs>
+<lineargradient id="m22-grad-bl" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#60a5fa"></stop><stop offset="1" stop-color="#2563eb"></stop>
+</lineargradient>
+<lineargradient id="m22-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m22-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m22-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#60a5fa" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m22-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#60a5fa"></path>
+</marker>
+<marker id="m22-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m22-grid)" height="360" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos de coluna -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="245" y="34">the library · loose pieces to choose from</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="720" y="34">the nested blocks · a single prompt</text>
+<line opacity="0.35" stroke="#9ca3af" stroke-dasharray="6,6" stroke-width="1.2" x1="480" x2="480" y1="20" y2="344"></line>
+<!-- LADO ESQUERDO: 5 pecas de lego (com pino em cima e encaixe embaixo) -->
+<!-- peça lego 1 identidade -->
+<g class="wf-a">
+<path d="M70,72 h22 v-7 a7,7 0 0 1 14,0 v7 h244 v44 h-22 a7,7 0 0 0 -14,0 h-244 z" fill="#0e1830" stroke="url(#m22-grad-bl)" stroke-width="2"></path>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="118" y="98">① &lt;identity&gt;</text>
+</g>
+<!-- peça lego 2 tom -->
+<g class="wf-a">
+<path d="M70,128 h22 v-7 a7,7 0 0 1 14,0 v7 h244 v44 h-22 a7,7 0 0 0 -14,0 h-244 z" fill="#0e1830" stroke="url(#m22-grad-bl)" stroke-width="2"></path>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="118" y="154">② &lt;tone&gt; + honesty</text>
+</g>
+<!-- peça lego 3 concisao -->
+<g class="wf-a">
+<path d="M70,184 h22 v-7 a7,7 0 0 1 14,0 v7 h244 v44 h-22 a7,7 0 0 0 -14,0 h-244 z" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"></path>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="118" y="210">③ concision</text>
+</g>
+<!-- peça lego 4 prioridade -->
+<g class="wf-a">
+<path d="M70,240 h22 v-7 a7,7 0 0 1 14,0 v7 h244 v44 h-22 a7,7 0 0 0 -14,0 h-244 z" fill="#0e1830" stroke="url(#m22-grad-bl)" stroke-width="2"></path>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="118" y="266">④ priority hierarchy</text>
+</g>
+<!-- peça lego 5 citacao -->
+<g class="wf-a">
+<path d="M70,296 h22 v-7 a7,7 0 0 1 14,0 v7 h244 v44 h-22 a7,7 0 0 0 -14,0 h-244 z" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"></path>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="118" y="322">⑤ citation / source</text>
+</g>
+<!-- setas de encaixe: as pecas viajam pra direita -->
+<path d="M384,94 C432,94 432,118 519,118" fill="none" marker-end="url(#m22-ah)" opacity="0.5" stroke="#60a5fa" stroke-width="1.6"></path>
+<path d="M384,150 C430,150 430,154 519,154" fill="none" marker-end="url(#m22-ah)" opacity="0.5" stroke="#60a5fa" stroke-width="1.6"></path>
+<path d="M384,206 C426,206 426,192 519,192" fill="none" marker-end="url(#m22-ahc)" opacity="0.5" stroke="#38bdf8" stroke-width="1.6"></path>
+<path d="M384,262 C430,262 430,228 519,228" fill="none" marker-end="url(#m22-ah)" opacity="0.5" stroke="#60a5fa" stroke-width="1.6"></path>
+<path d="M384,318 C432,318 432,264 519,264" fill="none" marker-end="url(#m22-ahc)" opacity="0.5" stroke="#38bdf8" stroke-width="1.6"></path>
+<!-- LADO DIREITO: os blocos encaixados num prompt unico (glow) -->
+<g filter="url(#m22-glow)">
+<rect fill="#0e1830" height="240" rx="14" stroke="url(#m22-grad-bl)" stroke-width="2.5" width="380" x="520" y="60"></rect>
+</g>
+<circle cx="540" cy="80" fill="#f87171" r="4"></circle><circle cx="554" cy="80" fill="#fbbf24" r="4"></circle><circle cx="568" cy="80" fill="#60a5fa" r="4"></circle>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="end" x="884" y="84">prompt_montado.md</text>
+<!-- blocos de lego encaixados (pinos casando com os encaixes) -->
+<path d="M540,100 h26 v-6 a6,6 0 0 1 12,0 v6 h282 v28 h-26 a6,6 0 0 0 -12,0 h-282 z" fill="#13213f" stroke="#60a5fa" stroke-width="1.4"></path>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="586" y="119">① &lt;identity&gt;</text>
+<path d="M540,136 h26 v-6 a6,6 0 0 1 12,0 v6 h282 v28 h-26 a6,6 0 0 0 -12,0 h-282 z" fill="#13213f" stroke="#60a5fa" stroke-width="1.4"></path>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="586" y="155">② &lt;tone&gt;</text>
+<path d="M540,172 h26 v-6 a6,6 0 0 1 12,0 v6 h282 v28 h-26 a6,6 0 0 0 -12,0 h-282 z" fill="#0e1b26" stroke="#38bdf8" stroke-width="1.4"></path>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="586" y="191">③ concision</text>
+<path d="M540,208 h26 v-6 a6,6 0 0 1 12,0 v6 h282 v28 h-26 a6,6 0 0 0 -12,0 h-282 z" fill="#13213f" stroke="#60a5fa" stroke-width="1.4"></path>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="586" y="227">④ priority</text>
+<path d="M540,244 h26 v-6 a6,6 0 0 1 12,0 v6 h282 v28 h-26 a6,6 0 0 0 -12,0 h-282 z" fill="#0e1b26" stroke="#38bdf8" stroke-width="1.4"></path>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="586" y="263">⑤ citation</text>
+<!-- selo -->
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="11" font-weight="700" x="710" y="293">▣ copy · fit · only what the case calls for</text>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">The identity block</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        This is the block that <strong class="text-blue-400">opens</strong> any system prompt. It answers three questions in a few
+        lines: <strong class="text-blue-400">who</strong> the AI is, <strong class="text-blue-400">where</strong> she operates, and
+        <strong class="text-blue-400">what for</strong> — the goal in one sentence. Without it, the model doesn’t know what role it’s playing, and
+        everything that follows is untethered. Copy it, change what’s <span class="code-box">{inside braces}</span>, paste it.
+      </p>
+<!-- Caixa mono: bloco identidade PT -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-4">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Block 1 — IDENTITY <span class="font-normal text-neutral-500">(PT)</span></div>
+<span class="text-xs text-neutral-500 code-box">copy-paste</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">Você é {NOME}, {PAPEL}, operando em {AMBIENTE}.
+Modelo: {id}. Data de hoje: {data}. Conhecimento até: {corte}.
+Seu objetivo principal é {objetivo em uma frase}.</pre>
+</div>
+<!-- Caixa mono: bloco identidade EN -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-sky-300">Same block—canonical EN <span class="font-normal text-neutral-500">(the form seen in leaks)</span></div>
+<span class="text-xs text-neutral-500 code-box">copy-paste</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-sky-400 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">You are {NAME}, {ROLE}, operating in {ENVIRONMENT}.
+Your main goal is to follow the user's instructions to {GOAL}.</pre>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🎯</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Why the date and the knowledge cutoff</p>
+<p class="text-sm text-neutral-300">
+              Lines like <span class="code-box">Today's date</span> e <span class="code-box">Knowledge up to</span> prevent the model from guessing the wrong year or confidently presenting something from before the cutoff as if it were current. If your use case doesn’t need it, remove the line — but it costs little and saves you from a silly mistake.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🪪</div>
+<div class="text-xs font-semibold text-neutral-200">Who</div>
+<div class="text-xs text-neutral-500 mt-1">{NAME} {ROLE}</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">📍</div>
+<div class="text-xs font-semibold text-neutral-200">Where</div>
+<div class="text-xs text-neutral-500 mt-1">{ENVIRONMENT}</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🎯</div>
+<div class="text-xs font-semibold text-neutral-200">What for</div>
+<div class="text-xs text-neutral-500 mt-1">{objective} in 1 sentence</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">1️⃣</div>
+<div class="text-xs font-semibold text-neutral-200">Always first</div>
+<div class="text-xs text-neutral-500 mt-1">opens the prompt</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Tone + honesty (the highest ROI)</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        If you could only paste <strong class="text-blue-400">one</strong> block beyond identity, this would be it. It combines two things:
+        how the AI <strong class="text-blue-400">sounds</strong> (concision, prose instead of lists) and how it behaves with the
+        <strong class="text-blue-400">truth</strong> (no flattery, own the mistake). Just a few lines, and they already cut out half the
+        answers that make you angry.
+      </p>
+<!-- Caixa mono: bloco tom PT -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-4">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Block 2 — TONE + HONESTY <span class="font-normal text-neutral-500">(PT)</span></div>
+<span class="text-xs text-neutral-500 code-box">copy-paste</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">&lt;tom&gt;</span>
+- Responda no menor tamanho que resolva. Em conversa casual, poucas frases bastam.
+- Use prosa, não listas, para explicações e relatórios — listas só quando o usuário pedir ranking/passos.
+- Verdade e honestidade acima de deferência. Sem bajulação, sem reasseguramento artificial, sem encher linguiça.
+- Discorde de forma construtiva quando achar que algo está errado — gentil, mas sem esconder o feedback.
+- Ao errar, assuma e corrija, sem auto-flagelação nem desculpas em excesso.
+<span class="text-blue-400">&lt;/tom&gt;</span></pre>
+</div>
+<!-- Caixa mono: bloco tom EN -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-sky-300">Same block—canonical EN <span class="font-normal text-neutral-500">(distilled from Codex pragmatic + Fable 5)</span></div>
+<span class="text-xs text-neutral-500 code-box">copy-paste</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-sky-400 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">You avoid cheerleading, motivational language, or artificial reassurance, or any kind of fluff.
+Truthfulness and honesty are more important than deference and sycophancy. When something is
+wrong, point it out kindly without hiding the feedback. When you make a mistake, own it and fix
+it without collapsing into self-abasement or excessive apology.</pre>
+</div>
+<!-- Grid: o que esse bloco LIGA vs DESLIGA -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-blue-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-xs">✓</span>
+<span>What it turns on</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Responses sized to the problem, not longer</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Prose you can read, instead of reflexive lists</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Constructive disagreement when you're wrong</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Admit the mistake without drama or ten apologies</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>What it turns off</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Flattery ("What a great question!") in every turn</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Artificial reassurance and padding</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Agree with you just to please you</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Excessive self-flagellation after a slip</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Why “higher ROI”</p>
+<p class="text-sm text-neutral-300">
+              Five lines change the entire character of the responses. No other block delivers so much impact with so few words — which is why it goes <strong>almost always</strong>, even in a chat-only PMV.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Concision budget</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The tone block already calls for concision. This goes further: it gives a <strong class="text-blue-400">number</strong>. When "be concise" isn’t
+        enough — because the AI and you disagree on what "concise" means — you set a budget: so many sentences, so many bullets, and a clear rule for <strong class="text-blue-400">when it can overflow</strong>. This is the block for anyone who needs predictable response length.
+      </p>
+<!-- Caixa mono: bloco concisao -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Block 3 — CONCISENESS BUDGET <span class="font-normal text-neutral-500">(PT)</span></div>
+<span class="text-xs text-neutral-500 code-box">copy-paste</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">Responda no menor tamanho que resolva. Padrão: {N} frases / {N} bullets de uma linha.
+Cada bullet começa com o entregável/ação em **negrito**, seguido de um qualificador curto.
+Expanda apenas para: código, segurança, ou quando o usuário pedir explicitamente.</pre>
+</div>
+<!-- Timeline: como decidir o orçamento -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+<span class="text-blue-400 text-lg">🔢</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-blue-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-blue-400 mb-1">1. Set the default number</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Replace the <span class="code-box">{N}</span> based on what your case calls for. A support chat response? "3 sentences / 3 bullets."
+              An executive summary? "5 one-line bullets." The number becomes the contract.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+<span class="text-blue-400 text-lg">📝</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-blue-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-blue-400 mb-1">2. Standardize the bullet format</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              "Deliverable in <strong class="text-blue-400">bold</strong> + the short qualifier" makes each item start with what
+              matters. The reader scans the first word and immediately knows whether that bullet is for them.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">🚪</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">3. List the exceptions, and only those</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Without an escape hatch, AI mutilates code or skips a safety warning to fit within the limit. The line
+              <span class="code-box">Expand only for: code, security, or when the user asks</span> solves it: this can grow here, nowhere else.
+            </p>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">📐</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Tone gives direction; concision gives a number</p>
+<p class="text-sm text-neutral-300">
+              You don’t always need both. For casual chat, the <span class="code-box text-blue-400">tone</span> that’s enough. Pull the
+              <span class="code-box text-sky-300">concision budget</span> when response length is a concrete problem and you
+              want an explicit ceiling.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Priority hierarchy</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Sooner or later, two instructions will <strong class="text-blue-400">fight</strong>: memory says one thing, the user asks for another;
+        a style preference conflicts with a safety rule. Without a declared order, the model decides in the moment—and not always the way
+        you wanted. This block sets the <strong class="text-blue-400">precedence</strong> at a time, so the tie-breaker is always the same.
+      </p>
+<!-- Caixa mono: bloco prioridade -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Block 4 — PRIORITY HIERARCHY <span class="font-normal text-neutral-500">(PT)</span></div>
+<span class="text-xs text-neutral-500 code-box">copy-paste</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">Em conflito de instruções, a ordem de precedência é:
+{segurança} &gt; {política inegociável} &gt; {instrução explícita do usuário} &gt; {defaults do sistema} &gt; {preferência de estilo}.
+Quando uma regra de memória/contexto contradisser uma instrução direta do usuário, o usuário vence.</pre>
+</div>
+<!-- Diagrama da cadeia de precedencia -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">🪜</span> The chain, from strongest to weakest</h3>
+<div class="flex flex-col gap-2 text-sm">
+<div class="bg-dark-900 rounded-lg p-3 border border-blue-500/30 flex items-center space-x-3">
+<span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">1</span>
+<span class="text-neutral-200"><strong class="text-blue-400">Safety</strong> — always takes precedence</span>
+</div>
+<div class="bg-dark-900 rounded-lg p-3 border border-blue-500/20 flex items-center space-x-3">
+<span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">2</span>
+<span class="text-neutral-200"><strong class="text-blue-400">Non-negotiable policy</strong> — the rules the brand won’t compromise on</span>
+</div>
+<div class="bg-dark-900 rounded-lg p-3 border border-sky-500/30 flex items-center space-x-3">
+<span class="flex items-center justify-center w-7 h-7 rounded-full bg-sky-500/10 text-sky-300 font-bold text-xs flex-shrink-0">3</span>
+<span class="text-neutral-200"><strong class="text-sky-300">Explicit user instruction</strong> — what it asked for now, directly</span>
+</div>
+<div class="bg-dark-900 rounded-lg p-3 border border-dark-600 flex items-center space-x-3">
+<span class="flex items-center justify-center w-7 h-7 rounded-full bg-dark-700 text-neutral-300 font-bold text-xs flex-shrink-0">4</span>
+<span class="text-neutral-200"><strong class="text-neutral-200">System defaults</strong> — the default behaviors</span>
+</div>
+<div class="bg-dark-900 rounded-lg p-3 border border-dark-600 flex items-center space-x-3">
+<span class="flex items-center justify-center w-7 h-7 rounded-full bg-dark-700 text-neutral-300 font-bold text-xs flex-shrink-0">5</span>
+<span class="text-neutral-200"><strong class="text-neutral-200">Style preference</strong> — gives way first in a conflict</span>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The line that matters most</p>
+<p class="text-sm text-neutral-300">
+              The last sentence — <span class="code-box">when memory contradicts the user, the user wins</span> — prevents the classic bug:
+              the AI clinging to an old preference and ignoring what you just asked. The present takes precedence over the past.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Citation / source preservation</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        When AI uses information from <strong class="text-blue-400">outside</strong> — a search, a document, a page — it needs
+        to say where it came from. But there’s a right way to cite: <strong class="text-blue-400">inline</strong>, with the source name as the link text,
+        never a raw URL or a "click here." This block gives the text the feel of serious research instead of a patchwork.
+      </p>
+<!-- Caixa mono: bloco citacao -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Block 5 — CITATION / SOURCE PRESERVATION <span class="font-normal text-neutral-500">(PT)</span></div>
+<span class="text-xs text-neutral-500 code-box">copy-paste</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">Toda frase com informação derivada de fonte externa cita inline: [nome da fonte](url).
+O texto âncora é o nome da fonte ou uma frase descritiva natural — nunca "fonte"/"link" nem URL crua.
+Citações inline, não numa seção "Referências" separada.
+Teste: o texto deve ler naturalmente mesmo se todas as URLs fossem removidas.</pre>
+</div>
+<!-- Grid: citacao certa vs errada -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-blue-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Citation done right</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Natural anchor text: "according to the React documentation"</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Link embedded in the sentence itself, flowing with the text</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>It can be read in full even if the URLs disappeared</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Without a "References" block tacked on at the end</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Citation done wrong</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Meaningless "click here" / "source" / "[1]" anchor text</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Raw URL dropped into the middle of the text</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Text that turns into Swiss cheese without the links</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Everything piled into a loose "References" section</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧪</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">The test embedded in the block</p>
+<p class="text-sm text-neutral-300">
+              The last line is a ready-made test: <strong>remove all URLs and read.</strong> If the text still makes sense, the citation is integrated as it should be. If it becomes a pile of "see [link]" references, the AI cited it incorrectly.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">How to combine blocks — the 3 recipes</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Loose blocks don’t make a prompt — assembly does. The library includes <strong class="text-blue-400">three recipes</strong> starting
+        point, one for each common type of AI. Each recipe is a list of blocks in order. Find your case, copy the blocks
+        from that row, and you have an MVP. Remember the golden rule: <strong class="text-blue-400">don’t paste them all.</strong>
+</p>
+<!-- Receita 1: agente de codigo -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-4">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Recipe A — CODE AGENT (PMV)</div>
+<span class="text-xs text-neutral-500 code-box">7 blocks</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">1 IDENTIDADE + 2 TOM + 4 CONTRATO + 5 LOOP + 6 RECUPERAÇÃO + 7 RELATO + 11 CONFIRMAÇÃO</pre>
+<p class="text-neutral-300 text-sm leading-relaxed mt-3">
+          The “heavier” recipe — because an agent that edits files and runs commands needs discipline: the
+          <strong class="text-blue-400">loop</strong> to work in cycles, the <strong class="text-blue-400">recovery</strong> so you don’t
+          repeat the mistake, the <strong class="text-blue-400">faithful report</strong> so you don’t disguise the result, and the
+          <strong class="text-blue-400">confirmation</strong> before the irreversible action.
+        </p>
+</div>
+<!-- Receita 2: assistente de pesquisa -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-4">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-sky-300">Recipe B — RESEARCH ASSISTANT</div>
+<span class="text-xs text-neutral-500 code-box">4 blocks</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-sky-400 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">1 IDENTIDADE + 3 CONCISÃO + 13 CITAÇÃO + 9 PRIORIDADE</pre>
+<p class="text-neutral-300 text-sm leading-relaxed mt-3">
+          For an AI that searches and summarizes: <strong class="text-sky-300">brevity</strong> with a number (answers that fit),
+          <strong class="text-sky-300">citation</strong> (every claim anchored in the source), and <strong class="text-sky-300">priority</strong>
+          (when memory and the new request conflict, the new request wins). Note: no loop and no contract tools — it informs, it doesn’t execute.
+        </p>
+</div>
+<!-- Receita 3: persona de produto -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Recipe C — PRODUCT PERSONA (chat)</div>
+<span class="text-xs text-neutral-500 code-box">4 blocks</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">1 IDENTIDADE + 12 PERSONA + 2 TOM + 8 SEGURANÇA</pre>
+<p class="text-neutral-300 text-sm leading-relaxed mt-3">
+          The brand chatbot recipe: <strong class="text-blue-400">persona</strong> (values, tone, way of guiding),
+          <strong class="text-blue-400">tone</strong> and a handful of <strong class="text-blue-400">safety</strong>. This is exactly the
+          foundation of what you built in 2.1 with Mia—and it’s the one you see most often in products.
+        </p>
+</div>
+<!-- Tabela comparativa das 3 receitas -->
+<div class="overflow-x-auto mb-6 rounded-xl border border-blue-500/30">
+<table class="w-full text-sm text-left">
+<thead class="bg-dark-700 text-neutral-200">
+<tr>
+<th class="px-4 py-3 font-semibold">Recipe</th>
+<th class="px-4 py-3 font-semibold">When to use</th>
+<th class="px-4 py-3 font-semibold">Is there a loop?</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-dark-600">
+<tr class="bg-dark-800">
+<td class="px-4 py-3 text-blue-400 font-semibold">A · Coding agent</td>
+<td class="px-4 py-3 text-neutral-300">Edits files, runs commands, executes in steps</td>
+<td class="px-4 py-3 text-blue-400">Yes</td>
+</tr>
+<tr class="bg-dark-800">
+<td class="px-4 py-3 text-sky-300 font-semibold">B · Research assistant</td>
+<td class="px-4 py-3 text-neutral-300">Searches, summarizes, and cites external sources</td>
+<td class="px-4 py-3 text-neutral-500">No</td>
+</tr>
+<tr class="bg-dark-800">
+<td class="px-4 py-3 text-blue-400 font-semibold">C · Product persona</td>
+<td class="px-4 py-3 text-neutral-300">Branded chatbot, conversation only, no tools</td>
+<td class="px-4 py-3 text-neutral-500">No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The recipe is a starting point, not a law</p>
+<p class="text-sm text-neutral-300">
+              The three cover most cases, but they are <strong>ground</strong>, not a ceiling. Start with the one that most resembles your case,
+              run it, and only then add a block when you see genuinely bad behavior — as you learned in 2.1.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🍳</div>
+<div class="text-xs font-semibold text-neutral-200">3 recipes</div>
+<div class="text-xs text-neutral-500 mt-1">code · research · persona</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🧩</div>
+<div class="text-xs font-semibold text-neutral-200">Blocks in order</div>
+<div class="text-xs text-neutral-500 mt-1">copy the whole line</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🚫</div>
+<div class="text-xs font-semibold text-neutral-200">Don’t paste them all</div>
+<div class="text-xs text-neutral-500 mt-1">only what the case calls for</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">📈</div>
+<div class="text-xs font-semibold text-neutral-200">Grow later</div>
+<div class="text-xs text-neutral-500 mt-1">only under real pressure</div>
+</div>
+</div>
+</section>
+<!-- ENTREGÁVEL PRÁTICO -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-2xl p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-3 flex items-center"><span class="mr-3">📦</span> Hands-on: build the library</h2>
+<p class="text-neutral-300 leading-relaxed mb-5 text-sm">
+        Return to the MVP you built in 2.1 and replace it with one of the three recipes—copying the blocks from this library verbatim.
+      </p>
+<ol class="space-y-3 text-sm text-neutral-300 mb-2">
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">1</span>
+<span>Decide which of the three recipes is yours: coding agent, research assistant, or product persona. That determines the blocks.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">2</span>
+<span>Copy each block from the recipe line exactly as shown here, and fill in the <span class="code-box">{keys}</span> for your case.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">3</span>
+<span>Use the PT or EN version according to your prompt — when both are available, choose the language of the rest of your system prompt.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">4</span>
+<span>Run it on real tasks. Resist pasting in extra blocks “just in case” — only add them when a real error appears.</span>
+</li>
+</ol>
+</div>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-blue-900/40 via-dark-800 to-dark-800 rounded-2xl border border-blue-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Module Summary</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Identity</strong>: open the prompt with who/where/goal in one sentence (in PT and EN)</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Tone + honesty</strong>: the highest-ROI block—concision, prose, and truth over flattery</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Concision budget</strong>: when "be concise" isn't enough, set a <span class="code-box">{N}</span> with exceptions</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Priority hierarchy</strong>: the tie-break order—safety at the top, style yields first</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Source citation</strong>: inline, a natural anchor, and the test of removing the URLs</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">3 recipes</strong>: code, research, persona—copy the line, but <strong>don’t paste them all</strong></span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-blue-500/20">
+<h3 class="font-semibold text-blue-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Next Module</h3>
+<p class="text-neutral-300 text-sm">
+<strong>2.3 — 🎭 Persona design.</strong> You have the blocks. Now let’s go deep on one of them: how to design a persona that
+          gives AI character without turning it into fantasy—values, tone, interaction, and escalation, plus the golden rule that separates persona from artifact.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-blue-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Back to Track</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-2-3.html">
+<span>Next: 2.3 Persona design</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-blue-400 font-medium">The AI's Hidden Manual</span> · Module 2.2 · Track 2 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

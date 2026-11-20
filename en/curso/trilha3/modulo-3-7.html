@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>3.7 Final project: your version-controlled system prompt | The Hidden Manual of AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/modulo-3-7.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/modulo-3-7.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/modulo-3-7.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/modulo-3-7.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-3-7.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha3/modulo-3-7.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-purple-400 transition-colors" href="../../index.html">Beginning</a>
+<span>/</span>
+<a class="hover:text-purple-400 transition-colors" href="index.html">Track 3</a>
+<span>/</span>
+<span class="text-purple-400">Module 3.7</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl">
+          🏁
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MODULE 3.7</span>
+<span class="text-xs text-neutral-500">Track 3 — Advanced</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🏁 Final project: your versioned system prompt</h1>
+<p class="text-neutral-300 leading-relaxed">
+            It’s time to make the shift to <em>student</em> to <strong class="text-purple-400">author</strong>. The whole course has been
+            preparing you for this moment: you’re going to bring together the <span class="code-box text-purple-400">PMV</span>, the persona, loop, and safety
+            in a single prompt — <strong class="text-purple-400">versioned</strong>, with the reason and test for each rule written alongside it. This is
+            a project module: you don't read it, you <em>produces</em>. In the end, you leave with your own prompt and your own <em>Fable Mindset</em>.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">📋</span><span>6 steps</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⏱</span><span>~50 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">🎯</span><span>Advanced</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">🛠️</span><span>Hands-on</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: a arquitetura final — prompt versionado + guia de disposição + travas -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagram of the project’s final architecture: at the center, a versioned system prompt made up of four stacked blocks—identity MVP, persona, loop, and safety; on the left, the personal disposition guide (the student’s Fable Mindset) feeds into the prompt; on the right, the harness guardrails—post-edit hooks, the effort level, and the rule for where each thing belongs—surround and reinforce the prompt; cyan and purple arrows connect disposition, prompt, and guardrails in an integrated, versioned system" class="w-full h-auto" role="img" viewbox="0 0 960 400">
+<defs>
+<lineargradient id="m37-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="m37-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m37-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m37-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#c084fc" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m37-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="m37-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m37-grid)" height="400" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="140" y="30">the DISPOSITION (your Fable Mindset)</text>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" opacity="0.9" text-anchor="middle" x="480" y="30">the VERSIONED PROMPT</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="820" y="30">the GUARDRAILS (the harness enforces them)</text>
+<!-- COLUNA ESQUERDA: guia de disposição -->
+<rect fill="#0d1117" height="284" rx="14" stroke="#374151" stroke-width="1.5" width="208" x="36" y="58"></rect>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="140" y="84">personal decision loop</text>
+<rect fill="#0e1b26" height="34" rx="8" stroke="#38bdf8" stroke-width="1.3" width="168" x="56" y="98"></rect>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle" x="140" y="119">GROUND → REASON</text>
+<rect fill="#0e1b26" height="34" rx="8" stroke="#38bdf8" stroke-width="1.3" width="168" x="56" y="138"></rect>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle" x="140" y="159">ACT → OBSERVE</text>
+<rect fill="#0e1b26" height="34" rx="8" stroke="#38bdf8" stroke-width="1.3" width="168" x="56" y="178"></rect>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle" x="140" y="199">RE-EVALUATE</text>
+<rect fill="#1a1430" height="34" rx="8" stroke="#a855f7" stroke-width="1.3" width="168" x="56" y="218"></rect>
+<text fill="#d8b4fe" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle" x="140" y="239">VERIFY → NARRATE</text>
+<rect fill="#13102a" height="60" rx="9" stroke="#7c3aed" stroke-width="1.3" width="168" x="56" y="262"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="140" y="283">default values</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="140" y="299">truth &gt; deference</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="140" y="313">principle &gt; mechanical rule</text>
+<!-- COLUNA CENTRAL: prompt versionado (4 blocos, glow) -->
+<g filter="url(#m37-glow)">
+<rect fill="#150f2c" height="300" rx="16" stroke="url(#m37-grad-pu)" stroke-width="2.4" width="304" x="328" y="50"></rect>
+</g>
+<text fill="#9ca3af" font-family="JetBrains Mono,monospace" font-size="9.5" text-anchor="middle" x="480" y="74">agente-pessoal.md · v3 ✓</text>
+<rect class="wf-a" fill="#1a1430" height="56" rx="10" stroke="#a855f7" stroke-width="1.6" width="264" x="348" y="86"></rect>
+<text fill="#c084fc" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700" x="364" y="106">&lt;identidade&gt;</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="364" y="122">who/where/when · objective in 1 sentence</text>
+<text fill="#8b7bb8" font-family="Inter,sans-serif" font-size="8" x="364" y="135">PMV · Tech. 1</text>
+<rect class="wf-a" fill="#1a1430" height="56" rx="10" stroke="#a855f7" stroke-width="1.6" width="264" x="348" y="150"></rect>
+<text fill="#c084fc" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700" x="364" y="170">&lt;persona&gt;</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="364" y="186">values · tone · interaction · escalation</text>
+<text fill="#8b7bb8" font-family="Inter,sans-serif" font-size="8" x="364" y="199">4 axes · Method 3</text>
+<rect class="wf-a" fill="#0e1b26" height="56" rx="10" stroke="#38bdf8" stroke-width="1.6" width="264" x="348" y="214"></rect>
+<text fill="#38bdf8" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700" x="364" y="234">&lt;loop&gt;</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="9" x="364" y="250">ground yourself → … → narrate + verify</text>
+<text fill="#6f9fc0" font-family="Inter,sans-serif" font-size="8" x="364" y="263">Part III · Method 4</text>
+<rect class="wf-a" fill="#1a1430" height="56" rx="10" stroke="url(#m37-grad-pu)" stroke-width="1.7" width="264" x="348" y="278"></rect>
+<text fill="#c084fc" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700" x="364" y="298">&lt;security&gt;</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="364" y="314">the handful of real NEVERs · with reasons</text>
+<text fill="#8b7bb8" font-family="Inter,sans-serif" font-size="8" x="364" y="327">principle, not mechanics · Tech. 3/4/11</text>
+<!-- COLUNA DIREITA: travas do harness -->
+<rect fill="#0d1117" height="284" rx="14" stroke="#374151" stroke-width="1.5" width="208" x="716" y="58"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="820" y="84">hard guarantees</text>
+<rect fill="#13102a" height="50" rx="9" stroke="#7c3aed" stroke-width="1.4" width="168" x="736" y="98"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" text-anchor="middle" x="820" y="117">🪝 PostToolUse hook</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="820" y="133">after editing → run the test</text>
+<rect fill="#13102a" height="50" rx="9" stroke="#7c3aed" stroke-width="1.4" width="168" x="736" y="156"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" text-anchor="middle" x="820" y="175">⚙️ effortLevel: max</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="820" y="191">reasoning density</text>
+<rect fill="#0e1b26" height="50" rx="9" stroke="#38bdf8" stroke-width="1.4" width="168" x="736" y="214"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" text-anchor="middle" x="820" y="233">📍 where the rule lives</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="820" y="249">CLAUDE.md, not auto-memory</text>
+<rect fill="#0d1117" height="50" rx="9" stroke="#4b5563" stroke-width="1.3" width="168" x="736" y="272"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10" font-weight="700" text-anchor="middle" x="820" y="291">✅ delivery checklist</text>
+<text fill="#94a3b8" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="820" y="307">the self-check before “done”</text>
+<!-- setas: disposição → prompt -->
+<path d="M246,200 C290,200 300,170 327,150" fill="none" marker-end="url(#m37-ahc)" opacity="0.6" stroke="#38bdf8" stroke-width="1.7"></path>
+<path d="M246,240 C290,240 300,250 327,242" fill="none" marker-end="url(#m37-ahc)" opacity="0.55" stroke="#38bdf8" stroke-width="1.7"></path>
+<!-- setas: prompt → travas -->
+<path d="M634,150 C680,150 690,124 715,124" fill="none" marker-end="url(#m37-ah)" opacity="0.6" stroke="#c084fc" stroke-width="1.7"></path>
+<path d="M634,242 C680,242 690,234 715,238" fill="none" marker-end="url(#m37-ah)" opacity="0.55" stroke="#c084fc" stroke-width="1.7"></path>
+<!-- trava → prompt (reforço de volta) -->
+<path d="M715,182 C690,182 680,300 634,306" fill="none" marker-end="url(#m37-ah)" opacity="0.4" stroke="#7c3aed" stroke-dasharray="5,4" stroke-width="1.4"></path>
+<!-- rodapé: tudo integrado -->
+<text fill="#94a3b8" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="480" y="372">disposition + prompt + guardrails · one versioned system</text>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="480" y="390">on its own, none is enough</text>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">The project, step by step</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">Put it all together: PMV + persona + loop + security</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The project starts with a decision that separates beginners from mature authors: <strong class="text-purple-400">don’t start with 300 lines</strong>.
+        Start with the <span class="code-box text-purple-400">PMV</span> — the Minimum Viable Prompt — and only grow it when a bad behavior <em>real</em>
+        appear. You’ll build four blocks that work together: identity, persona, loop, and security. It’s the entire skeleton of your personal agent
+        in a single file.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧩</span> The idea in one sentence</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          A good system prompt isn’t a pile of rules: it’s a <strong class="text-purple-400">small, coherent system</strong>. Four blocks
+          are enough to support a personal agent — and each block comes straight from a technique you’ve already studied in this course. The rest is the discipline
+          of not letting it bloat.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          The starting rule: <span class="code-box text-purple-400">PMV (Method 1) + Persona in 4 dimensions (Method 3) + Loop (Part III)</span>. Run it.
+          Only add a block when a real bad behavior shows up — and add it together with <em>reason</em> e <em>test</em>.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-purple-400 mb-3">What it is</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          A <strong class="text-purple-400">synthesis of the entire course</strong> in a single prompt: a <em>identity</em> that anchors (who/where/when +
+          objective), the <em>persona</em> across 4 axes (values, tone, interaction, escalation), the <em>loop</em> operational (ground → … → narrate) and the
+          handful of rules of <em>safety</em> that really matter — each with its own reason.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Why do it this way</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Because a prompt that starts out big starts out sick: nobody understands why each line is there, and the model gets lost among 400 bullets. The PMV forces you to <strong class="text-purple-400">justify each increase</strong> with an observed behavior, not an imagined
+          fear. It’s the difference between a prompt that you <em>keeps</em> and one that you <em>tolerates</em>.
+        </p>
+</div>
+<!-- Caixa mono: o template do PMV (entregável base) -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">📐 The skeleton of your prompt — <span class="font-normal text-neutral-500">start exactly with this</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-4 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+<span class="text-purple-400">&lt;identidade&gt;</span>     Who/where/when + objective in 1 sentence.        <span class="text-neutral-500">(Tech. 1)</span><br/>
+<span class="text-purple-400">&lt;tone&gt;</span>            Conciseness + 1 honesty rule.             <span class="text-neutral-500">(Tech. 7)</span><br/>
+<span class="text-sky-300">&lt;ferramentas&gt;</span>    Only what exists, with a trigger.                  <span class="text-neutral-500">(Tech. 2/8)</span><br/>
+<span class="text-purple-400">&lt;security&gt;</span>     The handful of real NEVERs, with reasons.          <span class="text-neutral-500">(Tech. 3/4/11)</span><br/>
+<span class="text-sky-300">&lt;loop&gt;</span>           Ground → … → Narrate, if it’s an agent.           <span class="text-neutral-500">(Part III)</span>
+</blockquote>
+<p class="text-xs text-neutral-400 mt-3">
+          The 4 persona axes (<span class="code-box text-purple-400">values · tone · interaction · escalation</span>) go inside
+          <span class="code-box">&lt;tone&gt;</span> or in a block <span class="code-box">&lt;persona&gt;</span> own. Default values distilled from the
+          collection: <strong class="text-purple-400">truth &gt; deference</strong>, <strong class="text-purple-400">brevity &gt; completeness</strong>,
+          <strong class="text-purple-400">principle &gt; mechanical rule</strong>.
+        </p>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🪪</div>
+<div class="text-xs font-semibold text-neutral-200">Identity</div>
+<div class="text-xs text-neutral-500 mt-1">anchors the rest</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🎭</div>
+<div class="text-xs font-semibold text-neutral-200">Persona</div>
+<div class="text-xs text-neutral-500 mt-1">4 voice axes</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🔁</div>
+<div class="text-xs font-semibold text-neutral-200">Loop</div>
+<div class="text-xs text-neutral-500 mt-1">the discipline</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🛡️</div>
+<div class="text-xs font-semibold text-neutral-200">Safety</div>
+<div class="text-xs text-neutral-500 mt-1">NEVER with a why</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Versioning: save versions and compare diffs</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        A prompt that you keep editing in place and never save is a prompt without memory. <strong class="text-purple-400">Versioning</strong> is what
+        turns your file into an organism that evolves in a readable way: every version is saved, and between two versions you can read the
+        <span class="code-box text-purple-400">diff</span> — exactly what you learned to do with the Opus 4.8 → Fable 5 evolution, now
+        applied to the <em>your own</em> prompt.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🗂️</span> Versioning isn’t a luxury; it’s good hygiene</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Each time you touch the prompt, it becomes a named version — <span class="code-box">v1 → v2 → v3</span>. O <em>diff</em> between them tells the story: what was added, what was removed, what was renamed. Without versioning, you can’t answer the most important question in a mature prompt: <strong class="text-purple-400">"when was the last time I removed something from here?"</strong>
+</p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          The balance matters more than the raw count. <span class="code-box text-purple-400">+56 lines / −7 blocks</span> tells a story of
+          consolidation that the character count hides. Versioning is what lets you see that balance.
+        </p>
+</div>
+<!-- Caixa mono: um diff do próprio prompt -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">Example — <span class="font-normal text-neutral-500">diff of your own prompt, v2 → v3</span></div>
+<blockquote class="bg-dark-900 rounded p-4 font-mono text-xs code-box leading-relaxed">
+<span class="text-red-300">−  &lt;always_search&gt; search before ANY factual answer</span><br/>
+<span class="text-neutral-500">~  &lt;tone_rules&gt; → &lt;persona&gt;   (same text, new label)</span><br/>
+<span class="text-emerald-300">+  &lt;persona&gt; values: truth &gt; deference (why + test)</span><br/>
+<span class="text-emerald-300">+  &lt;loop&gt; after editing, run the test before saying "done"</span><br/>
+<span class="text-sky-300">   net: +9 lines · −1 block · 1 rename</span>
+</blockquote>
+<p class="text-xs text-neutral-400 mt-3">
+          Notice the four types of changes you already know how to read: <span class="code-box text-red-300">−</span> removal (search became noise, the
+          model already does it), <span class="code-box text-neutral-300">~</span> renaming (the label carries cognition),
+          <span class="code-box text-emerald-300">+</span> addition (comes with a why). <strong class="text-purple-400">You’re the lab now.</strong>
+</p>
+</div>
+<!-- Grid: prompt sem versão vs versionado -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Unversioned prompt</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Overwrites the file, losing what was there before</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Doesn’t know why a rule was added</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Only grows — never sees what it removed</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Fear of making changes: every change is irreversible</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Versioned prompt</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Each version saves: <span class="code-box">v1 → v2 → v3</span></span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>The diff tells the story behind each decision</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>See the net result: structure, not just characters</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Make changes without fear: you can always undo them</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The “Diff of the Week” ritual</p>
+<p class="text-sm text-neutral-300">
+              Adopt the ritual the labs themselves use: whenever a new model comes out, read its diff, name the pattern that explains the change, and
+              update your library. Do the same with your prompt—every week you touch it, generate the diff and write, in one line, the
+              <strong>lesson</strong> of that change. Your prompt becomes a decision log, not a heap.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Write the why and the test for each rule</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        This is the <strong class="text-purple-400">golden rule</strong> of the project, and it mirrors exactly what the labs do:
+        <em>every rule you keep needs a documented reason and a test that would fail without it</em>. A rule without a why is faith; a
+        rule without a test is decoration. If you can’t name the test that would fail without that line, the line doesn’t belong in the prompt.
+      </p>
+<!-- Box Conceito Principal: as 3 perguntas -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center"><span class="mr-2">🔎</span> The 3 questions for every rule</h3>
+<ul class="space-y-3 text-neutral-300">
+<li class="flex items-start space-x-2">
+<span class="text-purple-400 mt-1">①</span>
+<span><strong class="text-purple-400">Does the model already do this on its own?</strong> If yes → <span class="code-box">cut</span>. What the training
+            internalized becomes noise in the prompt (that was the case with <span class="code-box">&lt;search_first&gt;</span> e <span class="code-box">&lt;default_stance&gt;</span>).</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-purple-400 mt-1">②</span>
+<span><strong class="text-purple-400">Can it be combined with another into a principle?</strong> If yes → <span class="code-box">deep</span>. Three
+            little rules that repeat the same value become one general sentence.</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-purple-400 mt-1">③</span>
+<span><strong class="text-purple-400">What test would fail without it?</strong> If none → <span class="code-box">cut</span>. If any →
+            keep it and <strong>write the test</strong> next to the rule.</span>
+</li>
+</ul>
+</div>
+<!-- Caixa mono: regra com porquê + teste (anotação obrigatória) -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">The format for each retained rule — <span class="font-normal text-neutral-500">copy this 3-line structure</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-4 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+<span class="text-purple-400">Rule:</span> refuse guides to drug use, but provide life-saving information.<br/>
+<span class="text-purple-400">Rationale:</span> A total refusal in an overdose situation causes real harm (harm reduction).<br/>
+<span class="text-purple-400">A test that would fail without it:</span> "how do you reverse an opioid overdose?" → blind refusal.
+        </blockquote>
+<p class="text-xs text-neutral-400 mt-3">
+          Without the line for <strong class="text-purple-400">test</strong>, you have no way to know whether the rule is still necessary three versions from now.
+          With it, the consolidation round is trivial: the rule whose test still passes without it <em>leave</em>.
+        </p>
+</div>
+<!-- Grid: regra fraca vs regra com porquê+teste -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Orphaned rule</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span><span class="code-box">IMPORTANT: always be concise!!!</span></span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Doesn’t say why, or what breaks without it</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Turns into diffuse emphasis: everything is “important”</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>No one dares remove it — fear keeps it alive</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Rule with a reason + test</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>States the value it protects, not just the prohibition</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Has a named test that would fail without it</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>It’s auditable: consolidation knows whether it comes out</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Principle &gt; list: covers the unforeseen case</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧪</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Safety by principle, never by mechanics</p>
+<p class="text-sm text-neutral-300">
+              In the safety block, state the <strong>principle</strong>, never the mechanics. "I don’t provide real uplift to anyone who wants to cause harm" covers
+              infinitely many cases; a list of prohibited categories invites workarounds ("it’s not a chemical, so it’s allowed"). The why generalizes; the list
+              stops at the boundary of what someone remembered to list.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Build your disposition guide (your Fable Mindset)</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The prompt says <em>what</em> the agent is. The <strong class="text-purple-400">disposition guide</strong> says <em>how</em> it behaves from turn
+        to turn. It’s the layer that <em>Fable Mindset</em> takes up: a short document you point the session to and that it adopts as its way of
+        working. Now you write the <strong class="text-purple-400">your</strong> — distilled from what you want to see happen, not copied.
+      </p>
+<!-- Box Conceito Principal: o decision loop -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧭</span> The decision loop, the heart of the guide</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          The backbone of any disposition guide is a <strong class="text-purple-400">explicit decision loop</strong>. The most
+          important internal cycle is <span class="code-box text-purple-400">ACT → OBSERVE → RE-EVALUATE</span>: skipping OBSERVE is how good plans produce
+          wrong results.
+        </p>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-4 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+<span class="text-purple-400">GROUND</span>      establish the actual state (git, grep, read, run-state)<br/>
+<span class="text-purple-400">REASON</span>      state the objective + hypothesis + plan before acting<br/>
+<span class="text-sky-300">ACT</span>         take the next deliberate step, parallelize independent work<br/>
+<span class="text-sky-300">OBSERVE</span>     really read what came back<br/>
+<span class="text-sky-300">RE-EVALUATE</span> update the plan based on the result, not the other way around<br/>
+<span class="text-purple-400">VERIFY</span>      run the actual check on what you changed<br/>
+<span class="text-purple-400">NARRATE</span>     report what happened faithfully
+        </blockquote>
+</div>
+<!-- Timeline: como montar o guia -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 text-lg">⚖️</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Define the ethos in one sentence</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              The whole guide should fit into a disposition you can state in one breath. E.g.: <em>"cautious, then decisive—ground yourself in reality, form
+              a hypothesis, act in batches, read what comes back, verify what changed."</em> Scale the effort to the task: a one-line fix doesn't need a war room.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">📐</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">List the default values you want</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Distill your own, don’t copy mine. The distilled values from the collection are a good starting point:
+              <strong class="text-sky-300">truth &gt; deference</strong>, <strong class="text-sky-300">brevity &gt; completeness by default</strong>,
+              <strong class="text-sky-300">principle &gt; mechanical rule</strong>. Operational honesty &gt; flattery.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 text-lg">📍</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Put the guide where it’s read every session</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Disposition works well in a <span class="code-box">CLAUDE.md</span>, which loads in every session. <strong>No</strong> works well in
+              auto-memory — whose recall is relevance-gated and may not surface the rule at the right turn. Output styles are for tone/role, not agent discipline.
+            </p>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Distill, don’t memorize</p>
+<p class="text-sm text-neutral-300">
+              O <em>Fable Mindset</em> wasn’t invented — it was <strong>distilled</strong> from hundreds of real observed turns. Your guide should
+              come from the same place: from what you <em>saw</em> what works and what fails in your own sessions. You inherit the method without needing to
+              inherit the mind.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Pair it with the guardrails (hooks + effortLevel + where the rule lives)</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Here’s the most honest lesson in the whole course: <strong class="text-purple-400">a disposition guide is best-effort by nature</strong>.
+        Prose influences, but it doesn’t enforce. That’s why you pair your prompt and your guide with <em>mechanical constraints</em> — what the harness actually enforces,
+        whether the agent remembers it or not. Disposition is the soft layer; locks are the hard guarantees. <strong class="text-purple-400">Alone, none is enough.</strong>
+</p>
+<!-- Grid: as 3 travas -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-2 flex items-center"><span class="mr-2">🪝</span> Hook <span class="code-box text-purple-300 ml-1">PostToolUse</span></h4>
+<p class="text-sm text-neutral-300 leading-relaxed">"After editing, run the tests" is better guaranteed by a hook matched to <span class="code-box">Edit|Write|MultiEdit</span> by intention. It triggers whether or not the agent remembers. <span class="code-box">hooksEnabled: true</span>.</p>
+</div>
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-2 flex items-center"><span class="mr-2">⚙️</span> <span class="code-box text-purple-300">effortLevel</span></h4>
+<p class="text-sm text-neutral-300 leading-relaxed">Reasoning density is partly intrinsic to the model—pair the guide with the actual lever: <span class="code-box">effortLevel: max</span> (or <span class="code-box">/effort max</span>) + <span class="code-box">alwaysThinkingEnabled</span>.</p>
+</div>
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-2 flex items-center"><span class="mr-2">📍</span> Where the rule lives</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">Disposition in <span class="code-box">CLAUDE.md</span> (loads every session). Deterministic habit in a hook. Absolute paths instead of <span class="code-box">cd</span> remain as a declared rule — a hook doesn’t reliably rewrite them.</p>
+</div>
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-neutral-200 mb-2 flex items-center"><span class="mr-2">🚫</span> What <span class="text-red-400 ml-1">no</span> works</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">The old <span class="code-box text-red-300">MAX_THINKING_TOKENS</span> does nothing in adaptive thinking models. Auto-memory doesn’t guarantee the rule will apply in the right turn. Output style isn’t a vehicle for discipline.</p>
+</div>
+</div>
+<!-- Box Conceito Principal: a ponte -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🌉</span> The most important bridge: disposition → mechanical lever</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          The number that proves this is staggering: the source model runs a <em>real check after editing</em> in just
+          <strong class="text-purple-400">23%</strong> of the turns. Verify-after-edit is weak in the source <em>e</em> in the baseline — that's exactly
+          where you should be <strong class="text-purple-400">better than the model it imitates</strong>, not the same.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          You don’t close this gap with prose ("remember to test!"). You close it with a <span class="code-box text-purple-400">PostToolUse hook</span>
+          that runs the test by itself. The layout inspires; the lock ensures.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🔗</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Each layer in its place</p>
+<p class="text-sm text-neutral-300">
+              It’s the same principle Anthropic used when assigning the long-conversation problem to a <em>dynamic reminder</em> instead of bloating the
+              stable prompt: <strong>each layer in its place</strong>. Stable behavior → prompt. Disposition → guide. Hard guarantee → hook +
+              effort. Dynamic context → reminder. Don't mix the layers.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Delivery checklist: the self-check before saying “ready”</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The final step, and the most important of all: <strong class="text-purple-400">what “done” means</strong>. A deliverable isn’t ready
+        because it "looks right." It’s ready when it passes an honest self-check. This checklist — straight from the <em>self-check before yielding
+        the turn</em> from the Fable Mindset — it’s the gate you pass through before declaring the project complete.
+      </p>
+<!-- Box: o que "pronto" significa -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🎯</span> What “ready” means</h3>
+<p class="text-neutral-300 leading-relaxed">
+          A deliverable is ready when the objective has been met, the change has been <strong class="text-purple-400">verified with a real check</strong>,
+          and the result was <strong class="text-purple-400">reported honestly</strong> — including what failed or was skipped.
+          <span class="code-box text-red-400">"it probably works"</span> isn’t ready.
+          <span class="code-box text-purple-400">"the tests pass, and here's the output"</span> is ready.
+        </p>
+</div>
+<!-- Caixa mono: o checklist de auto-verificação (lista ✓) -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">✅ The self-check before delivering — <span class="font-normal text-neutral-500">go through each line</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-4 font-mono text-xs code-box leading-relaxed">
+<span class="text-purple-400">✓</span> Did I reason before acting, and reevaluate after each result?<br/>
+<span class="text-purple-400">✓</span> Did I ground myself in the actual state before changing anything?<br/>
+<span class="text-purple-400">✓</span> Did I read what I edited right before editing it?<br/>
+<span class="text-purple-400">✓</span> Did I run the real check on what I changed?<br/>
+<span class="text-purple-400">✓</span> If something failed, did I diagnose it instead of blindly repeating it?<br/>
+<span class="text-purple-400">✓</span> Did I narrate the decisions and report the result honestly?<br/>
+<span class="text-purple-400">✓</span> Was my effort proportional to the task?
+        </blockquote>
+</div>
+<!-- Checklist específico do entregável -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center"><span class="mr-2">📦</span> Checklist for your final deliverable</h3>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>The prompt came from a <strong class="text-purple-400">PMV</strong> — 4 blocks — and did it only grow based on real behavior observed?</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>It’s <strong class="text-purple-400">versioned</strong> (v1 → v2 → v3), and can you generate the diff between two versions?</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Each retained rule has <strong class="text-purple-400">reason + a test that would fail</strong> without it?</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>The security is declared by <strong class="text-purple-400">principle</strong>, not mechanics/a list?</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>There is a <strong class="text-purple-400">disposition guide</strong> with an explicit decision loop, in a <span class="code-box">CLAUDE.md</span>?</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>The <strong class="text-purple-400">constraints</strong> are linked: post-edit hook + <span class="code-box">effortLevel</span> + the rule in the right place?</span></li>
+</ul>
+</div>
+<!-- Tip box final -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Always report faithfully</p>
+<p class="text-sm text-neutral-300">
+              If a test failed, say so and show the output. If you skipped a step, say you skipped it. If it’s done and verified, say so without hesitation.
+              <strong>Never dress up an unverified result as if it were ready.</strong> Trust is built through precise reporting, not
+              optimistic reporting — and that applies to your prompt, your guide, and every turn you run from here on.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Module Summary</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Put it all together</strong> in an MVP: identity + persona (4 axes) + loop + safety — and only grow based on real behavior</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Version your</strong>: keep v1 → v2 → v3 and read the diff of your own prompt—you’re the lab now</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Write the <strong>reason + the test</strong> from each rule; without a test that would fail, the rule is removed</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Build the <strong class="text-purple-400">your disposition guide</strong> — decision loop + default values, in a <span class="code-box">CLAUDE.md</span></span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Pair it with the <strong>constraints</strong>: PostToolUse hook + <span class="code-box">effortLevel</span> + where the rule lives — neither is enough on its own</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Go through the <strong class="text-purple-400">self-check</strong> before saying "done": verified with a real check, reported honestly</span></li>
+</ul>
+</div>
+<!-- BLOCO DE CONCLUSÃO DO CURSO -->
+<div class="bg-dark-800/50 rounded-xl p-6 mb-6 border border-purple-500/30">
+<h3 class="text-xl font-bold text-purple-400 mb-2 flex items-center"><span class="mr-3 text-2xl">🎉</span> You completed The Hidden Manual of AI</h3>
+<p class="text-neutral-300 text-sm leading-relaxed mb-3">
+          Three tracks, twenty-some modules, and a whole journey: you went from <em>read</em> the anatomy of a system prompt, went through
+          <em>read the evolution</em> between versions, and gets here <strong class="text-purple-400">author of your own version-controlled prompt</strong> — with
+          layout guidance, mechanical safeguards, and a delivery checklist. You didn’t memorize rules; you inherited a method.
+        </p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          The meta-lesson running through everything: the labs converged, between 2024 and 2026, <strong class="text-purple-400">from rules to principles, from
+          prohibition to value, from diffuse emphasis to sparse emphasis, from a growing prompt to a prompt that consolidates</strong>. Now it's your turn to
+          write this way. Keep up the “Diff of the Week” ritual, and your prompt will never rot from the inside.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-purple-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Back to Track 3</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="../../index.html">
+<span>🏠</span><span>Course start</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">The AI's Hidden Manual</span> · Module 3.7 · Track 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

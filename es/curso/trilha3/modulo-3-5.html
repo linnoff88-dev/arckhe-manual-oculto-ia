@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>3.5 Destilación: recuperar el cerebro | El Manual Oculto de la IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @keyframes wf-dash { to { stroke-dashoffset: -28; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+      .wf-flow { stroke-dasharray: 6 8; animation: wf-dash 1.6s linear infinite; }
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* tabela em tema claro */
+    html:not(.dark) thead.tbl-head { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .tbl-row-alt { background-color: #f9fafb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/modulo-3-5.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/modulo-3-5.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/modulo-3-5.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/modulo-3-5.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../../en/curso/trilha3/modulo-3-5.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="modulo-3-5.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">Manual oculto de la IA</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Práctica</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Avanzado</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-purple-400 transition-colors" href="../../index.html">Inicio</a>
+<span>/</span>
+<a class="hover:text-purple-400 transition-colors" href="index.html">Ruta 3</a>
+<span>/</span>
+<span class="text-purple-400">Módulo 3.5</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl">
+          🧠
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MÓDULO 3.5</span>
+<span class="text-xs text-neutral-500">Ruta 3 — Avanzado</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🧠 Destilación: recuperar el cerebro</h1>
+<p class="text-neutral-300 leading-relaxed">
+            Esta es la historia que le da alma al curso. Apareció un buen modelo durante algunos días y se fue. Nunca tendrás los
+            <strong class="text-purple-400">pesos</strong> de él. Pero tiene los <strong class="text-purple-400">logs</strong>cada conversación queda grabada,
+            turno a turno. Y en los logs hay suficiente comportamiento para reconstruir la <em>disposición</em> — la forma de trabajar, sin la mente.
+            Este módulo destila de nuevo el «cerebro de Fable»: desde los archivos JSONL sin procesar hasta una guía de comportamiento reutilizable.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">📋</span><span>6 temas</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⏱</span><span>~50 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">🎯</span><span>Avanzado</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⭐</span><span>Módulo clave</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: o pipeline de destilação — logs → script → perfil → guia → modelo novo -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagrama del pipeline de destilación conductual: los logs JSONL de las conversaciones alimentan un script Python que reduce el ruido y filtra por el agente objetivo; el resultado se convierte en un perfil conductual con cifras medidas; el perfil se sintetiza en una guía de disposición que contiene el decision loop; por último, se dirige una sesión nueva de otro modelo a esa guía, que hereda el método sin heredar los pesos." class="w-full h-auto" role="img" viewbox="0 0 960 400">
+<defs>
+<lineargradient id="m35-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="m35-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m35-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="2"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m35-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#c084fc" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m35-ah" markerheight="10" markerwidth="10" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="m35-ahc" markerheight="10" markerwidth="10" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m35-grid)" height="400" rx="16" width="960" x="0" y="0"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="480" y="28">el PIPELINE DE DESTILACIÓN — del registro sin procesar al método reutilizable</text>
+<!-- ETAPA 1: logs JSONL -->
+<rect fill="#0d1117" height="150" rx="14" stroke="#374151" stroke-width="1.5" width="150" x="40" y="120"></rect>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="115" y="146">① los LOGS</text>
+<text fill="#6b7280" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle" x="115" y="162">*.jsonl (crudos)</text>
+<!-- linhas de log empilhadas -->
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="176"></rect>
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="194"></rect>
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="212"></rect>
+<rect class="wf-a" fill="#16202b" height="13" rx="3" stroke="#2b3a4a" stroke-width="0.8" width="114" x="58" y="230"></rect>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="115" y="256">ruido · barato de mantener</text>
+<!-- ETAPA 2: script Python -->
+<rect fill="#0e1b26" height="150" rx="14" stroke="#38bdf8" stroke-width="1.6" width="150" x="234" y="120"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="309" y="146">② script PYTHON</text>
+<text fill="#6b7280" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle" x="309" y="162">extraes 5 campos</text>
+<rect fill="#0a1620" height="78" rx="7" stroke="#1f3a4d" stroke-width="1" width="114" x="252" y="174"></rect>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="190">timestamp</text>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="203">project · session</text>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="8" font-weight="700" x="262" y="216">model  ←clave</text>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="229">user_msg</text>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="8" x="262" y="242">assistant_msg</text>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="309" y="263">filtra model == fable</text>
+<!-- ETAPA 3: perfil comportamental -->
+<rect fill="#1a1430" height="150" rx="14" stroke="#a855f7" stroke-width="1.6" width="150" x="428" y="120"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="503" y="146">③ el PERFIL</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="503" y="162">429 turnos medidos</text>
+<!-- mini barras dos números -->
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="8" x="448" y="184">razonamiento</text>
+<rect fill="#2a1f44" height="7" rx="3" width="110" x="448" y="188"></rect>
+<rect class="wf-a" fill="url(#m35-grad-pu)" height="7" rx="3" width="107" x="448" y="188"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="8" x="448" y="208">antes de la 1.ª acción</text>
+<rect fill="#2a1f44" height="7" rx="3" width="110" x="448" y="212"></rect>
+<rect class="wf-a" fill="url(#m35-grad-pu)" height="7" rx="3" width="92" x="448" y="212"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="8" x="448" y="232">revalúa</text>
+<rect fill="#2a1f44" height="7" rx="3" width="110" x="448" y="236"></rect>
+<rect class="wf-a" fill="url(#m35-grad-pu)" height="7" rx="3" width="96" x="448" y="236"></rect>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="503" y="262">la disposición, en números</text>
+<!-- ETAPA 4: o guia (decision loop) — destaque com glow -->
+<g filter="url(#m35-glow)">
+<rect fill="#1a1430" height="150" rx="14" stroke="url(#m35-grad-pu)" stroke-width="2.4" width="150" x="622" y="120"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="697" y="146">④ la GUÍA</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="697" y="162">el ciclo de decisión</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="182">GROUND</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="196">REASON</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="210">ACT</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="224">OBSERVA</text>
+<text fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="238">RE-EVALUATE</text>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="8.5" x="642" y="252">VERIFY · NARRATE</text>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="697" y="266">método reutilizable</text>
+<!-- ETAPA 5: o modelo novo apontado ao guia -->
+<rect fill="#0e1b26" height="90" rx="14" stroke="#38bdf8" stroke-width="1.6" width="106" x="816" y="150"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="869" y="176">⑤ sesión</text>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="869" y="191">NOVA</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="869" y="208">otro modelo</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="8" text-anchor="middle" x="869" y="222">apuntada a la guía</text>
+<text fill="#64748b" font-family="Inter,sans-serif" font-size="7.5" text-anchor="middle" x="869" y="234">hereda el método</text>
+<!-- setas do fluxo -->
+<path class="wf-flow" d="M192,195 L232,195" fill="none" marker-end="url(#m35-ahc)" stroke="#38bdf8" stroke-width="2"></path>
+<path class="wf-flow" d="M386,195 L426,195" fill="none" marker-end="url(#m35-ah)" stroke="#c084fc" stroke-width="2"></path>
+<path class="wf-flow" d="M580,195 L620,195" fill="none" marker-end="url(#m35-ah)" stroke="#c084fc" stroke-width="2"></path>
+<path class="wf-flow" d="M774,195 L814,195" fill="none" marker-end="url(#m35-ahc)" stroke="#38bdf8" stroke-width="2"></path>
+<!-- nota de fundo: sem os pesos -->
+<rect fill="#0d1117" height="46" rx="11" stroke="#4b5563" stroke-width="1.3" width="732" x="40" y="318"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10.5" font-weight="700" x="60" y="338">⛔ no tienes los pesos</text>
+<text fill="#94a3b8" font-family="Inter,sans-serif" font-size="9.5" x="60" y="354">…pero el comportamiento observado basta para reconstruir la configuración. Perdimos Fable; recuperamos el método.</text>
+<!-- selo lateral -->
+<g filter="url(#m35-glow)">
+<rect fill="#1a1430" height="46" rx="11" stroke="url(#m35-grad-pu)" stroke-width="1.8" width="134" x="788" y="318"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10" font-weight="700" text-anchor="middle" x="855" y="338">el cerebro, de vuelta</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="855" y="353">disposición ≠ pesos</text>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Contenido detallado</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">La premisa: sin los pesos, pero con los logs</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Durante algunos días, hubo un modelo excepcional disponible. Quienes lo usaron notaron la diferencia: no en lo que sabía, sino en
+        <em>cómo</em> trabajaba: razonaba antes de actuar, leía antes de modificar, verificaba qué cambiaba. Después salió de escena. Nunca tendrás los <strong class="text-purple-400">pesos</strong> que hacían que aquello funcionara. Pero hay una pregunta mejor que "¿cómo recupero
+        los pesos?": <strong class="text-purple-400">¿cómo recupero la disposición sin ellos?</strong>
+</p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧠</span> La idea en una frase</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          No tienes los pesos del modelo — pero tienes los <strong class="text-purple-400">logs</strong>. Cada sesión de Claude Code registra un archivo
+          <span class="code-box text-purple-400">JSONL</span> con, por turno: <em>timestamp, el prompt del usuario, la respuesta del modelo, las llamadas a
+          herramientas, los resultados</em> y —el detalle que lo desbloquea todo— <strong class="text-purple-400">el ID del modelo por turno</strong>Hay suficiente comportamiento
+          allí para reconstruir la <em>disposición</em> del agente.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          La gran distinción del módulo: <strong class="text-purple-400">pesos ≠ disposición</strong>. Los pesos son la mente, cerrada e irrecuperable.
+          La disposición es el <em>forma de trabajar</em> — y la forma de trabajar deja un rastro observable. El rastro se puede leer.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-purple-400 mb-3">Qué es</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+<strong class="text-purple-400">Destilación del comportamiento</strong>: el proceso de convertir sesiones reales de un agente en un
+          <em>guía de disposición reutilizable</em>. Observas el comportamiento registrado, nombras el patrón y lo conviertes en una instrucción. No copias la mente: extraes el método. Funciona para <strong class="text-purple-400">cualquier agente cuyo registro tengas</strong>, no solo Fable.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Por qué aprender</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Porque es <em>el método para fabricar el método</em>. El resto del curso enseña a leer los prompts de laboratorio desde afuera. Este tema gira la cámara
+          hacia adentro: generas tus propios datos cada vez que conversas con un agente y estás desperdiciando ese oro. Quien domina la destilación no
+          depende de que un modelo siga disponible: guarda su comportamiento en un archivo de texto y lo señala en la siguiente sesión.
+        </p>
+</div>
+<!-- Grid: a mente que se perde vs o método que se guarda -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Lo que se pierde con el modelo</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Los <strong>pesos</strong> — la mente, cerrada e irrecuperable</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>La densidad de razonamiento intrínseca al modelo</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>El acceso directo («god mode») a esa cadencia</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Lo que se conserva de los logs</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>A <strong>disposición</strong> — el orden en que hace las cosas</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>O <em>bucle de decisión</em> explícito, en texto reutilizable</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Números medidos que se convierten en metas para tu sesión</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">El log ya se está generando</p>
+<p class="text-sm text-neutral-300">
+              No necesitas <em>empezar</em> a recopilar datos. La recopilación ya lleva semanas en marcha, en silencio, en tu disco. Cada buena conversación que tuviste
+              con un agente es una muestra archivada de su comportamiento. La destilación no es un experimento que montas desde cero: es la lectura de un
+              registro que ya existe y que casi nadie mira.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Encontrar los JSONL — dónde vive el registro</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Antes de analizar cualquier cosa, necesitas localizar la fuente. Los logs no están en un servidor lejano ni bajo llave: están en tu máquina,
+        en un directorio previsible. Cada proyecto en el que trabajaste con Claude Code tiene su propia carpeta de sesiones, y cada sesión es un archivo
+        <span class="code-box text-purple-400">.jsonl</span> con una línea por evento.
+      </p>
+<!-- Caixa mono: o caminho -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-purple-400 mb-3">Dónde viven los logs</div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box">
+          ~/.claude/projects/<span class="text-purple-400">&lt;projeto&gt;</span>/<span class="text-sky-300">*.jsonl</span>
+</blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed">
+          Una carpeta por proyecto; un archivo por sesión. Cada línea del archivo es un evento JSON — y dentro del <em>blob</em> de metadatos está el oro:
+          lo que <strong class="text-neutral-200">escribiste</strong>, lo que el <strong class="text-neutral-200">el modelo respondió</strong>, las herramientas
+          que llamó, y el <strong class="text-purple-400">ID del modelo por turno</strong>.
+        </p>
+</div>
+<!-- Box Conceito Principal: os campos do JSONL -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center"><span class="mr-2">🗂️</span> Lo que registra cada turno</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="code-box text-purple-400 text-xs mb-1">timestamp</div>
+<div class="text-neutral-300 text-xs">cuándo ocurrió el turno — establece el orden y el marco temporal</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="code-box text-purple-400 text-xs mb-1">user prompt</div>
+<div class="text-neutral-300 text-xs">lo que pediste — el estímulo de cada turno</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="code-box text-purple-400 text-xs mb-1">assistant response</div>
+<div class="text-neutral-300 text-xs">la respuesta, con bloques de razonamiento y llamadas a herramientas</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 border border-purple-500/30">
+<div class="code-box text-purple-400 text-xs mb-1">ID del modelo <span class="text-neutral-500">(¡por turno!)</span></div>
+<div class="text-neutral-300 text-xs">qué modelo respondió cada turno — la clave de todo</div>
+</div>
+</div>
+<p class="text-neutral-300 leading-relaxed mt-4 text-sm">
+          O <strong class="text-purple-400">ID del modelo por turno</strong> es lo que hace posible la destilación. Sin él, tendrías un montón de
+          conversaciones mezcladas. Con él, puedes <em>rastrear</em> exactamente qué turnos provienen del agente que quieres estudiar, y separar Fable de
+          todo lo que no es Fable.
+        </p>
+</div>
+<!-- Grid: o que olhar vs o que ignorar -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>La señal que quieres</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Secuencia de herramientas por turno (¿empieza con Bash? ¿grep?)</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Presencia de bloques de razonamiento antes de la 1.ª acción</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Si ejecutaste una comprobación después de editar</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>El model ID, para filtrar el agente objetivo</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>El ruido que descartas</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>UUID, hashes internos, campos de transporte</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Listas de servidores MCP y skills repetidas en cada turno</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Contenido enorme del resultado de una herramienta (registros dentro del registro)</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Todo lo que no dice <em>cómo decidió el agente</em></span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🔎</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Confirma el estado antes de procesar</p>
+<p class="text-sm text-neutral-300">
+              Fiel al propio método que estás destilando: <strong>básate primero en la realidad</strong>. Enumera el directorio, cuenta los archivos,
+              mira qué proyectos tienen sesiones antes de pedir cualquier script. No querrás descubrir a mitad del análisis que estabas apuntando a la carpeta
+              equivocada. <em>Primero Ground, luego reason</em> — empieza aquí.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Reducir el ruido: el script, no el contexto</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Aquí está la decisión técnica que define si la destilación es viable o un desperdicio costoso. El JSONL sin procesar es enorme y está lleno de metadatos inútiles.
+        La tentación de quien empieza es pegar el archivo entero en el contexto y pedir «analiza esto». <strong class="text-purple-400">No hagas eso.</strong>
+        Haces crecer la ventana, gastas tokens en vano y ahogas la señal con ruido. La jugada correcta es <em>procesar fuera</em>: pídele al propio Claude Code que
+        escriba un script de Python que extraiga solo los campos útiles.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🐍</span> La regla: el código procesa, el contexto recibe el resumen</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          El movimiento elegante es una meta: <strong class="text-purple-400">pídele al agente que escriba el extractor</strong>. No fue la persona quien abrió el JSONL
+          y copió los campos a mano: fue Claude Code quien generó un archivo Python para hacerlo. El script lee los archivos sin procesar, elimina el ruido y devuelve
+          algo conciso: cinco campos por turno, todavía un poco «blob», pero legible y barato.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Principio general, que vale mucho más allá de esta tarea: <strong class="text-purple-400">no vuelques datos grandes y sin procesar en el contexto</strong>Haz que el
+          código reduzca primero. El contexto es valioso; úsalo en la señal destilada, no en el volcado bruto.
+        </p>
+</div>
+<!-- Caixa mono: o passo do script (campos extraídos) -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-sky-300 mb-3">Lo que extrae el script Python — <span class="font-normal text-neutral-500">de cada línea del JSONL, solo estos campos</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-sky-500 rounded p-3.5 font-mono text-xs text-neutral-300 mb-3 code-box leading-relaxed">
+<span class="text-neutral-500"># para cada turno en ~/.claude/projects/&lt;proyecto&gt;/*.jsonl</span><br/>
+          registro = {<br/>
+            <span class="text-sky-300">"timestamp"</span>:  turno[<span class="text-purple-400">"timestamp"</span>],<br/>
+            <span class="text-sky-300">"project"</span>:    turno[<span class="text-purple-400">"cwd"</span>],<br/>
+            <span class="text-sky-300">"session"</span>:    turno[<span class="text-purple-400">"sessionId"</span>],<br/>
+            <span class="text-sky-300">"model"</span>:      turno[<span class="text-purple-400">"message"</span>][<span class="text-purple-400">"model"</span>],  <span class="text-neutral-500"># ← la clave del filtro</span><br/>
+            <span class="text-sky-300">"user_msg"</span>:   extrai_texto_usuario(turno),<br/>
+            <span class="text-sky-300">"assistant_msg"</span>: extrai_texto_assistente(turno),<br/>
+          }<br/>
+<span class="text-neutral-500"># descarta: UUID, hashes, lista de MCP/skills, blobs de resultados</span>
+</blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed">
+          Cinco campos. Es suficiente para definir el comportamiento sin ahogar el contexto. El archivo de salida todavía parece un <em>blob</em>, pero ahora cada
+          registro cabe en la cabeza, y el conjunto entero cabe en el presupuesto.
+        </p>
+</div>
+<!-- Grid: cru no contexto vs script fora -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Poner el JSONL sin procesar en el contexto</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Llena la ventana con metadatos inútiles</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Cuesta caro y degrada la atención del modelo</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>La señal se pierde en medio del ruido</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>No escala a decenas de sesiones</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Deja que el script procese por fuera</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>El código lee lo crudo; el contexto recibe lo conciso</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>5 campos por turno, baratos de cargar</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Escala a todos los proyectos de una vez</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>El agente escribe el extractor: tú solo pides</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La metalección</p>
+<p class="text-sm text-neutral-300">
+              Observa el detalle poético: estás usando el <strong>sucesor de Fable</strong> para reconstruir Fable. El modelo actual escribe el script,
+              ejecuta el análisis, prepara la guía y luego pasa a ser <em>guiado</em> por el comportamiento del predecesor. La herramienta de destilación y el objeto
+              destilado conviven en la misma sesión. Es reflexivo y es lo que hace accesible la técnica: no necesitas infraestructura, solo pedirlo bien.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Filtrar por el agente objetivo</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Los logs reducidos contienen conversaciones de <em>varios</em> modelos mezclados — Opus 4.8, 4.6, 4.5 y Fable. Para perfilar Fable, necesitas
+        un conjunto que sea <strong class="text-purple-400">solo Fable</strong>. Aquí es donde el model ID por turno justifica su costo: filtras los registros
+        y conservas solo los turnos donde <span class="code-box text-purple-400">model == fable</span>, y descarta todo lo demás.
+      </p>
+<!-- Caixa mono: o filtro -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-purple-400 mb-3">El filtro — <span class="font-normal text-neutral-500">aísla al agente que quieres destilar</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3.5 font-mono text-xs text-neutral-300 mb-3 code-box leading-relaxed">
+          turnos_fable = [<br/>
+            r <span class="text-purple-400">for</span> r <span class="text-purple-400">in</span> registros<br/>
+            <span class="text-purple-400">if</span> <span class="text-sky-300">"fable"</span> <span class="text-purple-400">in</span> r[<span class="text-sky-300">"model"</span>]<br/>
+          ]<br/>
+<span class="text-neutral-500"># de decenas de sesiones y miles de turnos…</span><br/>
+<span class="text-neutral-500"># …quedan exactamente los 429 turnos de Fable</span>
+</blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed">
+          Cambiar el criterio del filtro cambia el objetivo de la destilación. <span class="code-box text-purple-400">"fable"</span> hoy; mañana puede ser el próximo
+          modelo que quieras estudiar. El pipeline es el mismo: solo cambia la cadena.
+        </p>
+</div>
+<!-- Timeline: o funil do filtro -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">📚</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">Todo mezclado</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Decenas de sesiones a lo largo de un período de cuatro días, con respuestas de <strong>todos</strong> los modelos usados durante el período. Un conjunto
+              amplio, pero heterogéneo: no se puede concluir nada sobre un agente específico a partir de aquí.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 text-lg">🧲</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Filtra <span class="code-box">model == fable</span></h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Una línea de código separa lo bueno de lo malo. Observa la intencionalidad práctica: el uso de Fable fue <em>priorizado al inicio</em> a propósito: quienes
+              sabían que el modelo era poderoso concentraron en él los trabajos pesados, generando una muestra densa precisamente del agente que importa.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 text-lg">🎯</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Quedan 429 turnos puros</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Un corpus limpio, homogéneo y medible — solo Fable. Es la base sobre la que se construirá el perfil de comportamiento del siguiente tema.
+              <em>No</em> es una sesión; es el conjunto de respuestas del modelo, contadas turno a turno.
+            </p>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧬</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">La muestra es tan buena como el filtro</p>
+<p class="text-sm text-neutral-300">
+              Si el filtro es demasiado laxo (toma por error turnos de otro modelo), el perfil mezcla comportamientos y la conclusión queda contaminada.
+              <strong>Confirma qué quedó</strong> antes de perfilar: cuenta los turnos, comprueba que todos los model IDs coincidan con el objetivo. Un corpus
+              impuro produce una guía que describe un agente que nunca existió.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Perfilar el comportamiento: las cifras</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Con el corpus puro en mano, pides el análisis: cuantitativa <em>e</em> cualitativa. El resultado es el
+        <strong class="text-purple-400">perfil de comportamiento de Fable a lo largo de los 429 turnos</strong> — un agente disciplinado, que prioriza el razonamiento,
+        autónomo, con amplio rango dinámico. El turno típico es compacto, pero, cuando se autoriza, puede sostener enormes builds autónomos en un solo turno.
+        Y lo mejor: todo esto se convierte en <strong class="text-purple-400">número</strong>, comparable con la línea de base.
+      </p>
+<!-- TABELA DOS 429 TURNOS -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl overflow-hidden mb-5">
+<div class="px-5 pt-5 pb-3">
+<h3 class="text-lg font-semibold text-purple-400 flex items-center"><span class="mr-2">📊</span> El perfil en cifras: Fable 5, 429 turnos reales</h3>
+<p class="text-xs text-neutral-500 mt-1">Ventana de cuatro días, con comparación en la misma ventana frente a la línea base que el modelo debería superar.</p>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="tbl-head bg-purple-500/10">
+<tr class="text-left">
+<th class="px-5 py-3 font-semibold text-purple-400">Hábito</th>
+<th class="px-4 py-3 font-semibold text-purple-400 text-center">Fable <span class="text-neutral-500 font-normal">(fuente)</span></th>
+<th class="px-4 py-3 font-semibold text-neutral-300 text-center">Baseline</th>
+<th class="px-5 py-3 font-semibold text-sky-300">Lectura</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-dark-600">
+<tr>
+<td class="px-5 py-3 text-neutral-200">turnos que contienen razonamiento</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">97%</td>
+<td class="px-4 py-3 text-center text-neutral-400">80%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">razona en casi todos los turnos</td>
+</tr>
+<tr class="tbl-row-alt bg-dark-900/30">
+<td class="px-5 py-3 text-neutral-200">razona antes de la 1.ª acción</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">84%</td>
+<td class="px-4 py-3 text-center text-neutral-400">73%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">el plan precede a la acción</td>
+</tr>
+<tr>
+<td class="px-5 py-3 text-neutral-200">revalúa después de un resultado</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">87%</td>
+<td class="px-4 py-3 text-center text-neutral-400">80%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">el ciclo observar → decidir</td>
+</tr>
+<tr class="tbl-row-alt bg-dark-900/30">
+<td class="px-5 py-3 text-neutral-200">lee el archivo antes de la 1.ª edición</td>
+<td class="px-4 py-3 text-center font-bold text-yellow-400">48%</td>
+<td class="px-4 py-3 text-center text-neutral-400">52%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">ambos débiles → apuntar a ~100%</td>
+</tr>
+<tr>
+<td class="px-5 py-3 text-neutral-200">ejecuta <em>verificación real</em> después de editar</td>
+<td class="px-4 py-3 text-center font-bold text-red-400">23%</td>
+<td class="px-4 py-3 text-center text-neutral-400">19%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">el punto ciego común → corregir</td>
+</tr>
+<tr class="tbl-row-alt bg-dark-900/30">
+<td class="px-5 py-3 text-neutral-200">tasa de error de la herramienta</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">3,3%</td>
+<td class="px-4 py-3 text-center text-neutral-400">3,0%</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">baja; la recuperación es metódica</td>
+</tr>
+<tr>
+<td class="px-5 py-3 text-neutral-200">abandona un turno tras un error</td>
+<td class="px-4 py-3 text-center font-bold text-purple-400">casi nunca</td>
+<td class="px-4 py-3 text-center text-neutral-400">casi nunca</td>
+<td class="px-5 py-3 text-neutral-300 text-xs">diagnostica, no se rinde</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-5 py-3 border-t border-dark-600 text-xs text-neutral-500">
+          El análisis también perfila el <em>cualitativo</em>cómo inicia una tarea (el primer <em>elimina</em> revela Bash → ToolSearch), sus patrones de
+          uso de herramientas, la disciplina de verificación, el manejo de errores, la autonomía/delegación y el estilo de comunicación.
+        </div>
+</div>
+<!-- Box: como ler os números -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧭</span> Los números no son trofeos: son metas</h3>
+<p class="text-neutral-300 leading-relaxed mb-3 text-sm">
+          Las tres primeras líneas (razonamiento, plan previo, reevaluación) son donde Fable <strong class="text-purple-400">brilla</strong> y supera con creces la
+          línea base: es el corazón de la disposición. Las dos siguientes (leer antes de editar y verificar después de editar) son donde
+          <strong class="text-red-400">falla</strong> — y también la baseline. Esto no es un detalle: es la instrucción más importante del módulo.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          No estás copiando a un héroe perfecto. Estás heredando los puntos fuertes <em>e</em> apuntando explícitamente más allá de los puntos débiles. La guía
+          que sintetizas en el siguiente tema debe decir: "razona como él" <strong>e</strong> "verifica mejor que él".
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Medir hace que la disposición sea auditable</p>
+<p class="text-sm text-neutral-300">
+              "Fable razonaba bien" es una impresión. "El 97% de los turnos contenía razonamiento, frente al 80% de la línea de base" es un hecho verificable y una
+              <strong>meta accionable</strong>. Transformar lo vago en algo medible es lo que distingue elogiar un modelo de <em>reconstruir</em> un modelo. El
+              número es el puente entre la admiración y el método.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Sintetizar la guía: el decision loop, señalado</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        El último paso cierra el ciclo: le pides al agente <strong class="text-purple-400">comparar el perfil con tu modelo actual</strong> (Opus 4.8)
+        y producir un <em>guía de disposición</em> — un playbook que destila el comportamiento en un <strong class="text-purple-400">bucle de decisión</strong>
+        explícito. Después, tú <strong>apunta la nueva sesión a esta guía</strong>. El sucesor empieza a operar informado por el método del antecesor.
+        Perdimos Fable; nos quedamos con el loop.
+      </p>
+<!-- O decision loop, caixa mono -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-purple-400 mb-3">El decision loop destilado — <span class="font-normal text-neutral-500">el corazón de la guía, ejecútalo en cada turno</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3.5 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+<span class="text-purple-400">GROUND</span>      establece el estado real (git, grep, read, run-state)<br/>
+             │<br/>
+<span class="text-purple-400">REASON</span>      di el objetivo + la hipótesis + el plan antes de actuar<br/>
+             │<br/>
+<span class="text-purple-400">ACT</span>         da el siguiente paso; agrupa lo que es independiente<br/>
+             │<br/>
+<span class="text-purple-400">OBSERVA</span>     lee de verdad lo que volvió<br/>
+             │<br/>
+<span class="text-purple-400">RE-EVALUATE</span> actualiza el plan a partir del resultado, no al revés<br/>
+             │        <span class="text-neutral-500">(repite ACT..RE-EVALUATE hasta alcanzar la meta)</span><br/>
+<span class="text-sky-300">VERIFY</span>      ejecuta el <em>verificación real</em> en lo que cambiaste<br/>
+             │<br/>
+<span class="text-sky-300">NARRATE</span>     cuenta lo que pasó con honestidad
+        </blockquote>
+<p class="text-xs text-neutral-400 leading-relaxed mt-3">
+          El ciclo interno ajustado es <strong class="text-purple-400">ACT → OBSERVE → RE-EVALUATE</strong>. Saltarse OBSERVE es cómo los buenos planes producen
+          resultados erróneos. Fíjate en los dos últimos pasos en cian: <span class="text-sky-300">VERIFY</span> e <span class="text-sky-300">NARRATE</span>
+          son exactamente donde la fuente es débil — y donde tu guía debe exigir <em>más</em> que hacía Fable.
+        </p>
+</div>
+<!-- Grid: vanilla vs apontado ao guia -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Sesión vanilla (sin la guía)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Cada turno parte desde cero, sin una cadencia fija</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Actúa antes de fundamentar; se salta el observe</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>No hereda lo que el sucesor ya demostró que funciona</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Sesión orientada a la guía</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Adopta el decision loop como instrucción permanente</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Fundamenta, razona, reevalúa — turno tras turno</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Funciona «mucho mejor de lo esperado» en la práctica</span></li>
+</ul>
+</div>
+</div>
+<!-- AS DUAS RESSALVAS HONESTAS -->
+<div class="bg-red-900/20 border border-red-500/30 rounded-xl p-6 mb-5">
+<h3 class="text-lg font-semibold text-red-400 mb-4 flex items-center"><span class="mr-2">⚠️</span> Dos salvedades honestas — no prometas lo que no entregas</h3>
+<div class="space-y-4">
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 font-bold text-sm">①</span>
+<div>
+<p class="text-sm font-semibold text-neutral-200 mb-1">La densidad de razonamiento es en parte intrínseca</p>
+<p class="text-sm text-neutral-300 leading-relaxed">
+                Ese 97 % de razonamiento no se reproduce al 100 % solo con instrucciones: parte del ritmo es propio del modelo de origen. <strong class="text-purple-400">Combina la
+                guía con un mayor presupuesto de razonamiento</strong> (en Opus 4.8: <span class="code-box">effortLevel</span> en <span class="code-box">xhigh</span>/<span class="code-box">máx.</span>,
+                e <span class="code-box">alwaysThinkingEnabled</span> on) en vez de esperar que la prosa cierre la brecha. La disposición es la capa flexible; el effort es la garantía firme.
+              </p>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 font-bold text-sm">②</span>
+<div>
+<p class="text-sm font-semibold text-neutral-200 mb-1">La verificación es débil en la fuente: supérala</p>
+<p class="text-sm text-neutral-300 leading-relaxed">
+                El check real después de editar es débil <strong>en Fable (23%) y en la baseline (19%)</strong>Este es el lugar más claro para que seas
+                <strong class="text-purple-400">mejor que el modelo que imita</strong>, no solo igual. No destiles el punto ciego junto con la virtud:
+                copia el razonamiento de Fable y <em>corrige</em> su verificación. Un hook <span class="code-box">PostToolUse</span> en <span class="code-box">Edit|Write</span>
+                fuerza la prueba que la intención pasa por alto.
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Box Conceito Principal: disposição + garantia dura -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🌉</span> La guía es la capa de disposición — no la única capa</h3>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          La guía destilada moldea la <strong class="text-purple-400">disposición</strong>, y la disposición es best-effort por naturaleza. Por eso encaja bien en un
+          <span class="code-box text-purple-400">CLAUDE.md</span> (se carga en toda sesión) — y <em>no</em> en la auto-memory, cuyo recall está limitado por relevancia y
+          puede no activar la regla en el turno adecuado. Pero la guía por sí sola no basta: combínala con las <strong class="text-purple-400">garantías estrictas</strong> que el harness realmente fuerza: <span class="code-box">effortLevel</span> para la densidad, hooks <span class="code-box">PostToolUse</span> para la verificación.
+          Es la señal exacta del próximo módulo.
+        </p>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🗂️</div>
+<div class="text-xs font-semibold text-neutral-200">Registros</div>
+<div class="text-xs text-neutral-500 mt-1">JSONL por turno</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🐍</div>
+<div class="text-xs font-semibold text-neutral-200">Script</div>
+<div class="text-xs text-neutral-500 mt-1">reduce fuera de contexto</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">📊</div>
+<div class="text-xs font-semibold text-neutral-200">Perfil</div>
+<div class="text-xs text-neutral-500 mt-1">429 turnos medidos</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🧭</div>
+<div class="text-xs font-semibold text-neutral-200">Guía</div>
+<div class="text-xs text-neutral-500 mt-1">el ciclo de decisión</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Resumen del Módulo</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">La premisa:</strong> sin los pesos, pero con los registros — el comportamiento registrado basta para reconstruir la disposición</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Encontrar los JSONL:</strong> <span class="code-box">~/.claude/projects/&lt;projeto&gt;/*.jsonl</span> — con el model ID por turno</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Reducir el ruido:</strong> pide un script Python que extraiga 5 campos; nunca vuelques el JSONL crudo en el contexto</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Filtrar el objetivo:</strong> solo los turnos <span class="code-box">model == fable</span> → quedan 429 turnos puros</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Perfilar:</strong> 97% razonamiento · 84% antes de la 1.ª acción · 87% reevalúa · 23% verificación real</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Sintetizar:</strong> el ciclo de decisión en una guía, apuntado a la sesión nueva — y verifica mejor</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-purple-500/20">
+<h3 class="font-semibold text-purple-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Siguiente Módulo</h3>
+<p class="text-neutral-300 text-sm">
+<strong>3.6 — ⚙️ Disposición × garantía estricta.</strong> Destilaste la disposición en una guía — pero la disposición es best-effort. Ahora vamos a establecer las
+          garantías que el harness <em>fuerza de hecho</em>: <span class="code-box">effortLevel</span> para la densidad de razonamiento, hooks
+          <span class="code-box">PostToolUse</span> para la verificación, y dónde debe residir realmente cada regla.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-purple-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Volver a Trilha 3</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-3-6.html">
+<span>Siguiente: 3.6 Disposición × garantía dura</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">El Manual Oculto de la IA</span> · Módulo 3.5 · Ruta 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

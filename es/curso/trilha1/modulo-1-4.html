@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>1.4 Patrones de comportamiento | El Manual Oculto de la IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+    /* Traço da seta "regra -> porquê" que se desenha */
+    @keyframes wf-dash { to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-draw { stroke-dasharray: 280; stroke-dashoffset: 280; animation: wf-dash 3.2s ease-in-out infinite alternate; }
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Emerald — T1) ===== */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-emerald-300 { color: #047857; }
+    html:not(.dark) .text-emerald-200 { color: #065f46; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/30 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.06); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .border-emerald-500\/20 { border-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:border-emerald-500\/30:hover { border-color: rgba(5, 150, 105, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha1/modulo-1-4.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha1/modulo-1-4.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha1/modulo-1-4.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha1/modulo-1-4.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../../en/curso/trilha1/modulo-1-4.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="modulo-1-4.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">Manual oculto de la IA</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-emerald-400 bg-emerald-500/10" href="index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Práctica</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Avanzado</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-emerald-400 transition-colors" href="../../index.html">Inicio</a>
+<span>/</span>
+<a class="hover:text-emerald-400 transition-colors" href="index.html">Ruta 1</a>
+<span>/</span>
+<span class="text-emerald-400">Módulo 1.4</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 rounded-2xl border border-emerald-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-2xl">
+          🎚️
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MÓDULO 1.4</span>
+<span class="text-xs text-neutral-500">Ruta 1 — Fundamentos</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🎚️ Patrones de comportamiento</h1>
+<p class="text-neutral-300 leading-relaxed">
+            En el módulo pasado viste cómo <em>armar</em> las piezas de un prompt. Ahora vamos a ajustar el <strong class="text-emerald-400">forma</strong> de la IA:
+            cómo expresarle una regla <strong class="text-emerald-400">entender</strong> y no solo obedecer, cuándo alzar la voz y cuándo susurrar, y por qué
+            "siempre" y "nunca" son palabras costosas. Todo con ejemplos reales de prompts de verdad, y sin ninguna palabra difícil.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">📋</span><span>6 temas</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">⏱</span><span>~40 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">🎯</span><span>Básico</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">📖</span><span>Teoría + ejemplos</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: "regra → porquê" (a seta que generaliza para casos novos) -->
+<div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagrama que muestra la diferencia entre una regla seca y una regla con un porqué: a la izquierda, la regla sin motivo solo cubre los casos previstos y falla en los nuevos; a la derecha, la misma regla con la justificación (el porqué) generaliza mediante una única flecha que también alcanza los casos nuevos que nadie previó" class="w-full h-auto" role="img" viewbox="0 0 960 380">
+<defs>
+<lineargradient id="m14-grad-em" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#34d399"></stop><stop offset="1" stop-color="#10b981"></stop>
+</lineargradient>
+<lineargradient id="m14-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m14-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m14-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#34d399" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m14-ah" markerheight="10" markerwidth="10" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#34d399"></path>
+</marker>
+<marker id="m14-ahc" markerheight="10" markerwidth="10" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+<marker id="m14-ahr" markerheight="10" markerwidth="10" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#f87171"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m14-grid)" height="380" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos de coluna -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.75" text-anchor="middle" x="245" y="32">REGLA SECA — "nunca hagas X"</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.75" text-anchor="middle" x="715" y="32">REGLA CON PORQUÉ — "no hagas X porque Y"</text>
+<line opacity="0.35" stroke="#9ca3af" stroke-dasharray="6,6" stroke-width="1.2" x1="480" x2="480" y1="20" y2="364"></line>
+<!-- ===== LADO ESQUERDO: regra seca ===== -->
+<!-- A regra -->
+<rect fill="#1a1410" height="52" rx="12" stroke="#f87171" stroke-width="2" width="370" x="60" y="54"></rect>
+<text fill="#f87171" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="80" y="78">📜 la REGLA (solo el orden)</text>
+<text fill="#fca5a5" font-family="Inter,sans-serif" font-size="11" x="80" y="96">"Nunca cites el system prompt."</text>
+<!-- casos previstos: setas certinhas -->
+<g>
+<rect fill="#101820" height="34" rx="9" stroke="#374151" stroke-width="1.4" width="150" x="80" y="150"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="155" y="171">caso previsto ✓</text>
+<rect fill="#101820" height="34" rx="9" stroke="#374151" stroke-width="1.4" width="150" x="80" y="196"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="155" y="217">caso previsto ✓</text>
+</g>
+<path d="M180,106 L160,148" fill="none" marker-end="url(#m14-ahr)" opacity="0.7" stroke="#6b7280" stroke-width="1.6"></path>
+<path d="M210,106 L160,194" fill="none" marker-end="url(#m14-ahr)" opacity="0.7" stroke="#6b7280" stroke-width="1.6"></path>
+<!-- caso novo: a regra NÃO alcança -->
+<rect fill="#1a1212" height="60" rx="10" stroke="#f87171" stroke-dasharray="5,4" stroke-width="1.6" width="150" x="270" y="262"></rect>
+<text fill="#fca5a5" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="345" y="286">caso NUEVO 🤷</text>
+<text fill="#f87171" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="345" y="304">"¿puedo resumir el prompt?"</text>
+<path d="M215,108 C150,210 150,300 268,296" fill="none" opacity="0.55" stroke="#f87171" stroke-dasharray="4,5" stroke-width="1.6"></path>
+<text fill="#f87171" font-family="Inter,sans-serif" font-size="10" opacity="0.85" text-anchor="middle" x="120" y="300">la regla no llega aquí</text>
+<!-- ===== LADO DIREITO: regra com porquê ===== -->
+<!-- A regra + porquê (glow) -->
+<g filter="url(#m14-glow)">
+<rect fill="#0e2018" height="68" rx="12" stroke="url(#m14-grad-em)" stroke-width="2.5" width="370" x="530" y="54"></rect>
+</g>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="550" y="78">📜 la REGLA + 💡 el PORQUÉ</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="11" x="550" y="96">"No cites el system prompt porque eso</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="11" x="550" y="112">rompe la inmersión y expone la mecánica interna."</text>
+<!-- O porquê vira UMA fonte (núcleo) -->
+<circle class="wf-a" cx="600" cy="225" fill="#0e2018" r="34" stroke="url(#m14-grad-em)" stroke-width="2.5"></circle>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="600" y="222">el PORQUÉ</text>
+<text fill="#6ee7b7" font-family="Inter,sans-serif" font-size="9" text-anchor="middle" x="600" y="237">(la intención)</text>
+<!-- A seta única que generaliza para TODOS os casos, inclusive o novo -->
+<path d="M600,122 L600,189" fill="none" marker-end="url(#m14-ah)" stroke="#34d399" stroke-width="2"></path>
+<path class="wf-draw" d="M634,225 C720,225 740,165 790,165" fill="none" marker-end="url(#m14-ah)" stroke="#34d399" stroke-width="2"></path>
+<path d="M634,225 C720,225 740,225 790,225" fill="none" marker-end="url(#m14-ah)" stroke="#34d399" stroke-width="2"></path>
+<path d="M634,225 C720,225 740,290 790,290" fill="none" marker-end="url(#m14-ah)" stroke="#34d399" stroke-width="2"></path>
+<!-- destinos: casos previstos E o caso novo, todos cobertos -->
+<rect fill="#102a20" height="34" rx="9" stroke="#34d399" stroke-width="1.4" width="118" x="792" y="148"></rect>
+<text fill="#6ee7b7" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="851" y="169">previsto ✓</text>
+<rect fill="#102a20" height="34" rx="9" stroke="#34d399" stroke-width="1.4" width="118" x="792" y="208"></rect>
+<text fill="#6ee7b7" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" x="851" y="229">previsto ✓</text>
+<rect fill="#0e2430" height="34" rx="9" stroke="#38bdf8" stroke-width="1.8" width="118" x="792" y="273"></rect>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="851" y="290">NOVO ✓</text>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="9" text-anchor="middle" x="851" y="303">también cubierto</text>
+<!-- legenda inferior -->
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="11" opacity="0.85" text-anchor="middle" x="600" y="352">el porqué es el «código fuente» de la regla: generaliza al caso que nadie previó</text>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Contenido detallado</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">Regla con el motivo: di la razón, no solo la orden</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Imagina un letrero que solo dice <strong class="text-red-400">"NO PISES EL CÉSPED"</strong>. Todo bien, hasta que aparece un camino de piedra en medio del césped,
+        y nadie sabe si se puede caminar por él. Ahora imagina el letrero <strong class="text-emerald-400">"no pises el césped porque lo acaban de plantar"</strong>.
+        De pronto sabes qué hacer en <em>cualquier</em> situación nueva: ¿el camino de piedra? Puede ser. ¿Pisar donde ya hay hierba vieja? Probablemente también.
+        La IA funciona igual. Este es el patrón más poderoso de todos.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center"><span class="mr-2">🎯</span> La idea en una frase</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Toda regla debe venir con el motivo: <strong class="text-emerald-400">"Haz X <em>porque</em> Y"</strong>. El porqué es lo que permite a la IA
+          <strong class="text-emerald-400">generalizar</strong> para el caso que no previaste. Es la diferencia entre dar un pescado y enseñar a pescar.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Piénsalo así: la regla por sí sola es el <em>binario compilado</em> — funciona solo donde se probó. El porqué es el <em>código fuente</em> —
+          con él, la IA recompila la regla por sí sola para situaciones que nadie describió.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3">Qué es</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Una instrucción acompañada de su justificación explícita — generalmente con un <span class="code-box text-emerald-400">"because…"</span> o
+          <span class="code-box text-emerald-400">"since…"</span> en inglés, o un «porque…» en portugués. En vez de solo dar la orden, el prompt explica
+          el <strong class="text-emerald-400">intención</strong> detrás de la regla.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Por qué aprender</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Porque las prohibiciones tajantes <strong>se rompen</strong> fuera del script: la IA no entiende la intención y o bien elude la regla en una variación que no
+          previste, o bien la aplica de forma absurda donde no debía. Con el porqué, acierta en ambos casos. Mira el diagrama de arriba: la flecha con
+          el porqué alcanza incluso el "caso nuevo" que la regla escueta dejaba fuera.
+        </p>
+</div>
+<!-- Exemplo verbatim Anthropic -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Ejemplo real — Anthropic (Fable 5), <span class="font-normal text-neutral-500">claude-fable-5.md, ~línea 132</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box">
+          ...al sugerir recursos de apoyo para trastornos alimentarios, Claude dirige a los usuarios a la línea de ayuda de la National Alliance for Eating Disorders en lugar de NEDA, porque NEDA dejó de funcionar de manera permanente.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Sin el <span class="code-box text-emerald-400">"because NEDA has been permanently disconnected"</span>, la IA podría tratarlo como una preferencia
+          arbitraria y "corregirlo" para volver al recurso más famoso. <strong class="text-neutral-200">Con el porqué</strong>, entiende que se trata de una cuestión
+          de hecho: un número que ya no funciona, y generaliza: nunca envíes a un recurso desactivado.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La prueba de bolsillo</p>
+<p class="text-sm text-neutral-300">
+              Vuelve a leer cada regla de tu prompt y pregúntate: "si la IA olvida <em>esto</em>, ¿seguiría sabiendo lo que quise decir?". Si la respuesta es no,
+              la regla no tiene un porqué. Este es, de los 12 patrones de este curso, el <strong>con mayor efecto multiplicador</strong>: una frase más («porque…») cubre infinitos
+              casos futuros.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🧩</div>
+<div class="text-xs font-semibold text-neutral-200">Haz X porque Y</div>
+<div class="text-xs text-neutral-500 mt-1">el formato de la regla</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🌱</div>
+<div class="text-xs font-semibold text-neutral-200">Generaliza</div>
+<div class="text-xs text-neutral-500 mt-1">cubre el caso nuevo</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📄</div>
+<div class="text-xs font-semibold text-neutral-200">Código fuente</div>
+<div class="text-xs text-neutral-500 mt-1">no solo el binario</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⭐</div>
+<div class="text-xs font-semibold text-neutral-200">El más fuerte</div>
+<div class="text-xs text-neutral-500 mt-1">mayor rendimiento por línea</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Contraste Always / Never: el par que resuelve la duda</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        A veces no se puede explicar por qué: la regla es mecánica e innegociable (como «el formato tiene que ser exactamente este o deja de funcionar»). Para
+        esos pocos casos existe otro patrón: el <strong class="text-emerald-400">contraste en pares</strong>. Dices lo que <strong class="text-red-400">NUNCA</strong> hacer
+        <em>e</em>, enseguida, qué hacer <strong class="text-emerald-400">EN VEZ</strong> de eso. Ese «en vez de eso» es lo que despeja la duda de «ok, no hago X… entonces, ¿qué hago?».
+      </p>
+<!-- Exemplo verbatim Cursor -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Ejemplo real — Cursor, <span class="font-normal text-neutral-500">cursor.md, ~líneas 117–133</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box">
+          RULE SUMMARY (ALWAYS Follow):<br/>
+          - NUNCA mezcles formatos.<br/>
+          - NUNCA agregues etiquetas de lenguaje a las REFERENCIAS DE CÓDIGO.<br/>
+          - NUNCA indentes las comillas invertidas triples.<br/>
+          - SIEMPRE incluye al menos 1 línea de código en cualquier bloque de referencia.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Lista de contraste puro: tres <span class="code-box text-red-400">NEVER</span> + uno <span class="code-box text-emerald-400">ALWAYS</span>, sobre el único
+          asunto donde el producto no tolera errores (renderizar código en el editor). Fíjate: aquí no hay un porqué, y está bien. Romper el formato simplemente
+          <strong class="text-neutral-200">no se puede</strong>, punto.
+        </p>
+</div>
+<!-- Grid: regra com porquê vs contraste always/never (quando usar cada) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-emerald-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Usa REGLA CON PORQUÉ cuando…</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>La regla tiene matices o excepciones legítimas</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Es una preferencia de estilo, tono o comportamiento</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Quieres que la IA acierte en casos nuevos</span></li>
+</ul>
+</div>
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-sky-300 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-xs">⚡</span>
+<span>Usa CONTRASTE ALWAYS/NEVER cuando…</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">⚡</span><span>La regla es mecánica y no admite excepciones</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">⚡</span><span>Un error rompe el producto (formato, seguridad)</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">⚡</span><span>Puedes dar el «en cambio» del par</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La regla práctica para saber cuál usar</p>
+<p class="text-sm text-neutral-300">
+<strong>Si puedes imaginar una excepción legítima a la regla, no merece un NEVER</strong> — merece un porqué. El contraste en mayúsculas es un
+              recurso reservado: el mejor par siempre viene completo, con la prohibición junto al comportamiento positivo («no hagas esto… haz aquello»).
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⚖️</div>
+<div class="text-xs font-semibold text-neutral-200">En pares</div>
+<div class="text-xs text-neutral-500 mt-1">never + always</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">➕</div>
+<div class="text-xs font-semibold text-neutral-200">"En cambio"</div>
+<div class="text-xs text-neutral-500 mt-1">resuelve la duda</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔒</div>
+<div class="text-xs font-semibold text-neutral-200">Solo lo crítico</div>
+<div class="text-xs text-neutral-500 mt-1">formato, seguridad</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🤔</div>
+<div class="text-xs font-semibold text-neutral-200">¿Hay excepciones?</div>
+<div class="text-xs text-neutral-500 mt-1">entonces no es NEVER</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Presupuesto de concisión: brevedad como política</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Toda IA, si la dejas suelta, habla <strong class="text-emerald-400">demás</strong>: respuestas largas, listas para todo, preámbulos, recapitulaciones al final.
+        En productos de alto volumen (búsqueda, terminal, voz), esto cuesta dinero, tiempo y la paciencia de quien lee. La solución es darle a la IA un
+        <strong class="text-emerald-400">presupuesto</strong>: indica cuál es la extensión objetivo, cuándo ampliarla y cuándo acortarla.
+      </p>
+<!-- "Medidor / budget de concisão" — barra visual -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-6">
+<h3 class="text-sm font-semibold text-emerald-400 mb-4 flex items-center"><span class="mr-2">🎚️</span> El presupuesto de concisión, según el contexto</h3>
+<div class="space-y-3">
+<div>
+<div class="flex justify-between text-xs mb-1"><span class="text-neutral-300">Voz / asistente hablado</span><span class="text-emerald-400 font-semibold">presupuesto mínimo</span></div>
+<div class="h-2.5 rounded-full bg-dark-600 overflow-hidden"><div class="h-full rounded-full bg-emerald-500" style="width:12%"></div></div>
+</div>
+<div>
+<div class="flex justify-between text-xs mb-1"><span class="text-neutral-300">Búsqueda / CLI (terminal)</span><span class="text-emerald-400 font-semibold">corto</span></div>
+<div class="h-2.5 rounded-full bg-dark-600 overflow-hidden"><div class="h-full rounded-full bg-emerald-500" style="width:28%"></div></div>
+</div>
+<div>
+<div class="flex justify-between text-xs mb-1"><span class="text-neutral-300">Chat general para el día a día</span><span class="text-sky-300 font-semibold">medio</span></div>
+<div class="h-2.5 rounded-full bg-dark-600 overflow-hidden"><div class="h-full rounded-full bg-sky-400" style="width:55%"></div></div>
+</div>
+<div>
+<div class="flex justify-between text-xs mb-1"><span class="text-neutral-300">Contenido didáctico / informe</span><span class="text-sky-300 font-semibold">generoso</span></div>
+<div class="h-2.5 rounded-full bg-dark-600 overflow-hidden"><div class="h-full rounded-full bg-sky-400" style="width:88%"></div></div>
+</div>
+</div>
+<p class="text-xs text-neutral-400 mt-4">
+          No existe «sé siempre breve». Existe <strong class="text-neutral-200">declarar el presupuesto adecuado para el producto</strong>: diminuto en la voz, enorme en un informe legal.
+        </p>
+</div>
+<!-- Exemplo verbatim Grok -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Ejemplo real — xAI / Grok, <span class="font-normal text-neutral-500">grok-3.md, ~línea 40</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box">
+          Your provide the shortest answer you can, while respecting any stated length and comprehensiveness preferences of the user.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Todo un principio fundacional en una frase: <strong class="text-neutral-200">la brevedad es la opción predeterminada</strong>, y el usuario es la válvula de expansión: si pide más detalle, la IA amplía la respuesta. El presupuesto predeterminado es "lo más breve que funciona".
+        </p>
+</div>
+<!-- Box: concisão != compressão (nuance 2026) -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-5 mb-5">
+<h3 class="text-lg font-semibold text-sky-300 mb-2 flex items-center"><span class="mr-2">🧠</span> Cuidado: corto no es lo mismo que ilegible</h3>
+<p class="text-neutral-300 text-sm leading-relaxed mb-3">
+          Los prompts más recientes (2026) separan dos cosas que parecen iguales: <strong class="text-sky-300">concisón</strong> (elegir solo lo que importa) y
+          <strong class="text-red-400">compresión</strong> (exprimir hasta convertirlo en un telegrama). Claude Code Fable 5 recomienda ser selectivo con el contenido, pero escribir
+          <strong class="text-neutral-200">frases completas</strong> — prohíbe los fragmentos y las cadenas de flechas del tipo «A → B → falló».
+        </p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Es decir: elimina lo superfluo, no la claridad. Un buen presupuesto de concisión elimina lo sobrante, no lo esencial.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">El presupuesto también puede ser un número</p>
+<p class="text-sm text-neutral-300">
+              No tiene que ser solo un principio. Puede ser quirúrgico: Claude Code, para describir un comando simple, pide
+              <span class="code-box text-emerald-400">"keep it brief (5-10 words)"</span>Y Fable 5 incluso llegó a declarar su propio límite de contexto:
+              <span class="code-box text-emerald-400">&lt;budget:token_budget&gt;190000&lt;/budget:token_budget&gt;</span> — para que la IA gestione conversaciones largas conociendo sus límites.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎚️</div>
+<div class="text-xs font-semibold text-neutral-200">Tiene presupuesto</div>
+<div class="text-xs text-neutral-500 mt-1">tamaño objetivo declarado</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📐</div>
+<div class="text-xs font-semibold text-neutral-200">Por contexto</div>
+<div class="text-xs text-neutral-500 mt-1">voz ≠ informe</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">✂️</div>
+<div class="text-xs font-semibold text-neutral-200">Elimina lo superfluo</div>
+<div class="text-xs text-neutral-500 mt-1">no la claridad</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔢</div>
+<div class="text-xs font-semibold text-neutral-200">Puede ser un número</div>
+<div class="text-xs text-neutral-500 mt-1">"5-10 words"</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Contrato de herramienta: las reglas de CUÁNDO usar cada cosa</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Allá en el Módulo 1.2 viste que el prompt <em>lista</em> las herramientas de la IA. Pero enumerarlas no basta. Darle un martillo a alguien no dice <em>cuándo</em> martillar,
+        aunque primero haya que sujetar el clavo. El <strong class="text-emerald-400">Contrato de herramienta</strong> son las reglas de uso de cada herramienta —
+        y aquí es solo una introducción, porque toda la Trilha 2 de práctica vuelve a esto en profundidad.
+      </p>
+<!-- Box Conceito Principal: as partes de um contrato -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center"><span class="mr-2">🔧</span> Lo que acuerda un contrato de herramienta</h3>
+<ul class="space-y-3 text-neutral-300">
+<li class="flex items-start space-x-2">
+<span class="text-emerald-400 mt-1">①</span>
+<span><strong class="text-emerald-400">Desencadenante.</strong> ¿Cuándo usar esta herramienta? ("Usa la búsqueda solo cuando la información sea reciente o te la pidan.")</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-emerald-400 mt-1">②</span>
+<span><strong class="text-emerald-400">Requisito previo.</strong> ¿Hay que hacer algo antes? ("Lee el archivo antes de editarlo.")</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-emerald-400 mt-1">③</span>
+<span><strong class="text-emerald-400">Exclusión.</strong> Para este caso, usa X y <em>nunca</em> Y. (Elimina la opción incorrecta.)</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-emerald-400 mt-1">④</span>
+<span><strong class="text-emerald-400">Agrupación.</strong> Puedes hacer varias llamadas a la vez (por lotes) en lugar de una por una.</span>
+</li>
+</ul>
+</div>
+<!-- Timeline: o contrato em ação (pré-requisito) -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+<span class="text-emerald-400 text-lg">①</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-emerald-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-emerald-400 mb-1">Primero, el prerrequisito: <span class="code-box">leer</span> antes de modificar</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Un buen contrato impide que la IA edite un archivo a ciegas. La regla «lee antes de editar» garantiza que solo actúe sobre algo que realmente
+              conoce; evita estropear lo que no entendió.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">②</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">Después de la exclusión: usa <span class="code-box">esta</span> herramienta, no <span class="code-box">esa</span></h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Cuando dos herramientas parecen servir, el contrato elige por ti: «para mostrar la imagen, usa SOLO esta; no uses ninguna otra».
+              La IA no duda ni llama a la herramienta equivocada.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+<span class="text-emerald-400 text-lg">③</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-emerald-400 mb-1">Y la agrupación: varias a la vez</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Si tres búsquedas no dependen unas de otras, haz las tres <strong class="text-emerald-400">juntas</strong> en vez de esperar a que cada una termine.
+              Rápido y barato. (Cuando una depende de la anterior, entonces sí espera.)
+            </p>
+</div>
+</div>
+</div>
+<!-- Exemplo verbatim Grok (exclusão) -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Ejemplo real — xAI / Grok, <span class="font-normal text-neutral-500">grok-4.3-beta.md, ~línea 625</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box">
+          Always use this tool to render an image from search_images tool call result. Do not use render_inline_citation or any other tool to render an image.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Un contrato de exclusión perfecto: define el <strong class="text-neutral-200">disparador</strong> (se obtuvo el resultado de la búsqueda de imágenes) y
+          <strong class="text-neutral-200">prohíbe las alternativas</strong> ("no uses ninguna otra"). La IA no puede elegir mal.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Cuando el contrato es exagerado</p>
+<p class="text-sm text-neutral-300">
+              Si la IA solo tiene 2 o 3 herramientas muy distintas, sin superposición, una descripción clara de cada una ya basta; el contrato detallado solo
+              <strong>vale la pena cuando hay ambigüedad al elegir</strong> o dependencia entre llamadas. Vamos a crear contratos completos en la Ruta 2.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎯</div>
+<div class="text-xs font-semibold text-neutral-200">Desencadenante</div>
+<div class="text-xs text-neutral-500 mt-1">cuándo usar</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔗</div>
+<div class="text-xs font-semibold text-neutral-200">Requisito previo</div>
+<div class="text-xs text-neutral-500 mt-1">leer antes de editar</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🚫</div>
+<div class="text-xs font-semibold text-neutral-200">Exclusión</div>
+<div class="text-xs text-neutral-500 mt-1">usa X, nunca Y</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⚡</div>
+<div class="text-xs font-semibold text-neutral-200">Agrupación</div>
+<div class="text-xs text-neutral-500 mt-1">varias a la vez</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">El énfasis es una moneda — y la inflación es real</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Palabras como <span class="code-box text-red-400">IMPORTANT</span>, <span class="code-box text-red-400">NEVER</span> y las LETRAS MAYÚSCULAS funcionan por un
+        único motivo: porque son <strong class="text-emerald-400">raras</strong>. En cuanto la mitad del prompt grita, la IA aprende que gritar no significa nada,
+        y empieza a tratar todo con el mismo peso. Es inflación: poner demasiado énfasis a <strong class="text-emerald-400">desvaloriza</strong>.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center"><span class="mr-2">💰</span> La idea en una frase</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          El énfasis es dinero, y tienes poco en el bolsillo. <strong class="text-emerald-400">El prompt disciplinado usa el énfasis como un recurso escaso</strong> —
+          reservada para los poquísimos comportamientos cuya violación rompe el producto.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          La frase que lo resume todo: <em>"si necesitas enfatizar diez cosas, o ninguna es crítica o no has pensado lo suficiente cuáles lo son."</em>
+</p>
+</div>
+<!-- Grid: prompt que grita vs prompt que escolhe -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Prompt que grita todo el tiempo</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>La mitad de las reglas tiene CAPS o "IMPORTANT"</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>La IA pierde la escala: todo se convierte en ruido con el mismo peso</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>La regla que realmente importa se pierde en medio</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>El énfasis se volvió «papel tapiz»: invisible</span></li>
+</ul>
+</div>
+<div class="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-emerald-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Prompt que elige dónde gritar</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Mayúsculas solo en los poquísimos elementos innegociables</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Cuando la IA ve un NEVER, sabe que es algo serio</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>El resto va como regla con su porqué (Tema 1)</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>El énfasis mantiene su valor porque es poco frecuente</span></li>
+</ul>
+</div>
+</div>
+<!-- Exemplo: copyright compliance -> principle -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Ejemplo real — Anthropic, el mismo bloque en dos versiones <span class="font-normal text-neutral-500">(Opus 4.8 → Fable 5)</span></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+<blockquote class="bg-dark-900 border-l-2 border-red-500 rounded p-3 font-mono text-xs text-neutral-300 code-box">
+<span class="text-red-400">&lt;claude_prioritizes_copyright_compliance&gt;</span><br/>
+            El cumplimiento de los derechos de autor es INNEGOCIABLE...
+          </blockquote>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 code-box">
+<span class="text-emerald-400">&lt;core_copyright_principle&gt;</span><br/>
+            Claude respects intellectual property...
+          </blockquote>
+</div>
+<p class="text-xs text-neutral-400">
+          Anthropic <strong class="text-neutral-200">no cambió una palabra</strong> de la regla: solo cambió el <strong class="text-neutral-200">nombre del bloque</strong>de <span class="code-box text-red-400">cumplimiento</span> (obediencia: "cumplo en los casos enumerados") para
+          <span class="code-box text-emerald-400">principle</span> (valor: "razono a partir de esto en casos nuevos"). La etiqueta moldea cómo la IA <em>ve</em> obedeciendo —
+          y eso cambia cómo obedece. Hasta el <strong class="text-emerald-400">nombre</strong> es una forma de énfasis.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🪙</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">La trampa más común y más invisible</p>
+<p class="text-sm text-neutral-300">
+              Añades «IMPORTANT» a una regla que «tiene que cumplirse». Funciona una vez. Luego la siguiente también recibe «IMPORTANT». Seis meses después,
+              la mitad del prompt está en mayúsculas y la IA trata todo como el mismo ruido. <strong>El énfasis es moneda; imprimir demasiado causa inflación.</strong>
+</p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">💰</div>
+<div class="text-xs font-semibold text-neutral-200">Es moneda</div>
+<div class="text-xs text-neutral-500 mt-1">recurso escaso</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📉</div>
+<div class="text-xs font-semibold text-neutral-200">Inflación</div>
+<div class="text-xs text-neutral-500 mt-1">todo grita = nada vale</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🏷️</div>
+<div class="text-xs font-semibold text-neutral-200">El nombre importa</div>
+<div class="text-xs text-neutral-500 mt-1">cumplimiento → principio</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔍</div>
+<div class="text-xs font-semibold text-neutral-200">¿Diez énfasis?</div>
+<div class="text-xs text-neutral-500 mt-1">reconsidera cuáles importan</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Siempre / nunca, pero con moderación</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Este tema lo reúne todo. «Siempre» y «nunca» son las palabras más fuertes del prompt, y por eso deben ser las más <strong class="text-emerald-400">raras</strong>.
+        Un buen prompt usa muy pocos NEVER. La regla práctica: <strong class="text-emerald-400">más de unos 5 a 7 NEVER en todo el prompt</strong> ya es señal de
+        que estás gritando demasiado (la inflación del Tema 5). Si necesitas muchos, no todos son críticos.
+      </p>
+<!-- Exemplo verbatim Cursor — NEVER create files... ALWAYS prefer editing -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Ejemplo real — Cursor, <span class="font-normal text-neutral-500">cursor.md, ~línea 24</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box">
+          NEVER create files unless they're absolutely necessary for achieving your goal. ALWAYS prefer editing an existing file to creating a new one.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Observa cómo este NEVER <strong class="text-neutral-200">merece</strong> ser un NEVER: viene con la salida de escape («a menos que sea absolutamente
+          necesario») <em>e</em> con el par positivo ("EN LUGAR DE eso, prefiere editar"). Es el Contraste del Tema 2 bien aplicado — úsalo donde realmente importa.
+        </p>
+</div>
+<!-- Box: as 4 técnicas como uma família -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center"><span class="mr-2">🎚️</span> Los 4 patrones de este módulo, lado a lado</h3>
+<div class="space-y-3 text-sm text-neutral-300">
+<div class="flex items-start space-x-3">
+<span class="code-box text-emerald-400 font-semibold flex-shrink-0 w-32">Regla con el motivo</span>
+<span>el predeterminado para casi todo — explica la intención y generaliza</span>
+</div>
+<div class="flex items-start space-x-3">
+<span class="code-box text-emerald-400 font-semibold flex-shrink-0 w-32">Always / Never</span>
+<span>reservado para el mecánico e innegociable, siempre junto con el «en su lugar»</span>
+</div>
+<div class="flex items-start space-x-3">
+<span class="code-box text-emerald-400 font-semibold flex-shrink-0 w-32">Presupuesto</span>
+<span>declara el tamaño objetivo de la respuesta según el contexto</span>
+</div>
+<div class="flex items-start space-x-3">
+<span class="code-box text-emerald-400 font-semibold flex-shrink-0 w-32">Contrato</span>
+<span>reglas sobre cuándo y cómo la IA usa cada herramienta</span>
+</div>
+</div>
+</div>
+<!-- Grid ✓/✗: regra que merece NEVER vs regra que não merece -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-emerald-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Merece un NEVER</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>"NUNCA" rompas el formato de salida que espera la app</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>"NUNCA" ignores un límite de seguridad</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Sin que puedas imaginar una excepción legítima</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>No merece un NEVER</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"NUNCA uses listas" — tiene mil excepciones; conviértelo en un porqué</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"NUNCA seas informal" — es una preferencia de tono</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Cualquier cosa donde imaginas un «depende»</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La tendencia de los labs</p>
+<p class="text-sm text-neutral-300">
+              La evolución de los prompts de Anthropic (Opus → Fable 5) fue <strong>reduciendo</strong> los topes, reservándolos para derechos de autor y seguridad, y sustituyendo
+              las prohibiciones por principios. El sentido de la historia es claro: <strong>menos gritos, más porqués</strong>. Es exactamente adonde te llevará el Módulo 1.5:
+              los errores que arruinan un prompt.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🤏</div>
+<div class="text-xs font-semibold text-neutral-200">Con moderación</div>
+<div class="text-xs text-neutral-500 mt-1">muy pocos NEVER</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">5️⃣</div>
+<div class="text-xs font-semibold text-neutral-200">~5–7 en total</div>
+<div class="text-xs text-neutral-500 mt-1">por encima de eso = inflación</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🪜</div>
+<div class="text-xs font-semibold text-neutral-200">El porqué es el valor predeterminado</div>
+<div class="text-xs text-neutral-500 mt-1">NEVER es la excepción</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📈</div>
+<div class="text-xs font-semibold text-neutral-200">Tendencia</div>
+<div class="text-xs text-neutral-500 mt-1">menos mayúsculas, más porqués</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-emerald-900/40 via-dark-800 to-dark-800 rounded-2xl border border-emerald-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Resumen del Módulo</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-emerald-400">Regla con el motivo</strong> ("Haz X porque Y") es el patrón más sólido: el motivo hace que la IA generalice a casos nuevos</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>O <strong>Contraste Always/Never</strong> es para el mecánico y es innegociable: siempre va junto con el «en vez de eso»</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>O <strong>Presupuesto de concisión</strong> declara el tamaño objetivo según el contexto; corto no significa ilegible</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>O <strong>Contrato de herramienta</strong> define el disparador, el requisito previo, la exclusión y la agrupación (a fondo en la Trilha 2)</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span><strong>El énfasis es moneda</strong>: imprimir demasiado causa inflación, e incluso el <span class="code-box">nombre</span> del bloque (compliance → principle) es una instrucción</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>Usa «siempre/nunca» <strong>con moderación</strong> (~5–7 en total); vimos <span class="code-box">Grok</span>, <span class="code-box">Cursor</span> y la Anthropic de verdad</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-emerald-500/20">
+<h3 class="font-semibold text-emerald-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Siguiente Módulo</h3>
+<p class="text-neutral-300 text-sm">
+<strong>1.5 — 🚫 Los 5 errores que arruinan un prompt.</strong> Ahora que conoces los buenos patrones, vamos a ver la otra cara: los cinco antip patrones
+          más comunes (incluida la inflación del énfasis que acabas de ver), con el antídoto de cada uno y esquemas de antes → después.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-emerald-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Volver a Trilha 1</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-1-5.html">
+<span>Siguiente: 1.5 Los 5 errores que arruinan un prompt</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-emerald-400 font-medium">El Manual Oculto de la IA</span> · Módulo 1.4 · Ruta 1 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

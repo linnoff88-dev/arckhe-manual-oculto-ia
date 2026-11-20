@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>2.3 Persona design: the 4 axes | The Hidden Manual of AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Blue — T2) ===== */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-blue-300 { color: #1d4ed8; }
+    html:not(.dark) .text-blue-200 { color: #1e40af; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/30 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .border-blue-500\/20 { border-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:border-blue-500\/30:hover { border-color: rgba(37, 99, 235, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha2/modulo-2-3.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha2/modulo-2-3.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha2/modulo-2-3.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha2/modulo-2-3.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-2-3.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha2/modulo-2-3.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-blue-400 bg-blue-500/10" href="index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-blue-400 transition-colors" href="../../index.html">Beginning</a>
+<span>/</span>
+<a class="hover:text-blue-400 transition-colors" href="index.html">Track 2</a>
+<span>/</span>
+<span class="text-blue-400">Module 2.3</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 rounded-2xl border border-blue-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-2xl">
+          🎭
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MODULE 2.3</span>
+<span class="text-xs text-neutral-500">Track 2 — Practice</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🎭 Persona design: the 4 axes</h1>
+<p class="text-neutral-300 leading-relaxed">
+            "Be nice" isn’t a persona — it’s a wish. A real persona is shaped by
+            <strong class="text-blue-400">four buttons</strong>: what it <em>values</em>, how it <em>sounds</em>, how it
+            <em>leads</em> the conversation and when it <em>stop and check</em>. Four axes, adjustable like a mixing board. By the end
+            of this module, you’ll design your AI’s voice in four lines — and know the one rule you must never break.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">📋</span><span>6 topics</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">⏱</span><span>~35 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">🎚️</span><span>4 axes</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">🎯</span><span>Practical</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: a mesa de mixagem de persona — 4 sliders -->
+<div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="A mixing board for an AI persona with four independent tracks—Values, Tone, Interaction, and Escalation. Each track is a horizontal slider with the cursor in a different position, showing that the persona is calibrated one axis at a time. Below the tracks, a badge reminds you of the golden rule: the persona governs how it speaks, never the user’s artifact." class="w-full h-auto" role="img" viewbox="0 0 960 360">
+<defs>
+<lineargradient id="m23-grad-bl" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#60a5fa"></stop><stop offset="1" stop-color="#2563eb"></stop>
+</lineargradient>
+<lineargradient id="m23-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m23-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m23-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#60a5fa" opacity="0.10" r="1.2"></circle>
+</pattern>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m23-grid)" height="360" rx="16" width="960" x="0" y="0"></rect>
+<!-- Título da mesa -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.75" x="40" y="40">mixing board · a persona on 4 axes</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="end" x="920" y="40">persona.mix</text>
+<line opacity="0.3" stroke="#9ca3af" stroke-dasharray="6,6" stroke-width="1" x1="40" x2="920" y1="52" y2="52"></line>
+<!-- FAIXA 1 — Valores (slider, cursor ~72%) -->
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="40" y="92">① Values</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="40" y="108">what it prioritizes</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" x="210" y="96">deference</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="end" x="880" y="96">truth</text>
+<line stroke="#1f2a44" stroke-linecap="round" stroke-width="6" x1="210" x2="880" y1="86" y2="86"></line>
+<line class="wf-a" stroke="url(#m23-grad-bl)" stroke-linecap="round" stroke-width="6" x1="210" x2="690" y1="86" y2="86"></line>
+<circle cx="690" cy="86" fill="#0e1830" filter="url(#m23-glow)" r="11" stroke="url(#m23-grad-bl)" stroke-width="3"></circle>
+<!-- FAIXA 2 — Tom (slider, cursor ~50%) -->
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="40" y="152">② Tone</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="40" y="168">how it sounds</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" x="210" y="156">dry</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="end" x="880" y="156">warm</text>
+<line stroke="#1f2a44" stroke-linecap="round" stroke-width="6" x1="210" x2="880" y1="146" y2="146"></line>
+<line class="wf-a" stroke="url(#m23-grad-cy)" stroke-linecap="round" stroke-width="6" x1="210" x2="545" y1="146" y2="146"></line>
+<circle cx="545" cy="146" fill="#0e1b26" filter="url(#m23-glow)" r="11" stroke="#38bdf8" stroke-width="3"></circle>
+<!-- FAIXA 3 — Interação (slider, cursor ~85%) -->
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="40" y="212">③ Interaction</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="40" y="228">how it leads</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" x="210" y="216">only asks</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="end" x="880" y="216">assume defaults</text>
+<line stroke="#1f2a44" stroke-linecap="round" stroke-width="6" x1="210" x2="880" y1="206" y2="206"></line>
+<line class="wf-a" stroke="url(#m23-grad-bl)" stroke-linecap="round" stroke-width="6" x1="210" x2="780" y1="206" y2="206"></line>
+<circle cx="780" cy="206" fill="#0e1830" filter="url(#m23-glow)" r="11" stroke="url(#m23-grad-bl)" stroke-width="3"></circle>
+<!-- FAIXA 4 — Escalada (slider, cursor ~38%) -->
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="40" y="272">④ Escalation</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="40" y="288">when to stop</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" x="210" y="276">only for critical cases</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="end" x="880" y="276">checks early</text>
+<line stroke="#1f2a44" stroke-linecap="round" stroke-width="6" x1="210" x2="880" y1="266" y2="266"></line>
+<line class="wf-a" stroke="url(#m23-grad-cy)" stroke-linecap="round" stroke-width="6" x1="210" x2="465" y1="266" y2="266"></line>
+<circle cx="465" cy="266" fill="#0e1b26" filter="url(#m23-glow)" r="11" stroke="#38bdf8" stroke-width="3"></circle>
+<!-- Selo da regra de ouro -->
+<line opacity="0.3" stroke="#9ca3af" stroke-dasharray="6,6" stroke-width="1" x1="40" x2="920" y1="304" y2="304"></line>
+<rect fill="#0e1830" height="14" rx="3" stroke="#60a5fa" stroke-width="1.6" width="14" x="40" y="318"></rect>
+<path d="M43,325 l3,3 l5,-6" fill="none" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="11" font-weight="700" x="64" y="330">golden rule: the persona governs what it SAYS — never the artifact it writes FOR the user</text>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- TÓPICO 1 — Valores -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">Axis 1 — Values: what it prioritizes</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Before “how it sounds” comes “what it stands for.” <strong class="text-blue-400">Values</strong> is the axis that says what your AI
+        prioritizes <em>when two good things conflict</em> — and they always come into play. Truth or deference? Clarity or completeness?
+        Speed or caution? You can’t have both maxed out all the time; the values axis is where you decide who wins
+        the tie. It’s the deepest axis because the other three derive from it.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center"><span class="mr-2">🧭</span> The idea in one sentence</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Values are the <strong class="text-blue-400">declared tie-breakers</strong> of the persona. Instead of hoping the AI chooses
+          correctly in the heat of the moment, you write the hierarchy beforehand—and it starts reasoning from it, including in cases you
+          never anticipated. This is the factor that most reduces erratic behavior.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          The canonical form is a pair connected by an arrow: <span class="code-box text-blue-400">truth &gt; deference</span>,
+          <span class="code-box text-blue-400">clarity &gt; completeness</span>. The arrow reads “takes precedence over.” Two or three pairs are enough —
+          more than that and the hierarchy turns into alphabet soup.
+        </p>
+</div>
+<!-- Caixa mono: o eixo Valores no template -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">The Values axis in the persona template <span class="font-normal text-neutral-500">— block 12 from the library</span></div>
+<span class="text-xs text-neutral-500 code-box">line 1 of 4</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">Valores:</span> {o que prioriza — ex.: verdade &gt; deferência; clareza &gt; completude}.</pre>
+<p class="text-neutral-400 text-xs mt-3 leading-relaxed">
+          Replace the key with two or three pairs from the <em>your</em> case. A legal assistant might prioritize
+          <span class="code-box text-blue-400">caution &gt; speed</span>; one for brainstorming,
+          <span class="code-box text-blue-400">quantity &gt; polish</span>. The pair reveals the persona's soul.
+        </p>
+</div>
+<!-- Grid: valor bem escrito vs mal escrito -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-blue-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-xs">✓</span>
+<span>A value that guides behavior</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>It’s a <strong>pair with a winner</strong>: "truth &gt; flattery"</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Resolves a real tie that comes up in use</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Can it generalize to unanticipated cases?</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>There are 2 or 3, not a list of virtues</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>A value that’s just for show</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Be helpful, honest, and harmless" — it doesn’t break any ties</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>A list of ten flattering adjectives</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Values that never conflict (and say nothing)</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Always give the best possible answer" (empty)</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🎯</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">The conflict test</p>
+<p class="text-sm text-neutral-300">
+              A value only matters if you can imagine a situation where both sides pull in opposite directions. If "truth"
+              and "deference" never collide in your AI’s mind, writing the pair is pointless. Write the values that decide the
+              <strong>crossroads</strong>, not the ones that pad out the résumé.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 — Tom -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Axis 2 — Tone: how it sounds</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+<strong class="text-blue-400">Tone</strong> is the axis you "hear." It’s the texture of the voice: warm or dry, witty or
+        factual, brief or expansive. It’s the most visible axis — the user feels the tone in the very first sentence — and that’s why it’s the easiest to
+        overdo. The trap is writing a paragraph of adjectives. Good tone is <em>direction</em>, not vocabulary: a few
+        words that point to a way of working.
+      </p>
+<!-- Caixa mono: o eixo Tom no template -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">The Tone axis in the persona template <span class="font-normal text-neutral-500">— block 12</span></div>
+<span class="text-xs text-neutral-500 code-box">line 2 of 4</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">Tom:</span> {como soa — ex.: cálido e conciso; seco e factual; espirituoso}.</pre>
+<p class="text-neutral-400 text-xs mt-3 leading-relaxed">
+          Notice: two or three adjectives, period. "Warm and concise" says more than "friendly, welcoming, approachable, nice,
+          caring, accessible" — because each extra adjective dilutes the ones before it instead of adding to them.
+        </p>
+</div>
+<!-- Três posições do eixo de tom -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5">
+<div class="text-blue-400 text-2xl mb-2">🤝</div>
+<h3 class="text-base font-semibold text-blue-400 mb-2">Warm tone</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+            Conversational, idiomatic language, “like one person talking to another.” Warm and validates feelings. Good for companionship,
+            support, education. Careful: too much warmth turns into flattery.
+          </p>
+</div>
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5">
+<div class="text-blue-400 text-2xl mb-2">📐</div>
+<h3 class="text-base font-semibold text-blue-400 mb-2">Dry tone</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+            Factual, straight to the point, no embellishment. No "great question!" Good for technical tools, dashboards,
+            coding assistants. Caution: too dry can sound rude.
+          </p>
+</div>
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<div class="text-sky-300 text-2xl mb-2">✨</div>
+<h3 class="text-base font-semibold text-sky-300 mb-2">Witty tone</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+            Light irony, smart observations, a touch of personality. Memorable and risky — only worth it if the brand calls for it and
+            there are guardrails to keep it from getting tiresome.
+          </p>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Show, don’t label</p>
+<p class="text-sm text-neutral-300">
+              The collection’s "Cynic" persona offers the best lesson on tone: <em>"Show, don't tell — never label your own tone."</em>
+              You set the tone in the persona, but the AI <strong>never announces</strong> "responding in a humorous way now". The tone
+              comes through in the writing, not in a label. A tone label is the opposite of having tone.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 — Interação -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Axis 3 — Interaction: how it guides the conversation</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+<strong class="text-blue-400">Interaction</strong> is the conversation pacing axis: the AI <em>question</em> before acting, or
+        <em>assume</em> a reasonable default and move on? This axis is where the difference lies between an AI that stalls you at every step
+        ("do you prefer A or B?", "can you confirm this is right?") and one that unblocks you ("I assumed X and moved on; let me know if I got it wrong"). Almost always,
+        choosing and stating defaults wins — but not always, and you decide where to set the cursor.
+      </p>
+<!-- Caixa mono: o eixo Interação no template -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">The Interaction axis in the persona template <span class="font-normal text-neutral-500">— block 12</span></div>
+<span class="text-xs text-neutral-500 code-box">line 3 of 4</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">Interação:</span> {como conduz — ex.: assume defaults razoáveis e segue, declarando-os;
+            só pergunta o substancial; prefere lista de opções a pergunta aberta}.</pre>
+<p class="text-neutral-400 text-xs mt-3 leading-relaxed">
+          Three decisions on a single axis: <strong>(a)</strong> assume vs. ask; <strong>(b)</strong> what counts as “substantial”
+          enough to interrupt; <strong>(c)</strong> when you need to ask, a list of options &gt; an open-ended question (easier
+          to answer).
+        </p>
+</div>
+<!-- Grid: conduzir bem vs conduzir mal -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-blue-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Interaction that flows</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Assumes the obvious default and <strong>declares</strong>: "I started from X"</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Only interrupt when the choice actually changes the outcome</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>When asking, offer 2–3 named options</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Keeps the user in control without asking permission at every step</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Interaction that gets stuck</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Asks everything: “are you sure?”, “can you confirm?”, “can I proceed?”</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Open-ended question when a choice would settle it (“which do you prefer?”)</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Makes the wrong assumption and <strong>no</strong> says what it assumed</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Fill the ending with courtesy questions nobody needs</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🎚️</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">The axis depends on the cost of the error</p>
+<p class="text-sm text-neutral-300">
+              Where redoing is cheap (text drafts), move the cursor to <strong>make an assumption and move on</strong>. Where redoing it is expensive
+              or irreversible (deleting files, sending email), shift it to <strong>ask first</strong>. Interaction isn't a cute personality trait — it's a decision about risk.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 — Escalada -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Axis 4 — Escalation: when it stops and checks</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+<strong class="text-blue-400">Escalation</strong> is the braking axis. It defines when the AI <em>pause</em>, instead of
+        continuing on autopilot, because it has sniffed out a non-obvious consequence or a hidden risk. It’s Interaction’s serious sibling: Interaction is about routine questions; Escalation is about that moment when something feels wrong and the AI needs to stop and
+        realign <strong class="text-blue-400">before committing</strong>. Poorly calibrated, it either blocks for no reason or overlooks a real risk.
+      </p>
+<!-- Caixa mono: o eixo Escalada no template -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">The Escalation axis in the persona template <span class="font-normal text-neutral-500">— block 12</span></div>
+<span class="text-xs text-neutral-500 code-box">line 4 of 4</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">Escalada:</span> {quando para e checa — ex.: ao detectar consequência não-óbvia
+           ou risco oculto, pausa e realinha antes de cometer}.</pre>
+</div>
+<!-- Timeline: o gatilho de escalada -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">⏸️</span> The escalation, step by step</h3>
+<div class="space-y-4">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold">1</div>
+<div class="flex-1 bg-dark-900 border border-dark-600 rounded-lg p-3">
+<p class="text-sm font-semibold text-neutral-200 mb-0.5">Detects the signal</p>
+<p class="text-xs text-neutral-400">A non-obvious consequence, a hidden risk, an ambiguity that changes everything if I get it wrong.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold">2</div>
+<div class="flex-1 bg-dark-900 border border-dark-600 rounded-lg p-3">
+<p class="text-sm font-semibold text-neutral-200 mb-0.5">Pause <em>before</em> from making</p>
+<p class="text-xs text-neutral-400">Doesn’t act and apologize later—it stops while there’s still time to change course.</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-300 font-bold">3</div>
+<div class="flex-1 bg-dark-900 border border-dark-600 rounded-lg p-3">
+<p class="text-sm font-semibold text-neutral-200 mb-0.5">Realign as support, not as a reprimand</p>
+<p class="text-xs text-neutral-400">Lays out the tradeoff, checks the assumption, offers a path forward — without correcting the user condescendingly.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Box: o tom da escalada -->
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center"><span class="mr-2">🛟</span> Escalation is support, not correction</h3>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Codex’s pragmatic persona captures the spirit: escalation is "framed as support and shared responsibility,
+          never as correction." The AI doesn’t stop to say "you were wrong"—it stops to say "before I continue, let me confirm
+          something that could have an impact." The difference in framing is everything: one blocks collaboration, the other strengthens it.
+        </p>
+</div>
+</section>
+<!-- TÓPICO 5 — A regra de ouro -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">The golden rule: persona governs speech, not the artifact</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        This is the rule that <strong class="text-blue-400">save</strong> the persona — without it, a witty tone axis turns into a
+        disaster. The persona defines how the AI <strong class="text-blue-400">SPEAKS to you</strong>. It <strong class="text-blue-400">NEVER</strong>
+        defines the style of the artifacts the AI writes <em>for you to use</em>: emails, posts, code, text, documents. For these,
+        tone and style follow the context and your instructions—not the persona. A "Cynic" assistant doesn't write your formal email in
+        a sarcastic way. It <em>conversation</em> with sarcasm, but <em>delivers</em> the email in the tone the email calls for.
+      </p>
+<!-- Caixa mono: a regra de ouro verbatim -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-blue-400 mb-3">THE GOLDEN RULE in the template <span class="font-normal text-neutral-500">— block 12, verbatim</span></div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">REGRA DE OURO DA PERSONA:</span> a persona governa como você FALA com o usuário, nunca
+os artefatos que você escreve PARA ele usar (e-mails, posts, código, textos). Nesses,
+tom e estilo seguem o contexto e a instrução do usuário, não a persona.</pre>
+</div>
+<!-- Grid: persona na FALA (✓) vs no ARTEFATO (✗) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-blue-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Persona governs THE VOICE — allowed</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>The message it gives you in the conversation</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>How it explains, asks, comments</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>The way of presenting the result ("all set, here you go")</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>The chat, the notes, the tone of the "envelope"</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Persona IN THE ARTIFACT — not allowed</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The formal email it drafts <em>by you</em></span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The code and comments it writes</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The post, the caption, the résumé, the letter</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Any text whose tone the <strong>destination</strong> define, not the AI</span></li>
+</ul>
+</div>
+</div>
+<!-- Caixa mono: a regra, do acervo (verbatim, inglês) -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-sky-300 mb-3">The same rule, in the real collection <span class="font-normal text-neutral-500">— GPT-5 "Cynical", verbatim</span></div>
+<pre class="bg-dark-900 border-l-2 border-sky-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">Do not apply personality traits to user-requested artifacts: When producing
+written work to be used elsewhere by the user, the tone and style of the writing
+must be determined by context and user instructions. DO NOT write user-requested
+written artifacts (e.g. emails, letters, code comments, texts, social media posts,
+resumes, etc.) in your specific personality.</pre>
+<p class="text-neutral-400 text-xs mt-3 leading-relaxed">
+          All the serious personas in the collection — friend, robot, cynic — carry this clause almost word for word. It's no
+          coincidence: it's the line that keeps personality from contaminating the work.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The envelope metaphor</p>
+<p class="text-sm text-neutral-300">
+              Think of the persona as the <strong>mail carrier</strong>, and in the artifact as <strong>letter inside the envelope</strong>. The
+              mail carrier can be playful, curt, or cynical when delivering your mail—but the letter's content is yours, and its tone
+              is what <em>you</em> asked. A persona is the envelope; never the letter.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 — Vozes prontas -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Three ready-made voices: friend, robot, cynic</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        You don’t need to invent a persona from scratch every time. The collection includes <strong class="text-blue-400">ready-made voices</strong> that
+        you copy and calibrate — each one is a set of positions already chosen on the four axes. Here are three from the collection, in a
+        monospace box, exactly as they appear in real prompts. Use them as a starting point and adjust the slider for your case.
+      </p>
+<!-- Voz 1: Amigo -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-4">
+<div class="flex items-center justify-between mb-3">
+<div class="text-sm font-semibold text-blue-400 flex items-center"><span class="mr-2">🤗</span> "Friend" <span class="font-normal text-neutral-500 ml-2 text-xs">GPT-5.1 friendly</span></div>
+<span class="text-xs text-neutral-500 code-box">warm tone · high empathy</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">You are a warm, curious, witty, and energetic AI friend. Casual, idiomatic language:
+like a person talking to another person. Anticipate the user's needs; show empathetic
+acknowledgement. Do not reference these rules; just follow them.</pre>
+</div>
+<!-- Voz 2: Robô -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-4">
+<div class="flex items-center justify-between mb-3">
+<div class="text-sm font-semibold text-sky-300 flex items-center"><span class="mr-2">🤖</span> "Robot" <span class="font-normal text-neutral-500 ml-2 text-xs">GPT-5 robot — extreme concision</span></div>
+<span class="text-xs text-neutral-500 code-box">dry tone · zero fluff</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-sky-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">Respond with extreme concision and precision. Factual, neutral, mechanical tone.
+No pleasantries, no filler, no emotional language. State only what is necessary.
+Shortest correct answer wins, no fluff.</pre>
+</div>
+<!-- Voz 3: Cínico -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-5">
+<div class="flex items-center justify-between mb-3">
+<div class="text-sm font-semibold text-blue-400 flex items-center"><span class="mr-2">😒</span> "Cynical" <span class="font-normal text-neutral-500 ml-2 text-xs">GPT-5 cynic — only if the brand calls for it</span></div>
+<span class="text-xs text-neutral-500 code-box">witty tone · escalating care</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed">Beleaguered AI with a core of kindness. Sarcasm and wit on superficial matters;
+genuine care on sensitive ones (medical, mental health, grief). Show, don't tell —
+never label your own tone.</pre>
+</div>
+<!-- Como cada voz posiciona os 4 eixos -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">🎚️</span> The three voices across four dimensions</h3>
+<div class="overflow-x-auto">
+<table class="w-full text-sm text-left">
+<thead>
+<tr class="text-neutral-400 border-b border-dark-600">
+<th class="py-2 pr-4 font-semibold">Axis</th>
+<th class="py-2 px-3 font-semibold text-blue-400">🤗 Friend</th>
+<th class="py-2 px-3 font-semibold text-sky-300">🤖 Robot</th>
+<th class="py-2 px-3 font-semibold text-blue-400">😒 Cynical</th>
+</tr>
+</thead>
+<tbody class="text-neutral-300">
+<tr class="border-b border-dark-700">
+<td class="py-2 pr-4 font-semibold text-neutral-200">Values</td>
+<td class="py-2 px-3">connection &gt; efficiency</td>
+<td class="py-2 px-3">accuracy &gt; warmth</td>
+<td class="py-2 px-3">honesty &gt; pleasing</td>
+</tr>
+<tr class="border-b border-dark-700">
+<td class="py-2 pr-4 font-semibold text-neutral-200">Tone</td>
+<td class="py-2 px-3">warm, idiomatic</td>
+<td class="py-2 px-3">dry, mechanical</td>
+<td class="py-2 px-3">witty, ironic</td>
+</tr>
+<tr class="border-b border-dark-700">
+<td class="py-2 pr-4 font-semibold text-neutral-200">Interaction</td>
+<td class="py-2 px-3">welcomes, anticipates</td>
+<td class="py-2 px-3">only what is necessary</td>
+<td class="py-2 px-3">direct, no pleasantries</td>
+</tr>
+<tr>
+<td class="py-2 pr-4 font-semibold text-neutral-200">Escalation</td>
+<td class="py-2 px-3">handle sensitively</td>
+<td class="py-2 px-3">states the risk plainly</td>
+<td class="py-2 px-3">drop the irony for serious matters</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-6">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🌱</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Notice what ALL of them have in common</p>
+<p class="text-sm text-neutral-300">
+              Robot and Cynic have opposite tones, but both <strong>let their guard down when it matters</strong>: the Cynic drops the sarcasm on
+              sensitive topics; the Robot flags the risk, even tersely. And they all keep the <strong>golden rule</strong>. Persona is where you
+              vary; the golden rule and care around sensitive topics are where you <em>no</em> varies.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🤗</div>
+<div class="text-xs font-semibold text-neutral-200">Friend</div>
+<div class="text-xs text-neutral-500 mt-1">warm · empathetic</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🤖</div>
+<div class="text-xs font-semibold text-neutral-200">Robot</div>
+<div class="text-xs text-neutral-500 mt-1">dry · zero fluff</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">😒</div>
+<div class="text-xs font-semibold text-neutral-200">Cynical</div>
+<div class="text-xs text-neutral-500 mt-1">ironic · careful</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">📋</div>
+<div class="text-xs font-semibold text-neutral-200">Copy and calibrate</div>
+<div class="text-xs text-neutral-500 mt-1">don’t invent it from scratch</div>
+</div>
+</div>
+</section>
+<!-- ENTREGÁVEL PRÁTICO -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-2xl p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-3 flex items-center"><span class="mr-3">🎚️</span> Hands-on: design your persona</h2>
+<p class="text-neutral-300 leading-relaxed mb-5 text-sm">
+        Four lines. That’s all that separates "be friendly" from a real persona. Do it now for your use case.
+      </p>
+<ol class="space-y-3 text-sm text-neutral-300 mb-2">
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">1</span>
+<span><strong>Values:</strong> write 2 pairs with an arrow for your case (e.g., <span class="code-box">truth &gt; deference</span>). Think about the ties that actually come up.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">2</span>
+<span><strong>Tone:</strong> two or three adjectives, period. Choose from warm / dry / witty and stop there.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">3</span>
+<span><strong>Interaction + Escalation:</strong> decide where the cursor goes—does it assume defaults or ask? And what signal makes the AI stop and check before committing?</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">4</span>
+<span>Paste the <strong>golden rule</strong> at the end, without changing anything. Then talk with the AI and ask for an artifact (an email): check whether it <em>conversation</em> in the persona but <em>delivers</em> the email in the email's tone.</span>
+</li>
+</ol>
+</div>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-blue-900/40 via-dark-800 to-dark-800 rounded-2xl border border-blue-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Module Summary</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span>Persona isn’t “be friendly” — it’s <strong class="text-blue-400">4 axes</strong> adjustable like sliders</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Values</strong>: the stated tie-breakers (pairs with an arrow: truth &gt; deference)</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Tone</strong>: 2–3 directional adjectives (warm / dry / witty)—show, don’t label</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Interaction</strong> (assume vs. ask) and <strong class="text-blue-400">Escalation</strong> (when to stop and check) depend on the cost of the error</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Golden rule</strong>: persona governs SPEECH, never the artifact the AI writes FOR you</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Ready-made voices</strong> (friend / robot / cynic): copy and calibrate, don’t invent from scratch</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-blue-500/20">
+<h3 class="font-semibold text-blue-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Next Module</h3>
+<p class="text-neutral-300 text-sm">
+<strong>2.4 — 🔧 Tools and the Tool Contract.</strong> You designed how the AI speaks. Now let’s give it
+          <em>powers</em>: how to declare tools with triggers, prerequisites, and exclusions, and finalize the contract that prevents the AI from
+          inventing capabilities it doesn’t have.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-blue-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Back to Track</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-2-4.html">
+<span>Next: 2.4 Tools and the Tool Contract</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-blue-400 font-medium">The AI's Hidden Manual</span> · Module 2.3 · Track 2 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>1.1 What is a “system prompt” | The Hidden Manual of AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Emerald — T1) ===== */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-emerald-300 { color: #047857; }
+    html:not(.dark) .text-emerald-200 { color: #065f46; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/30 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.06); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .border-emerald-500\/20 { border-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:border-emerald-500\/30:hover { border-color: rgba(5, 150, 105, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha1/modulo-1-1.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha1/modulo-1-1.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha1/modulo-1-1.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha1/modulo-1-1.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-1-1.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha1/modulo-1-1.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-emerald-400 bg-emerald-500/10" href="index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-emerald-400 transition-colors" href="../../index.html">Beginning</a>
+<span>/</span>
+<a class="hover:text-emerald-400 transition-colors" href="index.html">Track 1</a>
+<span>/</span>
+<span class="text-emerald-400">Module 1.1</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 rounded-2xl border border-emerald-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-2xl">
+          🧭
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MODULE 1.1</span>
+<span class="text-xs text-neutral-500">Track 1 — Fundamentals</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🧭 What is a "system prompt"</h1>
+<p class="text-neutral-300 leading-relaxed">
+            Before you type anything, the AI has already received a set of secret instructions. This invisible text
+            is the <strong class="text-emerald-400">system prompt</strong> — and it decides who the AI is, how it speaks, and what it does.
+            Without any jargon, using everyday analogies, this module shows you the part almost nobody sees.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">📋</span><span>6 topics</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">⏱</span><span>~30 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">🎯</span><span>Basic</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">📖</span><span>Theory</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: As 3 vozes (system → user → assistant) -->
+<div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagram of the three voices in an AI conversation: the system voice (invisible instruction) sits silently at the top, with the user and assistant voices alternating below it, turn by turn; the system shapes every AI response" class="w-full h-auto" role="img" viewbox="0 0 960 360">
+<defs>
+<lineargradient id="m11-grad-em" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#34d399"></stop><stop offset="1" stop-color="#10b981"></stop>
+</lineargradient>
+<lineargradient id="m11-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m11-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m11-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#34d399" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m11-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#34d399"></path>
+</marker>
+<marker id="m11-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m11-grid)" height="360" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos de coluna -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="250" y="34">what you SEE on the screen</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="720" y="34">what the AI ACTUALLY receives</text>
+<line opacity="0.35" stroke="#9ca3af" stroke-dasharray="6,6" stroke-width="1.2" x1="480" x2="480" y1="20" y2="344"></line>
+<!-- LADO ESQUERDO: a janela de chat que o usuario ve -->
+<rect fill="#0d1117" height="276" rx="14" stroke="#374151" stroke-width="1.5" width="380" x="60" y="54"></rect>
+<circle cx="80" cy="74" fill="#f87171" r="4"></circle><circle cx="94" cy="74" fill="#fbbf24" r="4"></circle><circle cx="108" cy="74" fill="#34d399" r="4"></circle>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="250" y="78">chat (illustrative)</text>
+<!-- balao user -->
+<rect fill="#0e1b26" height="40" rx="10" stroke="#38bdf8" stroke-width="1.5" width="236" x="180" y="100"></rect>
+<text fill="#bfe6ff" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="298" y="118">YOU (user)</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="298" y="132">"Explain to me what interest is."</text>
+<!-- balao assistant -->
+<rect fill="#0e2018" height="44" rx="10" stroke="url(#m11-grad-em)" stroke-width="1.5" width="236" x="84" y="152"></rect>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="202" y="170">AI (assistant)</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="202" y="185">"Sure! Imagine borrowing money…"</text>
+<!-- balao user 2 -->
+<rect fill="#0e1b26" height="40" rx="10" stroke="#38bdf8" stroke-width="1.5" width="236" x="180" y="208"></rect>
+<text fill="#bfe6ff" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="298" y="226">YOU (user)</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="298" y="240">"And compound interest?"</text>
+<!-- balao assistant 2 -->
+<rect fill="#0e2018" height="44" rx="10" stroke="url(#m11-grad-em)" stroke-width="1.5" width="236" x="84" y="260"></rect>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="202" y="278">AI (assistant)</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="202" y="293">"It's compound interest. Let me give you an example…"</text>
+<!-- LADO DIREITO: a instrucao invisivel + as 3 vozes empilhadas -->
+<!-- system (em destaque, glow) -->
+<g filter="url(#m11-glow)">
+<rect fill="#0e2018" height="74" rx="14" stroke="url(#m11-grad-em)" stroke-width="2.5" width="380" x="520" y="60"></rect>
+</g>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="14" font-weight="700" x="540" y="86">🔒 system — the invisible instruction</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="11" x="540" y="106">"You are a friendly study buddy. Explain with</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="11" x="540" y="121">simple analogies. Be brief and encouraging."</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="end" x="908" y="150">comes BEFORE everything · you don’t see it</text>
+<!-- user (ciano) -->
+<rect class="wf-a" fill="#0e1b26" height="32" rx="9" stroke="#38bdf8" stroke-width="2" width="380" x="520" y="166"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="540" y="186">💬 user — your message</text>
+<!-- assistant -->
+<rect class="wf-a" fill="#102a20" height="32" rx="9" stroke="#34d399" stroke-width="2" width="380" x="520" y="208"></rect>
+<text fill="#6ee7b7" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="540" y="228">🤖 assistant — the AI's response</text>
+<!-- user 2 -->
+<rect class="wf-a" fill="#0e1b26" height="32" rx="9" stroke="#38bdf8" stroke-width="2" width="380" x="520" y="250"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="540" y="270">💬 user — another message</text>
+<!-- assistant 2 -->
+<rect class="wf-a" fill="#102a20" height="32" rx="9" stroke="#34d399" stroke-width="2" width="380" x="520" y="292"></rect>
+<text fill="#6ee7b7" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="540" y="312">🤖 assistant — another response</text>
+<!-- seta: o system molda toda resposta -->
+<path d="M512,97 C500,97 500,224 519,224" fill="none" marker-end="url(#m11-ah)" opacity="0.55" stroke="#34d399" stroke-width="1.8"></path>
+<path d="M512,97 C500,97 500,308 519,308" fill="none" marker-end="url(#m11-ah)" opacity="0.45" stroke="#34d399" stroke-width="1.8"></path>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="10" opacity="0.8" text-anchor="middle" transform="rotate(-90 470 200)" x="470" y="200">the system shapes every response</text>
+<!-- ponte: a tela mostra so user+assistant -->
+<line marker-end="url(#m11-ahc)" opacity="0.5" stroke="#38bdf8" stroke-dasharray="5,4" stroke-width="1.5" x1="440" x2="518" y1="200" y2="182"></line>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">AI already has rules before you speak</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        When you open ChatGPT, Gemini, or any other AI and type your first question, it seems like the conversation
+        <em>starts</em> there. But no. <strong class="text-emerald-400">Before your message arrives</strong>, the AI has already read a text you
+        have never seen — a note of instructions that says who it is, how it should behave, and what it can or can't do. That note is the
+        <strong class="text-emerald-400">system prompt</strong>.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center"><span class="mr-2">🧭</span> The idea in one sentence</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          A system prompt isn’t a list of disconnected little rules—it’s <strong class="text-emerald-400">the AI’s "operating mode"</strong>.
+          It’s the text that turns on before the conversation and stays on in the background, guiding every response.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Think of it this way: the same AI, with two different notes, becomes two different AIs. We’re not changing its “brain” —
+          we’re changing its <em>instructions</em>. And that's why understanding the system prompt changes everything: it's the part you can adjust.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3">What it is</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          A set of instructions that reaches the AI <strong class="text-emerald-400">before</strong> of your message and stays in effect throughout the
+          conversation. It defines the personality, rules, and way of responding. You don't see it on screen—it stays "behind the scenes."
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Why learn</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Because almost everything that frustrates or delights you about an AI comes from here. "Why is it so formal?" "Why did it refuse to answer that?" "Why is this AI so different from that one?" The answer is almost always in the system prompt. Knowing it exists is the first step toward no longer <em>suffer</em> the AI and start to <em>guide</em> the AI.
+        </p>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔒</div>
+<div class="text-xs font-semibold text-neutral-200">Invisible</div>
+<div class="text-xs text-neutral-500 mt-1">you can't see on screen</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⏮️</div>
+<div class="text-xs font-semibold text-neutral-200">Comes first</div>
+<div class="text-xs text-neutral-500 mt-1">before the 1st message</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📌</div>
+<div class="text-xs font-semibold text-neutral-200">Stay tuned</div>
+<div class="text-xs text-neutral-500 mt-1">applies to the whole conversation</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎛️</div>
+<div class="text-xs font-semibold text-neutral-200">Adjustable</div>
+<div class="text-xs text-neutral-500 mt-1">is the part you can change</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Analogy: the actor’s script and the employee handbook</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The easiest way to understand the system prompt is by comparison. Two analogies make everything clear—and you’ll
+        carry them with you through the rest of the course.
+      </p>
+<!-- Duas analogias lado a lado -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center"><span class="mr-2">🎭</span> The actor’s script</h3>
+<p class="text-neutral-300 text-sm leading-relaxed mb-3">
+            Imagine a great actor. He can play a tough detective in one movie and a kind grandpa in another.
+            The <strong class="text-emerald-200">talent</strong> is the same — what changes is the <strong class="text-emerald-400">script</strong>.
+          </p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+            The system prompt is the AI’s script. It says: “you are like this, speak like this, act like this.” Change the script and the
+            same “actor” delivers a completely different character.
+          </p>
+</div>
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h3 class="text-lg font-semibold text-sky-300 mb-3 flex items-center"><span class="mr-2">📋</span> The employee handbook</h3>
+<p class="text-neutral-300 text-sm leading-relaxed mb-3">
+            Think of someone’s first day on the job. They receive a <strong class="text-sky-300">manual</strong>:
+            “this is how we serve people here, this is what we never do, this is the tone we use with customers.”
+          </p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+            The system prompt is this manual. The AI “reads” it before helping you and follows those rules with everyone —
+            without needing to be reminded in every conversation.
+          </p>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The detail that brings the two analogies together</p>
+<p class="text-sm text-neutral-300">
+              The actor doesn't <em>shows</em> the script in the scene, and the employee doesn’t <em>recites</em> the manual for the client. They
+              simply <strong>act accordingly</strong>. The AI does the same thing: it follows the system prompt without showing you the text.
+              That’s why it seems like “magic” — but it’s just a well-written note behind the scenes.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎭</div>
+<div class="text-xs font-semibold text-neutral-200">Script</div>
+<div class="text-xs text-neutral-500 mt-1">defines the character</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📋</div>
+<div class="text-xs font-semibold text-neutral-200">Manual</div>
+<div class="text-xs text-neutral-500 mt-1">defines the rules</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🧠</div>
+<div class="text-xs font-semibold text-neutral-200">Same talent</div>
+<div class="text-xs text-neutral-500 mt-1">the model doesn't change</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🤫</div>
+<div class="text-xs font-semibold text-neutral-200">Behind the scenes</div>
+<div class="text-xs text-neutral-500 mt-1">continues without showing</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">The 3 voices: system, user, and assistant</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Every conversation with an AI has <strong class="text-emerald-400">three voices</strong>, not two. You know two of them —
+        you and the AI. The third is the one that stays silent but controls everything. Look at the diagram above: on the left is
+        what appears on the screen; on the right is what the AI <em>really</em> receives.
+      </p>
+<!-- Timeline das 3 vozes -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+<span class="text-emerald-400 text-lg">🔒</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-emerald-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-emerald-400 mb-1">1. The voice <span class="code-box">system</span> — the behind-the-scenes director</h4>
+<p class="text-sm text-neutral-500 mb-2">Who speaks: the team that created the AI. When: before everything else. Can you see it? No.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              It’s the system prompt. It defines the personality and rules. It’s the “strongest” voice of the three—when it says something,
+              the other two obey. It speaks once and then stays quiet, but its influence is in <strong class="text-emerald-400">each</strong> answer.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">💬</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">2. The voice <span class="code-box">user</span> — you</h4>
+<p class="text-sm text-neutral-500 mb-2">Who speaks: you. When: with each of your messages. Can you see it? Yes.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Your questions and requests. It’s the voice that <em>pulls</em> the conversation, but always within the rules that the <span class="code-box text-emerald-400">system</span> already established.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+<span class="text-emerald-400 text-lg">🤖</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-emerald-400 mb-1">3. The voice <span class="code-box">assistant</span> — the AI responding</h4>
+<p class="text-sm text-neutral-500 mb-2">Who speaks: the AI. When: after each of your messages. Can you see it? Yes.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              The response that appears on the screen. Each response is the AI trying to meet the <span class="code-box text-sky-300">user</span>
+<strong class="text-emerald-400"> without breaking</strong> what the <span class="code-box text-emerald-400">system</span> sent it.
+            </p>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🎬</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Think of a radio show</p>
+<p class="text-sm text-neutral-300">
+              O <span class="code-box text-emerald-400">system</span> é o <strong>director</strong> (decides the program’s tone, stays out of the conversation).
+              The <span class="code-box text-sky-300">user</span> é o <strong>listener who calls</strong>. O <span class="code-box text-emerald-400">assistant</span>
+              é o <strong>on-air speaker</strong>. The listener and the speaker talk—but the whole program has the director's defined character.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔒</div>
+<div class="text-xs font-semibold text-neutral-200">system</div>
+<div class="text-xs text-neutral-500 mt-1">the director (invisible)</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">💬</div>
+<div class="text-xs font-semibold text-neutral-200">user</div>
+<div class="text-xs text-neutral-500 mt-1">you</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🤖</div>
+<div class="text-xs font-semibold text-neutral-200">assistant</div>
+<div class="text-xs text-neutral-500 mt-1">the AI responding</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">👑</div>
+<div class="text-xs font-semibold text-neutral-200">who’s in charge</div>
+<div class="text-xs text-neutral-500 mt-1">system &gt; everything else</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Why this exists: consistency and safety</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Why go to all this trouble to write an invisible note? For two very practical reasons. Without the system prompt,
+        the AI would be <strong class="text-emerald-400">unpredictable</strong> e <strong class="text-emerald-400">dangerous</strong>. With it, it becomes
+        reliable.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center"><span class="mr-2">🎯</span> The two main reasons</h3>
+<ul class="space-y-3 text-neutral-300">
+<li class="flex items-start space-x-2">
+<span class="text-emerald-400 mt-1">①</span>
+<span><strong class="text-emerald-400">Consistency.</strong> The company wants AI to act the same way with everyone—the same tone, the same quality, every time.
+            Without the note, every conversation would be a lottery. With it, millions of people get the same well-defined "personality."</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-emerald-400 mt-1">②</span>
+<span><strong class="text-emerald-400">Safety.</strong> AI needs to know what <em>no</em> do — don’t give dangerous medical advice, help with anything illegal, or make up facts with false certainty. These safeguards live in the system prompt.</span>
+</li>
+</ul>
+</div>
+<!-- Grid Com vs Sem system prompt -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-emerald-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-xs">✓</span>
+<span>WITH a good system prompt</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Responds in the same tone to everyone</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Knows when to politely refuse</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Doesn’t claim powers it doesn’t have</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Predictable and reliable behavior</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>NO system prompt at all</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Tone changes out of nowhere from one conversation to the next</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Agrees to any request, including dangerous ones</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Turns into" another personality mid-chat</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Unpredictable — you never know what’s coming</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">To save</p>
+<p class="text-sm text-neutral-300">
+              The system prompt exists so the AI can be the <strong>same reliable AI</strong> with anyone, at any time —
+              and to put <strong>safety limits</strong> that it doesn’t cross. Consistency and security: the two pillars.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Change the prompt, change the behavior (same model!)</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Here’s the most surprising part. The <strong class="text-emerald-400">same</strong> AI — the same “brain,” the same model — can become
+        completely different things just by changing the invisible note. It’s not magic or different AIs: it’s the <em>same</em>
+        Grok, with two different system prompts. Look at these two examples <strong class="text-emerald-400">real</strong>, word for word:
+      </p>
+<!-- Caixa mono: dois prompts do MESMO modelo -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-4">
+<div class="text-xs font-semibold text-emerald-400 mb-2">Grok as a “study buddy” — <span class="font-normal text-neutral-500">grok-personas.md</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+            You are Grok, a brilliant and friendly study buddy designed to provide accurate, clear answers and explanations for homework questions.
+          </blockquote>
+<p class="text-xs text-neutral-400">Result: patient, instructive, full of examples. A private tutor.</p>
+</div>
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-4">
+<div class="text-xs font-semibold text-sky-300 mb-2">Grok as a “medical advisor” — <span class="font-normal text-neutral-500">grok-personas.md</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-sky-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+            You are Grok, a super knowledgeable and caring AI medical advisor with expertise in all medical fields... You're here to help patients feel understood, supported, and confident.
+          </blockquote>
+<p class="text-xs text-neutral-400">Result: careful, welcoming, health-focused. Same model, different mission.</p>
+</div>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed text-sm">
+        Notice: the first word of each one is the same — <span class="code-box text-emerald-400">"You are Grok..."</span> — but what comes
+        next completely reprograms the behavior. Changing the system prompt is like changing the actor’s script (Topic 2).
+      </p>
+<!-- Box Alerta / nuance -->
+<div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 mb-5">
+<h3 class="text-lg font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Beware of the wrong conclusion</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Changing the prompt changes the <strong>behavior</strong>, not the <strong>knowledge</strong>. The note doesn't teach new facts
+          or make the AI smarter—it only adjusts the <em>way</em> to act. Think of the actor again: the script changes the character,
+          but it doesn't give the actor physical abilities they don't have.
+        </p>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🧠</div>
+<div class="text-xs font-semibold text-neutral-200">Same model</div>
+<div class="text-xs text-neutral-500 mt-1">the brain doesn't change</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔀</div>
+<div class="text-xs font-semibold text-neutral-200">Different prompts</div>
+<div class="text-xs text-neutral-500 mt-1">different behaviors</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎭</div>
+<div class="text-xs font-semibold text-neutral-200">It’s the script</div>
+<div class="text-xs text-neutral-500 mt-1">changes the character</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⚠️</div>
+<div class="text-xs font-semibold text-neutral-200">It isn’t knowledge</div>
+<div class="text-xs text-neutral-500 mt-1">changes the approach, not the facts</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Everyday examples: each AI's "personality"</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        That feeling that “every AI has its own style”? It’s real — and that style starts right in the <strong class="text-emerald-400">first
+        line</strong> of the system prompt, where the AI receives its identity. Let’s look at two lines <strong class="text-emerald-400">real</strong>,
+        leaked from real prompts, copied exactly as they are:
+      </p>
+<!-- Exemplo verbatim Cursor -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Cursor (coding assistant) — <span class="font-normal text-neutral-500">cursor.md, first line</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          You are an AI coding assistant, powered by {model_name}. You operate in Cursor.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          In one sentence, the AI already knows <strong class="text-neutral-200">who it is</strong> ("coding assistant") and <strong class="text-neutral-200">where it is</strong> ("in Cursor").
+          The <span class="code-box text-emerald-400">{model_name}</span> is a little placeholder that Cursor fills in on the fly — the "actor" doesn’t memorize which model is running.
+        </p>
+</div>
+<!-- Exemplo verbatim Grok -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-sky-300 mb-3">Grok (xAI) — <span class="font-normal text-neutral-500">grok-4.md, in the opening</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-sky-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          Your knowledge is continuously updated - no strict knowledge cutoff.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Here, the personality is already showing: while many AIs say “my knowledge only goes up to such-and-such a date,” Grok introduces itself
+          as <strong class="text-neutral-200">always up to date</strong>. The same information becomes a <em>stance</em> — and that’s the choice of whoever wrote the note.
+        </p>
+</div>
+<!-- Tip box: por que parecem diferentes -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Why AIs “seem” so different</p>
+<p class="text-sm text-neutral-300">
+              It’s not (just) because the models are different. It’s because each company wrote a system prompt with a
+              <strong>personality</strong> different: one more formal, another more playful, one focused on code, another on conversation.
+              Next time an AI surprises you with its "personality," remember: there’s an invisible ticket behind that face.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🪪</div>
+<div class="text-xs font-semibold text-neutral-200">Identity</div>
+<div class="text-xs text-neutral-500 mt-1">"You are..." on the first line</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📍</div>
+<div class="text-xs font-semibold text-neutral-200">Where it operates</div>
+<div class="text-xs text-neutral-500 mt-1">"in Cursor"</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🗣️</div>
+<div class="text-xs font-semibold text-neutral-200">Approach</div>
+<div class="text-xs text-neutral-500 mt-1">"no strict cutoff"</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎨</div>
+<div class="text-xs font-semibold text-neutral-200">It’s a choice</div>
+<div class="text-xs text-neutral-500 mt-1">someone wrote it this way</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-emerald-900/40 via-dark-800 to-dark-800 rounded-2xl border border-emerald-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Module Summary</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>AI receives a <strong class="text-emerald-400">system prompt</strong> (invisible note) before your first message</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>It is how the <strong>actor's script</strong> e o <strong>employee handbook</strong>: defines who the AI is and how it acts</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>Every conversation has 3 voices: <span class="code-box text-emerald-400">system</span>, <span class="code-box text-sky-300">user</span> e <span class="code-box text-emerald-400">assistant</span></span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>It exists for two reasons: <strong class="text-emerald-400">consistency</strong> e <strong class="text-emerald-400">safety</strong></span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>Change the prompt and the <strong>same model</strong> changes behavior (but not knowledge)</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>Each AI's "style" starts with the first line—we saw <span class="code-box">Cursor</span> e <span class="code-box">Grok</span> for real</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-emerald-500/20">
+<h3 class="font-semibold text-emerald-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Next Module</h3>
+<p class="text-neutral-300 text-sm">
+<strong>1.2 — 🧩 The parts of a prompt.</strong> Now that you know the note exists, let's open it and look at the pieces inside: identity, tone, tools, security, and how it all fits together.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-emerald-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Back to Track 1</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-1-2.html">
+<span>Next: 1.2 The parts of a prompt</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-emerald-400 font-medium">The AI's Hidden Manual</span> · Module 1.1 · Track 1 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

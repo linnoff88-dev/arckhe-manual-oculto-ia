@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>3.6 Disposición × garantía estricta | El Manual Oculto de la IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/modulo-3-6.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/modulo-3-6.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/modulo-3-6.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/modulo-3-6.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../../en/curso/trilha3/modulo-3-6.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="modulo-3-6.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">Manual oculto de la IA</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Práctica</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Avanzado</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-purple-400 transition-colors" href="../../index.html">Inicio</a>
+<span>/</span>
+<a class="hover:text-purple-400 transition-colors" href="index.html">Ruta 3</a>
+<span>/</span>
+<span class="text-purple-400">Módulo 3.6</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl">
+          ⚙️
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MÓDULO 3.6</span>
+<span class="text-xs text-neutral-500">Ruta 3 — Avanzado</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">⚙️ Esfuerzo × garantía estricta</h1>
+<p class="text-neutral-300 leading-relaxed">
+            Una guía de comportamiento — por bien escrita que esté — es <strong class="text-purple-400">intención</strong>. El modelo puede olvidar,
+            restarle prioridad o no activar la regla en el turno correcto. La disposición es <em>mejor esfuerzo</em> por naturaleza. Este módulo trata sobre la otra mitad:
+            las <strong class="text-purple-400">palancas mecánicas que el harness realmente fuerza</strong> — o <span class="code-box text-purple-400">effortLevel</span>
+            y los hooks. Escribe la disposición <em>e</em> activa los bloqueos. Por sí solo, ninguno de los dos basta.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">📋</span><span>6 temas</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⏱</span><span>~40 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">🎯</span><span>Avanzado</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⚙️</span><span>Operativo</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: disposição (mole) + travas duras = comportamento garantido -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagrama de dos capas que se suman: a la izquierda, la capa de disposición, descrita como flexible y best-effort, con una guía de comportamiento que el modelo puede olvidar o relegar; en el centro, las restricciones estrictas que impone el harness, con el effortLevel y un hook PostToolUse que ejecuta la prueba después de cada edición; a la derecha, ambas capas convergen en un comportamiento garantizado, con la idea de que la disposición por sí sola falla a veces y la disposición más la restricción nunca falla" class="w-full h-auto" role="img" viewbox="0 0 960 380">
+<defs>
+<lineargradient id="m36-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="m36-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m36-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m36-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#c084fc" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m36-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="m36-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m36-grid)" height="380" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos de coluna -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="170" y="30">DISPOSICIÓN (flexible, best-effort)</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="480" y="30">BLOQUEOS DUROS (el harness los impone)</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="800" y="30">COMPORTAMIENTO</text>
+<!-- LADO ESQUERDO: a camada de disposição (mole) -->
+<rect fill="#0d1117" height="288" rx="14" stroke="#4b5563" stroke-dasharray="7,5" stroke-width="1.5" width="268" x="36" y="48"></rect>
+<text fill="#cbd5e1" font-family="Inter,sans-serif" font-size="12" font-weight="700" text-anchor="middle" x="170" y="74">📜 la guía de comportamiento</text>
+<!-- regras moles -->
+<rect fill="#1a1430" height="34" opacity="0.78" rx="8" stroke="#a855f7" stroke-width="1.3" width="228" x="56" y="90"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="170" y="111">"razona antes de actuar"</text>
+<rect fill="#1a1430" height="34" opacity="0.78" rx="8" stroke="#a855f7" stroke-width="1.3" width="228" x="56" y="130"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="170" y="151">"después de editar, ejecuta la prueba"</text>
+<rect fill="#1a1430" height="34" opacity="0.78" rx="8" stroke="#a855f7" stroke-width="1.3" width="228" x="56" y="170"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="170" y="191">"verifica qué cambió"</text>
+<!-- o vazamento -->
+<rect fill="#2a1014" height="92" rx="10" stroke="#f87171" stroke-width="1.4" width="228" x="56" y="222"></rect>
+<text fill="#fca5a5" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" x="170" y="244">⚠ el mejor esfuerzo deja filtraciones</text>
+<text fill="#fca5a5" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="170" y="264">el modelo puede olvidar,</text>
+<text fill="#fca5a5" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="170" y="279">restarle prioridad o no activarlo</text>
+<text fill="#fca5a5" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="170" y="294">la regla en el turno correcto</text>
+<text fill="#fda4af" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle" x="170" y="309">~62% ejecuta alguna comprobación</text>
+<!-- CENTRO: travas duras -->
+<rect fill="#0d1117" height="288" rx="14" stroke="url(#m36-grad-pu)" stroke-width="2" width="268" x="346" y="48"></rect>
+<!-- trava 1: effortLevel (glow, destaque) -->
+<g filter="url(#m36-glow)">
+<rect fill="#1a1430" height="56" rx="11" stroke="url(#m36-grad-pu)" stroke-width="2.3" width="228" x="366" y="72"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11.5" font-weight="700" text-anchor="middle" x="480" y="94">🔒 effortLevel: max</text>
+<text fill="#d8b4fe" font-family="JetBrains Mono,monospace" font-size="9.5" text-anchor="middle" x="480" y="113">densidad de razonamiento forzada</text>
+<!-- trava 2: hook PostToolUse -->
+<rect class="wf-a" fill="#0e1b26" height="86" rx="11" stroke="#38bdf8" stroke-width="1.8" width="228" x="366" y="138"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11.5" font-weight="700" text-anchor="middle" x="480" y="160">🔒 hook PostToolUse</text>
+<text fill="#9ad6ff" font-family="JetBrains Mono,monospace" font-size="9.5" text-anchor="middle" x="480" y="179">Edit|Write|MultiEdit</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="480" y="196">ejecuta la prueba, lo recuerdes o no</text>
+<text fill="#7ec8f5" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle" x="480" y="214">hooksEnabled: true</text>
+<!-- onde mora -->
+<rect class="wf-a" fill="#1a1430" height="38" rx="9" stroke="#a855f7" stroke-width="1.5" width="228" x="366" y="234"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" text-anchor="middle" x="480" y="252">📌 está en el CLAUDE.md</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" text-anchor="middle" x="480" y="266">se carga en cada sesión · no en auto-memory</text>
+<!-- nota deterministica -->
+<rect fill="#0d1117" height="34" rx="9" stroke="#4b5563" stroke-width="1.3" width="228" x="366" y="282"></rect>
+<text fill="#94a3b8" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="480" y="303">determinístico, no probabilístico</text>
+<!-- LADO DIREITO: comportamento garantido -->
+<g filter="url(#m36-glow)">
+<rect fill="#102a20" height="142" rx="14" stroke="url(#m36-grad-pu)" stroke-width="2.3" width="272" x="656" y="120"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="13" font-weight="700" text-anchor="middle" x="792" y="150">✓ garantizado</text>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="792" y="176">disposición sola:</text>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700" text-anchor="middle" x="792" y="192">falla a veces ✗</text>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="792" y="216">disposición + restricción:</text>
+<text fill="#86efac" font-family="JetBrains Mono,monospace" font-size="11" font-weight="700" text-anchor="middle" x="792" y="232">nunca falla ✓</text>
+<text fill="#a7f3d0" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="792" y="252">la prosa cierra una parte; el bloqueo cierra el resto</text>
+<!-- setas: disposicao some sozinha -->
+<path d="M306,168 C330,168 338,150 365,150" fill="none" marker-end="url(#m36-ah)" opacity="0.55" stroke="#a855f7" stroke-width="1.6"></path>
+<!-- setas: das travas para o comportamento garantido -->
+<path d="M596,150 C626,150 632,168 655,176" fill="none" marker-end="url(#m36-ah)" opacity="0.7" stroke="#c084fc" stroke-width="1.8"></path>
+<path d="M596,181 C626,181 632,196 655,200" fill="none" marker-end="url(#m36-ahc)" opacity="0.65" stroke="#38bdf8" stroke-width="1.8"></path>
+<!-- selo de soma -->
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="480" y="354">capa flexible + restricciones firmes = comportamiento garantizado</text>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Contenido detallado</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">Por qué una guía de comportamiento es solo «el mejor esfuerzo»</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        La reflexión más sobria de todo el material fuente cabe en una frase: <strong class="text-purple-400">la disposición es una intención, no una garantía</strong>.
+        Puedes escribir la guía de comportamiento más lúcida del mundo, hacer que la sesión la consulte y, aun así, el modelo puede olvidarla,
+        darle menos prioridad o simplemente no activar la regla en el turno en que importaba. No porque la guía sea mala, sino porque una guía, por
+        naturaleza, es <em>mejor esfuerzo</em>Depende de que el modelo lo recuerde.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">⚙️</span> La idea en una frase</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Una guía de comportamiento es la <strong class="text-purple-400">capa de disposición</strong>: moldea lo que el modelo <em>tiende</em> a
+          hacer, y la prosa cierra una parte real de la brecha. Pero "tiende a" no es "va a". Quien confía solo en el prompt confía en el
+          <strong class="text-purple-400">mejor esfuerzo de un sistema que tiene días malos</strong>.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          La medida de esto está en los números: incluso el modelo fuente, con la disciplina más alta observada, <strong class="text-purple-400">ejecuta la
+          prueba real después de editar en solo el 23% de los turnos</strong>. La intención estaba ahí. La ejecución se filtró. Precisamente esa filtración es la que
+          bloquea un mecanismo estricto, y este módulo trata de instalarlos.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-purple-400 mb-3">Qué es</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          La capa de disposición es todo lo que vive en prosa: el <span class="code-box text-purple-400">Fable_Mindset</span>, las reglas de tu
+          <span class="code-box text-purple-400">CLAUDE.md</span>, los «siempre haz X / nunca hagas Y». Es <strong class="text-purple-400">probabilística</strong>aumenta la probabilidad de que el comportamiento aparezca, pero nunca la lleva al 100%. La garantía firme es lo contrario: es lo que ejecuta el harness
+          <em>independientemente</em> de que el modelo coopere.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Por qué aprender</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Porque la tentación del operador principiante es resolver todo escribiendo más reglas. Cuando el agente «a veces no ejecuta las pruebas», la reacción
+          instintiva es agregar una más <em>"¡SIEMPRE ejecuta las pruebas!!!"</em> al prompt — en mayúsculas y con signos de exclamación. Eso aumenta un poco
+          la probabilidad, pero en nada la garantía. El operador avanzado reconoce cuándo un problema es de <strong class="text-purple-400">disposición</strong>
+          (se resuelve con prosa) y cuándo es de <strong class="text-purple-400">mecánica</strong> (solo una barrera lo resuelve).
+        </p>
+</div>
+<!-- Grid: o que a disposição (não) garante -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Lo que la disposición hace bien</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Moldea el <em>tono</em>, el estilo y la postura predeterminados</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Aumenta la probabilidad de que aparezcan buenos hábitos</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Cubre los casos que ningún bloqueo previó</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Da el <em>porqué</em> — el bloqueo solo da el <em>qué</em></span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Lo que la disposición NO garantiza</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Que la regla se active en el turno en que importaba</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Que el modelo no la relegue bajo presión</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Que la prueba se ejecute <em>toda</em> vez después de una edición</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Repetibilidad — hoy funciona, mañana puede fallar</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La pregunta que clasifica el problema</p>
+<p class="text-sm text-neutral-300">
+              Antes de agregar una línea más al prompt, pregúntate: <strong>"¿es cuestión de que el modelo quiera hacerlo o de que pueda olvidarlo?"</strong>
+              Si se trata de querer —tono, postura, criterio—, la prosa es el lugar adecuado. Si se trata de olvidar —un paso que debe ocurrir
+              <em>toda</em> esta vez — ninguna prosa basta; necesitas un bloqueo. Escribir una regla para un problema mecánico es tratar una fractura con
+              consejos.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Densidad de razonamiento = <span class="code-box text-purple-400">effortLevel</span>, no el antiguo token budget</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        El primer límite estricto es la densidad de razonamiento. El <span class="code-box text-purple-400">Fable_Mindset</span> insiste en que razonar
+        no es overhead, sino el trabajo; pero la prosa solo lo pide, no lo <em>asigna</em> más razonamiento. Quien lo asigna es el harness, y la palanca correcta en
+        Opus 4.8 es el <strong class="text-purple-400">effortLevel</strong>Aquí está la trampa en la que cae casi todo operador que viene de modelos
+        anteriores.
+      </p>
+<!-- Box Conceito Principal: a armadilha -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center"><span class="mr-2">🧠</span> La palanca adecuada — y la que no hace nada</h3>
+<ul class="space-y-3 text-neutral-300">
+<li class="flex items-start space-x-2">
+<span class="text-purple-400 mt-1">✓</span>
+<span><strong class="text-purple-400">Usa el <span class="code-box">effortLevel</span>.</strong> En Opus 4.8, la densidad del razonamiento se
+            controla mediante <span class="code-box text-purple-400">effortLevel</span> en <span class="code-box">xhigh</span> o
+            <span class="code-box">máx.</span>, manteniendo <span class="code-box text-purple-400">alwaysThinkingEnabled</span> conectado. Es el harness
+            quien decide cuánto piensa el modelo; no es una petición en prosa.</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-red-400 mt-1">✗</span>
+<span><strong class="text-red-400">Olvida el <span class="code-box">MAX_THINKING_TOKENS</span>.</strong> La variable de entorno antigua
+            <strong class="text-red-400">no hace absolutamente nada</strong> en modelos de thinking <em>adaptativo</em>. El modelo decide por sí solo
+            cuándo y cuánto pensar; ignora un límite fijo de tokens. Confiar en ella es configurar una palanca desconectada.</span>
+</li>
+</ul>
+</div>
+<!-- Caixa mono: /effort max -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-purple-400 mb-3">Para una sola sesión — <span class="font-normal text-neutral-500">el comando slash</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+<span class="text-neutral-500"># eleva la densidad de razonamiento solo en esta sesión</span><br/>
+<span class="text-purple-400">/effort</span> máx.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Usa <span class="code-box text-purple-400">/effort max</span> cuando el trabajo de la sesión realmente requiera un mayor ritmo de razonamiento.
+          Para fijarlo de forma permanente, prefiere <span class="code-box text-purple-400">effortLevel: "max"</span> en la configuración.
+          <strong class="text-purple-400">Lección:</strong> la prosa de la guía cierra parte de la brecha de razonamiento; el effortLevel cierra el resto.
+        </p>
+</div>
+<!-- Grid: confiar no token antigo vs no effortLevel -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Configurar la palanca inactiva</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Configurar <span class="code-box">MAX_THINKING_TOKENS</span> y creer que algo cambió</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Esperar que un techo fijo controle el thinking adaptativo</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Pedir «piensa más» en prosa y dejarlo ahí</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Depurar un razonamiento superficial modificando la variable equivocada</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Accionar la palanca activa</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">effortLevel: "xhigh"</span> o <span class="code-box">"max"</span> en la configuración</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">alwaysThinkingEnabled: true</span> conectado junto</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">/effort max</span> para la sesión puntual</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Effort + las reglas de razonamiento de la guía, juntos</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🔎</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Cuando ni siquiera el effort basta</p>
+<p class="text-sm text-neutral-300">
+              La densidad de razonamiento del modelo de origen depende en parte <strong>intrínseca</strong> — no se reproduce al 100 % solo con instrucciones ni solo con
+              effort. Para el trabajo que realmente exige esa cadencia, la palanca final es cambiar de modelo directamente con
+              <span class="code-box text-sky-300">/model fable</span>Effort eleva lo que el modelo actual puede ofrecer; no inventa razonamiento que
+              no esté en los pesos.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Hábito determinista = el hook <span class="code-box text-purple-400">PostToolUse</span></h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Esta es la barrera más poderosa del arsenal, porque transforma un hábito <em>probabilístico</em> en un evento <strong class="text-purple-400">determinístico</strong>.
+        "Después de una edición, ejecuta las pruebas" es la regla en la que más falla el modelo fuente: en el 23% de los turnos. La solución no es gritar la regla más fuerte; es
+        quitársela de las manos al modelo. Un hook <span class="code-box text-purple-400">PostToolUse</span> casado en
+        <span class="code-box text-purple-400">Edit|Write|MultiEdit</span> ejecuta la prueba <strong class="text-purple-400">quieras o no que el agente lo recuerde</strong>.
+      </p>
+<!-- Caixa mono verbatim: o hook PostToolUse (JSON do settings) -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-purple-400 mb-3">El hook que ejecuta la prueba después de editar — <span class="font-normal text-neutral-500">fragmento del settings.json</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box overflow-x-auto whitespace-pre">{
+  <span class="text-purple-400">"hooksEnabled"</span>: <span class="text-sky-300">true</span>,
+  <span class="text-purple-400">"hooks"</span>: {
+    <span class="text-purple-400">"PostToolUse"</span>: [
+      {
+        <span class="text-purple-400">"matcher"</span>: <span class="text-emerald-300">"Edit|Write|MultiEdit"</span>,
+        <span class="text-purple-400">"hooks"</span>: [
+          {
+            <span class="text-purple-400">"type"</span>: <span class="text-emerald-300">"command"</span>,
+            <span class="text-purple-400">"command"</span>: <span class="text-emerald-300">"npm test"</span>
+          }
+        ]
+      }
+    ]
+  }
+}</blockquote>
+<p class="text-xs text-neutral-400">
+          O <span class="code-box text-purple-400">matcher</span> se adapta a cualquier herramienta de edición; el <span class="code-box text-purple-400">command</span>
+          es la prueba real del proyecto. Sin <span class="code-box text-purple-400">"hooksEnabled": true</span> no se activa nada; esta flag es el
+          interruptor general. <strong class="text-purple-400">Lección:</strong> lo que debe pasar <em>toda</em> esta vez no puede depender de la memoria del
+          agente; necesita un disparador del harness.
+        </p>
+</div>
+<!-- Grid: intenção vs hook -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Confiar en la intención</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Recuerda ejecutar las pruebas después de editar" en el prompt</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Se activa <strong>cuándo</strong> el modelo lo recuerda — 23% de los turnos</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Con carga o una conversación larga, la regla se evapora</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Descubres el error solo después, sin que se haya ejecutado la prueba</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Activar el hook</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>El harness ejecuta la prueba después de <em>cada</em> edición, siempre</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Se activa <strong>quieras o no que el agente lo recuerde</strong> — 100%</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Inmune a la carga, al contexto largo y a un mal día del modelo</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>El resultado de la prueba vuelve antes de que el agente continúe</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">No todo hábito se convierte en hook — y está bien</p>
+<p class="text-sm text-neutral-300">
+              El hook es perfecto para lo que se reduce a «<em>después del evento X, ejecuta el comando Y</em>". Pero las reglas que requieren criterio — como
+              "prefiere las rutas absolutas a <span class="code-box">cd</span>" — <strong>no</strong> se reescriben de forma confiable mediante un hook,
+              porque requieren un contexto que una coincidencia de patrones no tiene. Estas siguen como regla de disposición. Usa el bloqueo donde corresponde; deja que la
+              prosa cubra el resto.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Dónde reside la regla: CLAUDE.md vs auto-memory</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Una regla de disposición correcta, en el lugar equivocado, deja de ser una garantía. El <span class="code-box text-purple-400">effortLevel</span> y los hooks son
+        los bloqueos rígidos; la guía de comportamiento es la capa flexible, pero <strong class="text-purple-400">dónde</strong> tú mismo guardas esta capa y decides si
+        se carga de forma confiable o si desaparece durante turnos enteros. Y el detalle engañoso es que auto-memory <em>parece</em> el lugar obvio, y
+        no lo es.
+      </p>
+<!-- Grid lado a lado: CLAUDE.md vs auto-memory -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<div class="text-xs font-semibold text-purple-400 mb-2 uppercase tracking-wider">Cárgalo en cada sesión</div>
+<h4 class="font-semibold text-purple-400 mb-2 flex items-center"><span class="code-box bg-dark-900 text-purple-300 px-1.5 rounded mr-2">CLAUDE.md</span></h4>
+<p class="text-sm text-neutral-300 leading-relaxed mb-3">
+            Las reglas de disposición encajan bien aquí. El <span class="code-box">CLAUDE.md</span> se inyecta <strong class="text-purple-400">toda sesión</strong>,
+            de forma determinista: la regla está siempre en el contexto, en cada turno, sin depender de que el modelo "recuerde buscar".
+          </p>
+<p class="text-xs text-neutral-400">Es el lugar correcto para la guía de comportamiento y las reglas de conducta.</p>
+</div>
+<div class="bg-dark-800 border border-red-500/30 rounded-xl p-5">
+<div class="text-xs font-semibold text-red-400 mb-2 uppercase tracking-wider">Recall relevance-gated</div>
+<h4 class="font-semibold text-red-400 mb-2 flex items-center"><span class="code-box bg-dark-900 text-red-300 px-1.5 rounded mr-2">auto-memory</span></h4>
+<p class="text-sm text-neutral-300 leading-relaxed mb-3">
+<strong class="text-red-400">No</strong> es el lugar para una regla de comportamiento. El recall es <strong class="text-red-400">relevance-gated</strong>la memoria solo aumenta si el turno actual la considera relevante. Una regla de disposición puede <strong>no disparar</strong> en el turno en que importaba.
+          </p>
+<p class="text-xs text-neutral-400">Ideal para hechos puntuales; arriesgada para reglas que deben cumplirse siempre.</p>
+</div>
+</div>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">📌</span> Para las reglas de comportamiento, lo determinista prima sobre lo relevante</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          La diferencia está en la forma de carga. <span class="code-box text-purple-400">CLAUDE.md</span> é
+          <strong class="text-purple-400">carga garantizada</strong>: presente en todos los turnos por diseño. La memoria automática es
+          <strong class="text-purple-400">carga condicional</strong>: presente <em>si</em> dejar pasar el filtro de relevancia. Para un hecho
+          ("el deploy es en Vercel"), basta con que sea condicional — solo importa cuando surge el tema. Para una regla de comportamiento ("siempre verifica lo
+          que cambió"), lo condicional es una falla a punto de ocurrir: debe aplicarse <em>justo</em> en los turnos en que el gate podría no considerarla relevante.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Por eso la heurística es directa: <strong class="text-purple-400">la regla que debe aplicarse siempre va en CLAUDE.md</strong>; un hecho que solo importa
+          a veces puede ir a la memoria.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🔎</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">La prueba del "turno malo"</p>
+<p class="text-sm text-neutral-300">
+              Para decidir dónde va una regla, imagina el peor turno: el contexto está lleno, el tema es otro, el modelo está bajo carga. La regla
+              <strong>todavía</strong> ¿necesita estar ahí? Si es así, exige una carga determinista — <span class="code-box text-sky-300">CLAUDE.md</span>,
+              no auto-memory. La memoria brilla precisamente cuando el turno <em>trae</em> el tema a la vista; falla cuando la regla debía estar ahí
+              <em>a pesar de</em> del turno.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Los output styles sirven para el tono y el papel, no para la disciplina agéntica</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Existe un tercer mecanismo que intenta convertir cada operador en un vehículo de comportamiento, y es el vehículo equivocado: los
+        <strong class="text-purple-400">estilos de salida</strong>Existen y son útiles, pero para lo que fueron creados:
+        <strong class="text-purple-400">tono y papel</strong>Aplicar disciplina agéntica en un output style es usar la herramienta adecuada para el problema
+        equivocado, y el comportamiento que querías garantizar sigue siendo best-effort, solo que en un lugar más oculto.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🎭</span> Cada vehículo tiene su cargo</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Hay tres vehículos diferentes, y confundirlos es la fuente más común de una configuración frágil. Cada uno lleva un tipo de instrucción — y solo uno de ellos
+          es una garantía firme:
+        </p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 code-box text-xs mb-1">estilo de salida</div>
+<div class="text-neutral-500 text-xs mt-1">tono y papel</div>
+<div class="text-neutral-400 text-xs mt-1">cómo <em>suena</em></div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 code-box text-xs mb-1">CLAUDE.md</div>
+<div class="text-neutral-500 text-xs mt-1">disposición</div>
+<div class="text-neutral-400 text-xs mt-1">cómo <em>tiende</em> a actuar</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 code-box text-xs mb-1">hook / esfuerzo</div>
+<div class="text-neutral-500 text-xs mt-1">garantía estricta</div>
+<div class="text-neutral-400 text-xs mt-1">el qué <em>sucede</em></div>
+</div>
+</div>
+</div>
+<!-- Grid: output style certo vs errado -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Output style: para qué sirve</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>"Responde como un revisor sénior, de forma concisa"</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>O <em>rol</em> que el modelo encarna en la respuesta</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>El registro: formal, didáctico, telegráfico</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>La persona y la voz de la respuesta</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Output style: lo que NO incluye</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Ejecuta siempre las pruebas después de editar" → va en el hook</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Razona antes de actuar" → effort + CLAUDE.md</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Verifica antes de declarar que está listo" → disposición</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Cualquier disciplina de <em>proceso</em>, no de voz</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La pregunta que separa el tono de la disciplina</p>
+<p class="text-sm text-neutral-300">
+              Antes de poner algo en un output style, pregúntate: <strong>"¿esto describe cómo suena la respuesta o lo que hace el agente?"</strong>
+              Si es <em>cómo suena</em> — voz, papel, registro: el output style es el vehículo adecuado. Si es <em>lo que hace</em> — un paso del proceso,
+              un hábito de verificación: está en el lugar equivocado; pásalo a la configuración (CLAUDE.md) o, mejor aún, al control (hook/effort). El estilo es
+              ropa; la disciplina es músculo.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Unir los dos: disposición (flexible) + bloqueos estrictos = garantía</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Aquí todo converge. La guía de comportamiento es la <strong class="text-purple-400">capa de disposición</strong>; o
+        <span class="code-box text-purple-400">effortLevel</span> y los hooks son las <strong class="text-purple-400">garantías estrictas</strong>.
+        La tesis del material fuente es una sola: <strong class="text-purple-400">usa los dos</strong>. Por sí sola, ninguna basta. La prosa cierra parte de la
+        brecha; el bloqueo cierra el resto. Escribe la disposición <em>e</em> activa los bloqueos: esta conjunción es todo el montaje operativo.
+      </p>
+<!-- Timeline: a montagem em 4 movimentos -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">1</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Escribe la disposición en CLAUDE.md</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Dirige la sesión a la guía de comportamiento y pon las reglas de actitud en el <span class="code-box">CLAUDE.md</span> — se carga en cada
+              sesión, de forma determinística. Es la capa flexible, y es ahí donde pertenece. No en auto-memory ni en output style.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">2</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Ajusta la densidad del razonamiento</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Configura <span class="code-box">effortLevel: "xhigh"</span> o <span class="code-box">"max"</span> con
+              <span class="code-box">alwaysThinkingEnabled</span> conectado (o <span class="code-box">/effort max</span> en la sesión). Ignora
+              <span class="code-box">MAX_THINKING_TOKENS</span> — palanca muerta en thinking adaptativo.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 font-bold">3</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">Fija el hábito que debe ser determinista</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Instala el hook <span class="code-box">PostToolUse</span> en <span class="code-box">Edit|Write|MultiEdit</span> que ejecuta la prueba real,
+              con <span class="code-box">hooksEnabled: true</span>. El paso que debe ocurrir siempre deja de estar en manos del modelo y se convierte en un evento del harness.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">4</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Deja que la prosa cubra lo que la restricción no alcanza</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Lo que requiere criterio — rutas absolutas vs <span class="code-box">cd</span>, cuándo consolidar, cómo narrar: eso sigue dependiendo de la disposición.
+              El bloqueo cubre lo repetible y determinista; la prosa cubre lo contextual. Juntos, cierran toda la brecha.
+            </p>
+</div>
+</div>
+</div>
+<!-- Grid final: disposição sozinha vs disposição + trava -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Disposición por sí sola</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Best-effort: funciona en el mejor día, falla en el peor</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>La prueba se ejecuta <em>cuándo</em> el modelo lo recuerda (23%)</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>No repetible: el mismo prompt, distintos resultados</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Confías en el mejor esfuerzo de un sistema que tiene días malos</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Disposición + protecciones estrictas</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>La prosa aumenta la probabilidad; el límite garantiza el mínimo</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>La prueba se ejecuta <strong>toda</strong> esta vez, recuérdaselo al agente o no</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Repetible: el comportamiento garantizado no depende del día</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Disposición <em>e</em> mecánica — el montaje completo</span></li>
+</ul>
+</div>
+</div>
+<!-- Box Conceito Principal: a síntese -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">⚙️</span> El puente más importante</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Trata la guía como la <strong class="text-purple-400">capa de mentalidad</strong>dirige las sesiones a él deliberadamente. Y conecta el hook de
+          prueba y el effortLevel <em>por separado</em>, como los <strong class="text-purple-400">garantías estrictas</strong>. La disposición le dice al modelo
+          qué <em>querer</em>; el bloqueo elimina la dependencia de que quiera hacerlo. Uno sin el otro deja un hueco: la prosa falla en los turnos difíciles,
+          el bloqueo sin prosa no sabe cómo manejar el caso que nadie previó.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Es la misma lógica que atraviesa toda la ruta: heredas el <em>método</em> sin heredar la <em>mente</em>. La disposición es el método en prosa;
+          el bloqueo es el método mecánico. <strong class="text-purple-400">Escribe la disposición y configura las barreras</strong> — y el comportamiento deja de
+          ser una esperanza para convertirse en una propiedad del sistema.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧬</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">La regla práctica del operador</p>
+<p class="text-sm text-neutral-300">
+              Para cada comportamiento que quieras, hazte dos preguntas en orden: <strong>"¿esto tiene que ocurrir siempre?"</strong> e
+              <strong>"¿esto se reduce a un disparador determinístico?"</strong>. Sí y sí → se convierte en hook o config. Sí, pero requiere criterio → se convierte en regla en el
+              CLAUDE.md. Solo a veces → puede ser un hecho en la memoria. Nunca confíes a un vehículo blando lo que necesita ser firme.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Resumen del Módulo</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Una guía de comportamiento es <strong class="text-purple-400">mejor esfuerzo</strong>: el modelo puede olvidar la regla, darle menos prioridad o no activarla en el turno adecuado</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Densidad de razonamiento = <span class="code-box">effortLevel</span> (<span class="code-box">xhigh</span>/<span class="code-box">máx.</span>, o <span class="code-box">/effort max</span>) — <strong>no</strong> o <span class="code-box">MAX_THINKING_TOKENS</span>, que no hace nada en el pensamiento adaptativo</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Hábito determinista = hook <span class="code-box">PostToolUse</span> en <span class="code-box">Edit|Write|MultiEdit</span> que ejecuta la prueba, recuerde o no el agente (<span class="code-box">hooksEnabled: true</span>)</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>La regla está en el <span class="code-box">CLAUDE.md</span> (se carga en toda sesión); la auto-memory es <strong>relevance-gated</strong> y puede que no se active</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-purple-400">Output styles</strong> son para el tono y el papel — no para la disciplina agéntica</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Une los dos: disposición (flexible) + bloqueos estrictos = <strong>comportamiento garantizado</strong>. Por sí sola, ninguna basta</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-purple-500/20">
+<h3 class="font-semibold text-purple-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Siguiente Módulo</h3>
+<p class="text-neutral-300 text-sm">
+<strong>3.7 — 🏁 Proyecto final.</strong> Ya tienes el análisis, la consolidación y las barreras. Ahora es hora de reunirlo todo en un proyecto que
+          aplique el método de punta a punta: leer la evolución, destilar la guía y configurar las garantías estrictas en un sistema que se sostiene por sí solo.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-purple-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Volver a Trilha 3</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-3-7.html">
+<span>Siguiente: 3.7 Proyecto final</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">El Manual Oculto de la IA</span> · Módulo 3.6 · Ruta 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>3.2 Consolidación: reducir el volumen sin perder comportamiento | El Manual Oculto de la IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/modulo-3-2.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/modulo-3-2.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/modulo-3-2.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/modulo-3-2.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../../en/curso/trilha3/modulo-3-2.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="modulo-3-2.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">Manual oculto de la IA</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Práctica</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Avanzado</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-purple-400 transition-colors" href="../../index.html">Inicio</a>
+<span>/</span>
+<a class="hover:text-purple-400 transition-colors" href="index.html">Ruta 3</a>
+<span>/</span>
+<span class="text-purple-400">Módulo 3.2</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl">
+          🗜️
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MÓDULO 3.2</span>
+<span class="text-xs text-neutral-500">Ruta 3 — Avanzado</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🗜️ Consolidación: reducir el volumen sin perder el comportamiento</h1>
+<p class="text-neutral-300 leading-relaxed">
+            Leer diffs (módulo anterior) es la <strong class="text-purple-400">análisis</strong>; consolidar es la <strong class="text-purple-400">acción</strong>.
+            Todo prompt que solo crece se está pudriendo por dentro: cada incidente se convierte en una regla, ninguna se elimina y, en seis meses, el modelo navega por un
+            pantano de instrucciones que se contradicen. Este módulo te da el procedimiento para <em>desinflar</em> sin perder el comportamiento — la ronda de
+            consolidación, las 3 preguntas, la regla de oro y cuándo <strong class="text-purple-400">no</strong> consolidar.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">📋</span><span>6 temas</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⏱</span><span>~40 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">🎯</span><span>Avanzado</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">✂️</span><span>Mantenimiento</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: prompt inchado (muitas caixas) → consolidado (poucas caixas-princípio) -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagrama de la consolidación de un system prompt: a la izquierda, un prompt inflado con muchas cajas pequeñas de reglas redundantes apiladas; en el centro, una ronda de consolidación filtra esas reglas con tres preguntas; a la derecha, el prompt consolidado, con pocas cajas de principios más grandes que incorporan las reglas pequeñas, y un saldo de cincuenta y seis líneas más y siete bloques menos" class="w-full h-auto" role="img" viewbox="0 0 960 380">
+<defs>
+<lineargradient id="m32-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="m32-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m32-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m32-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#c084fc" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m32-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="m32-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m32-grid)" height="380" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos de coluna -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="160" y="32">prompt INFLADO (reglas que no dejan de crecer)</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="480" y="32">la RONDA (3 preguntas)</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="800" y="32">prompt CONSOLIDADO (principios)</text>
+<!-- LADO ESQUERDO: prompt inchado, muitas caixinhas -->
+<rect fill="#0d1117" height="312" rx="14" stroke="#374151" stroke-width="1.5" width="252" x="34" y="50"></rect>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="160" y="72">400+ bullets · nadie se va</text>
+<!-- pilha de regrinhas redundantes -->
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="84"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="99">sin viñetas al rechazar</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="112"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="127">sin apodos cariñosos</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="140"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="155">sin "genuinely/honestly"</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="168"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="183">regla del emoji</text>
+<rect fill="#2a2410" height="22" rx="6" stroke="#fbbf24" stroke-width="1.1" width="220" x="50" y="196"></rect>
+<text fill="#fcd34d" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="211">&lt;search_first&gt; (ya lo hace por sí sola)</text>
+<rect fill="#2a2410" height="22" rx="6" stroke="#fbbf24" stroke-width="1.1" width="220" x="50" y="224"></rect>
+<text fill="#fcd34d" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="239">&lt;default_stance&gt; (redundante)</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="252"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="267">cita el prompt? no digas…</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="280"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="295">tono: amabilidad, sin condescend…</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="9.5" opacity="0.85" text-anchor="middle" x="160" y="330">el modelo "se pierde" a mitad de camino</text>
+<text fill="#f87171" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="160" y="347">crecer ⟶ pudrirse</text>
+<!-- CENTRO: o filtro das 3 perguntas -->
+<g filter="url(#m32-glow)">
+<rect fill="#160e26" height="180" rx="14" stroke="url(#m32-grad-pu)" stroke-width="2.2" width="320" x="320" y="100"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12" font-weight="700" text-anchor="middle" x="480" y="124">🗜️ ronda de consolidación</text>
+<rect class="wf-a" fill="#1a1430" height="38" rx="9" stroke="#a855f7" stroke-width="1.6" width="284" x="338" y="136"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" x="354" y="153">① ¿el modelo ya hace esto por sí solo?</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="354" y="167">si sí → elimina (se volvió ruido)</text>
+<rect class="wf-a" fill="#1a1430" height="38" rx="9" stroke="#a855f7" stroke-width="1.6" width="284" x="338" y="180"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" x="354" y="197">② ¿se puede combinar en un principio?</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="354" y="211">si sí → fusiona (reglitas → 1)</text>
+<rect class="wf-a" fill="#0e1b26" height="38" rx="9" stroke="#38bdf8" stroke-width="1.6" width="284" x="338" y="224"></rect>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" x="354" y="241">③ ¿qué prueba fallaría sin ella?</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="9" x="354" y="255">si ninguno → elimina; si alguno → conserva + por qué</text>
+<!-- LADO DIREITO: prompt consolidado, poucas caixas-princípio -->
+<rect fill="#0d1117" height="312" rx="14" stroke="#374151" stroke-width="1.5" width="252" x="674" y="50"></rect>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="800" y="72">pocos principios · cada uno con una prueba</text>
+<!-- caixa-princípio 1 (grande, glow) -->
+<g filter="url(#m32-glow)">
+<rect fill="#1a1430" height="64" rx="11" stroke="url(#m32-grad-pu)" stroke-width="2.2" width="220" x="690" y="84"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="700" x="704" y="106">🧠 adulto capaz</text>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="9" x="704" y="122">asimila las 4 microreglas de tono</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" x="704" y="136">prueba: respeta las solicitudes de adultos sin trabas</text>
+<!-- caixa-princípio 2 -->
+<rect class="wf-a" fill="#1a1430" height="56" rx="11" stroke="#a855f7" stroke-width="1.8" width="220" x="690" y="158"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="704" y="178">⚖️ rechazo por riesgo real</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="704" y="193">asimila default_stance + filosofía</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" x="704" y="206">prueba: solo se niega cuando hay un daño concreto</text>
+<!-- caixa-princípio 3 (ciano) -->
+<rect class="wf-a" fill="#0e1b26" height="56" rx="11" stroke="#38bdf8" stroke-width="1.8" width="220" x="690" y="224"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="704" y="244">🔒 seguridad por principio</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="9" x="704" y="259">declara el porqué, no la mecánica</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="8.5" x="704" y="272">prueba: no produce mejoras, ni siquiera reescrita</text>
+<!-- saldo -->
+<rect fill="#0e1b26" height="54" rx="10" stroke="#38bdf8" stroke-width="1.4" width="220" x="690" y="290"></rect>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="800" y="311">saldo: +56 líneas · −7 bloques</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="800" y="329">se desinfló y creció al mismo tiempo</text>
+<!-- setas: do inchado ao filtro, do filtro ao consolidado -->
+<path d="M272,190 C300,190 304,178 319,178" fill="none" marker-end="url(#m32-ah)" opacity="0.55" stroke="#c084fc" stroke-width="1.6"></path>
+<path d="M272,238 C300,238 306,200 319,200" fill="none" marker-end="url(#m32-ah)" opacity="0.5" stroke="#fbbf24" stroke-width="1.6"></path>
+<path d="M641,150 C660,150 668,116 689,116" fill="none" marker-end="url(#m32-ah)" opacity="0.6" stroke="#c084fc" stroke-width="1.6"></path>
+<path d="M641,200 C660,200 670,186 689,186" fill="none" marker-end="url(#m32-ah)" opacity="0.55" stroke="#a855f7" stroke-width="1.6"></path>
+<path d="M641,250 C660,250 672,252 689,252" fill="none" marker-end="url(#m32-ahc)" opacity="0.5" stroke="#38bdf8" stroke-width="1.6"></path>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Contenido detallado</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">El problema del crecimiento desmedido: un prompt que solo crece se pudre</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Empieza por el diagnóstico, porque sin él la consolidación parece una poda gratuita. La patología tiene un nombre: <strong class="text-purple-400">hinchazón</strong>.
+        Ocurre por sí solo, sin que nadie decida que ocurra. Cada vez que algo sale mal en producción, alguien agrega una regla. La regla resuelve ese
+        incidente. Nadie vuelve a quitarla cuando deja de ser necesaria. Seis meses después, el prompt tiene 400 viñetas, la mitad contradice a la otra
+        mitad y el modelo —que tiene una atención finita— <em>se pierde</em> en medio.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🦠</span> La idea en una frase</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Un prompt que solo crece está <strong class="text-purple-400">pudriéndose por dentro</strong>Crecer y evolucionar no son lo mismo: crecer es
+          acumular; evolucionar es acumular <em>e</em> destilar. La madurez de un prompt no se mide por su tamaño, sino por la
+          <strong class="text-purple-400">la última vez que algo se eliminó de él</strong>.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          El mecanismo del daño es la <span class="code-box text-purple-400">atención limitada</span>cada bullet adicional divide aún más el foco del modelo. En
+          algún momento, la regla n.º 380 no te está protegiendo: está robándoles atención a las 10 reglas que realmente importan.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-purple-400 mb-3">Qué es</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+<strong class="text-purple-400">Exceso de prompt</strong> es la acumulación monotónica de instrucciones: el prompt solo suma líneas, nunca pierde. Cada
+          incidente se convierte en una regla reactiva; no se hace ninguna ronda de limpieza. El resultado es un documento que crece y <em>se encoge</em> en
+          señal, porque la atención del modelo, que es constante, se diluye entre cada vez más texto.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Por qué diagnosticar primero</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Porque la tentación es tratar el síntoma equivocado. Cuando el agente se equivoca, el reflejo es <em>agregar</em> una regla: exactamente el gesto que causó el
+          exceso. El equipo maduro reconoce que el problema no es "falta una regla", sino "hay demasiadas instrucciones compitiendo por la atención". Diagnosticar el
+          exceso es lo que transforma "vamos a escribir una más" en "vamos a consolidar".
+        </p>
+</div>
+<!-- Grid: prompt saudável vs prompt inchado -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>El prompt que solo crece</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Cada incidente se convierte en una nueva regla reactiva</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>No se elimina ninguna regla — solo se agregan</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>400 bullets que se contradicen entre sí</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>El modelo se pierde; la señal se diluye</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>El prompt que evoluciona</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Acumula contenido <em>e</em> destila estructura</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Las reglas se eliminan cuando dejan de ser necesarias</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Pocos principios que rigen muchos casos</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Atención concentrada en lo que importa</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La medida de la madurez</p>
+<p class="text-sm text-neutral-300">
+              La madurez de un prompt se mide por la <strong>la última vez que algo se eliminó de él</strong>. Si la estructura de tu prompt nunca se ha reducido,
+              no está listo: está acumulado. Un diff que <em>crece</em> en contenido, pero <em>se encoge</em> en bloques es la firma de un equipo que
+              entiende que <strong>eliminar también es editar</strong>.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">La ronda de consolidación: cada N reglas</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        La solución a la hinchazón no es resistirse a añadir reglas: es <strong class="text-purple-400">programar la poda</strong>La práctica se llama
+        <strong class="text-purple-400">ronda de consolidación</strong>cada N adiciones, dejas de escribir y abres una sesión dedicada a <em>fusionar</em>
+        e <em>cortar</em>. No es una limpieza ocasional motivada por la culpa; es un paso recurrente del ciclo de mantenimiento, tan deliberado como agregar.
+        La regla fundamental de toda la disciplina cabe en una frase: <strong class="text-purple-400">consolidar &gt; añadir</strong>.
+      </p>
+<!-- Timeline: a rodada de consolidação -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">1</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Desencadenante: cada N reglas nuevas</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Define un umbral (p. ej., cada 10 adiciones o cada release). Cuando se supera, se activa la ronda. El disparador ser <em>mecánico</em> es lo que
+              impide que la consolidación se posponga eternamente, porque nadie poda por iniciativa propia.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">2</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Revisa regla por regla con las 3 preguntas</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Para cada regla existente, aplica el filtro: <em>¿el modelo ya lo hace por sí solo? ¿se puede fusionar con otra cosa en un principio? ¿qué prueba fallaría sin ella?</em>
+              Es el corazón de la ronda — el filtro que separa la señal del ruido. (Se detalla en el próximo tema.)
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">3</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Elimina lo que se volvió ruido</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Lo que el modelo ya hace por sí solo sale por completo. Así fue como <span class="code-box">&lt;search_first&gt;</span>,
+              <span class="code-box">&lt;default_stance&gt;</span> e <span class="code-box">&lt;respond_without_citing_system_prompt&gt;</span> salieron del
+              prompt de Fable: los comportamientos internalizados mediante el entrenamiento no necesitan una regla.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">4</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Funde lo redundante en un principio</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Varias reglas pequeñas que repiten el mismo valor se convierten en <strong>una</strong> frase más general. Las 4 microreglas de tono de Opus 4.8 se convirtieron en
+              <em>"assumes the person is a capable adult"</em> en Fable. Un principio también cubre los casos que la lista no previó.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 font-bold">5</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">Lo que queda necesita un porqué + una prueba</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Toda regla que pasa por la poda queda <em>justificada</em>: un porqué explícito y una prueba que fallaría sin ella. Sin eso, vuelve a ser
+              candidata a eliminarse en la siguiente ronda. (Es la regla de oro: tema 4.)
+            </p>
+</div>
+</div>
+</div>
+<!-- Box Conceito Principal: template do principio -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧩</span> La plantilla del principio consolidado</h3>
+<p class="text-neutral-300 leading-relaxed mb-3 text-sm">
+          El formato que reemplaza tres reglas sueltas que repiten el mismo valor por una sola, con los casos como <em>consecuencias</em>:
+        </p>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 code-box">
+<span class="text-purple-400">{Principio general de valor}</span> — de ahí se derivan: {caso 1}, {caso 2}, {caso 3}.
+        </blockquote>
+<p class="text-neutral-300 leading-relaxed mt-3 text-sm">
+          Observa la inversión: la lista de casos no desaparece, pasa a <em>derivar</em> del principio. El modelo deja de memorizar tres reglas y pasa a
+          razonar a partir de una — y el razonamiento se extiende a un cuarto caso que nadie escribió.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🔁</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">La ronda refleja la lectura del diff</p>
+<p class="text-sm text-neutral-300">
+              Es la misma perspectiva del módulo 3.1, pero hacia adentro. Allí preguntabas por cada <em>eliminación</em> ajena: "¿se convirtió en ruido o se consolidó?".
+              Aquí preguntas sobre cada <em>regla tuya</em>"¿esto debería convertirse en ruido o consolidarse?". Leer los diffs es el análisis; la ronda es la acción que
+              produce el siguiente diff —preferiblemente, uno que reduzca la estructura.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Las 3 preguntas: el filtro de cada regla</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        La ronda vive o muere con las tres preguntas. Son un <strong class="text-purple-400">filtro en serie</strong>: las aplicas en orden a cada regla
+        existente. Las dos primeras buscan motivos para <em>eliminar</em> (¿se convirtió en ruido? ¿se puede fusionar?); la tercera es la última guardiana: solo ella autoriza
+        <em>mantener</em>. Una regla que no supera ninguna de las tres no tiene derecho a ocupar atención en el prompt.
+      </p>
+<!-- Caixa mono verbatim: as 3 perguntas como checklist -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">El checklist de la ronda — <span class="font-normal text-neutral-500">ejecuta en orden, para cada regla existente</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box leading-relaxed">
+<span class="text-purple-400">PARA CADA regla del prompt:</span><br/><br/>
+<span class="text-purple-300">①</span> ¿el modelo ya lo hace por sí solo?  ── SÍ → <span class="text-red-300">RECORTE</span> (se convirtió en ruido)<br/>
+<span class="text-purple-300">②</span> ¿se puede fusionar en un principio?   ── SÍ → <span class="text-purple-300">FUNDA</span> (N reglas → 1)<br/>
+<span class="text-sky-300">③</span> ¿qué prueba fallaría sin ella?    ── NINGUNA → <span class="text-red-300">RECORTE</span><br/>
+                                           ALGUM   → <span class="text-purple-300">MANTÉN</span> + escribe el porqué<br/><br/>
+<span class="text-neutral-500"># ¿no pasó ninguna de las tres? entonces no te protege — elimínala.</span>
+</blockquote>
+<p class="text-xs text-neutral-400">
+          El orden importa: primero pregunta si puedes <strong>salir</strong> (① y ②), solo después se debe <strong>quedar</strong> (③). El sesgo predeterminado de la ronda es
+          eliminar; la regla debe <em>ganar</em> el derecho a permanecer.
+        </p>
+</div>
+<!-- Os 3 cards das perguntas -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-2 flex items-center"><span class="code-box bg-dark-900 text-purple-300 px-1.5 rounded mr-2">①</span> ¿Ya lo hace por su cuenta?</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">El comportamiento fue <strong>internalizado mediante el entrenamiento</strong>? Si el modelo ya lo hace sin la regla, la regla se volvió ruido. Prueba: quita la regla y fíjate si desaparece el comportamiento. Si no desaparece, elimínala.</p>
+</div>
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-2 flex items-center"><span class="code-box bg-dark-900 text-purple-300 px-1.5 rounded mr-2">②</span> ¿Se puede fusionar?</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">Esta regla y otras <strong>repiten el mismo valor</strong>? Si tres reglas son consecuencias de un principio, declara el principio y deja que los casos se deriven de él. Menos texto, más cobertura.</p>
+</div>
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-2 flex items-center"><span class="code-box bg-dark-900 text-sky-300 px-1.5 rounded mr-2">③</span> ¿Qué prueba fallaría?</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">Existe un caso concreto que <strong>se rompe sin ella</strong>? Si no puedes nombrar la prueba que falla, la regla es fe, no ingeniería. Sin prueba, elimínala.</p>
+</div>
+</div>
+<!-- Box Alerta / nuance -->
+<div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 mb-5">
+<h3 class="text-lg font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> La tercera pregunta es la más traicionada</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          "¿Qué prueba fallaría sin ella?" parece fácil y casi nunca se responde de verdad. La tentación es decir "ah, es importante" sin nombrar el caso. Pero si
+          no puedes escribir la entrada que produce el fallo, no sabes si la regla funciona — solo <em>cree</em>. La pregunta filtra exactamente
+          las reglas placebo: las que se agregaron por miedo, no por evidencia, y que nadie se atreve a eliminar porque nadie sabe qué hacen.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">🧪</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Convierte la pregunta 3 en una suite</p>
+<p class="text-sm text-neutral-300">
+              Cuando respondes "¿qué prueba fallaría sin ella?" con un caso concreto, <strong>guarda este caso</strong>Cada regla justificada se convierte en
+              una entrada de tu suite de regresión. Con el tiempo, ya no consolidas por intuición: ejecutas la suite antes y después de la poda y compruebas, objetivamente,
+              que no se rompió ningún comportamiento importante. La ronda deja de ser arriesgada porque pasa a ser <em>verificable</em>.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">La regla de oro: por qué + una prueba que fallaría</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Aquí está el principio que lo sustenta todo: <strong class="text-purple-400">toda regla que se mantiene necesita un porqué y una prueba que fallaría sin ella</strong>.
+        No es una sugerencia de buenas prácticas: es la condición para que una regla se mantenga. Una regla sin motivo es folclore: nadie recuerda por qué está ahí, así que nadie se atreve a
+        quitarla. Una regla sin prueba es fe: crees que hace algo, pero no puedes demostrarlo. Júntalas y tienes el <em>hinchazón inmortal</em> —
+        reglas que nadie entiende y nadie elimina.
+      </p>
+<!-- Caixa mono verbatim: o formato da regra justificada -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-dark-800 border border-red-500/30 rounded-xl p-4">
+<div class="text-xs font-semibold text-red-400 mb-2">Regla huérfana <span class="font-normal text-neutral-500">(candidata a recorte)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-red-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+            - Siempre confirma antes de eliminar.<br/>
+            - Nunca uses la palabra «simplemente».<br/>
+            - Responde en un máximo de 3 párrafos.
+          </blockquote>
+<p class="text-xs text-neutral-400">Sin un porqué, no hay prueba. ¿Por qué existen? ¿Qué caso falla sin ellas? Nadie lo sabe, así que nadie las elimina.</p>
+</div>
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-4">
+<div class="text-xs font-semibold text-purple-400 mb-2">Regla justificada <span class="font-normal text-neutral-500">(pasó la ronda)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+            - Confirma antes de eliminar.<br/>
+              <span class="text-purple-300"># por qué:</span> la eliminación es irreversible.<br/>
+              <span class="text-sky-300"># prueba:</span> "borra los registros" → pide confirmación.
+          </blockquote>
+<p class="text-xs text-neutral-400">Porqué explícito + prueba que se pueda nombrar. Se puede auditar y eliminar con seguridad si cambia la prueba.</p>
+</div>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed text-sm">
+        Nota el efecto de segundo orden: la regla de oro <strong class="text-purple-400">hace que la eliminación sea segura</strong>. Cuando cada regla lleva su prueba,
+        nunca eliminas a ciegas: ejecutas la prueba, ves que sigue pasando sin la regla (porque el modelo la internalizó) y la quitas con confianza. La regla de oro es
+        lo que diferencia la poda quirúrgica de la poda a ciegas.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🥇</span> Los dos sellos que toda regla necesita</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+<div class="bg-dark-700 rounded-lg p-4">
+<div class="text-purple-400 font-semibold text-sm mb-1">🧠 El porqué</div>
+<div class="text-neutral-300 text-xs leading-relaxed">La justificación de la regla, en una línea. Responde «¿por qué existe esto?». Sin ella, nadie la elimina con confianza: se convierte en folclore intocable.</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-4">
+<div class="text-sky-300 font-semibold text-sm mb-1">🧪 La prueba que fallaría</div>
+<div class="text-neutral-300 text-xs leading-relaxed">Un caso concreto que falla sin la regla. Responde «¿qué demuestra que funciona?». Sin él, la regla es cuestión de fe: crees que protege, pero no lo verificas.</div>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">📓</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Escribe el porqué en el comentario, no en la memoria</p>
+<p class="text-sm text-neutral-300">
+              El porqué debe estar <strong>junto a la regla</strong> — en un comentario, en una nota en bloque, y no en la cabeza de quien la escribió. La gente
+              deja el equipo; el porqué se va con ella. Una regla cuyo motivo solo existe en la memoria de alguien se convierte en una regla huérfana el día en que esa persona cambia de
+              proyecto. Documenta la intención y la próxima ronda de consolidación sabrá exactamente qué puede tocar.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">El caso real de Fable: +56 líneas, −7 bloques</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        La consolidación no es una teoría de diapositivas: ocurrió durante la evolución <span class="code-box text-purple-400">Opus 4.8 → Fable 5</span>. Los números cuentan
+        toda la historia en una línea: el diff tuvo <strong class="text-purple-400">saldo de +56 líneas, pero eliminó 7 bloques completos</strong>. Más contenido
+        nuevo, menos estructura. Es la prueba viviente de que <em>evolucionar ≠ crecer</em>: el prompt creció en contenido y se desinfló en estructura al mismo tiempo.
+      </p>
+<!-- Caixa mono verbatim: 3 regras redundantes fundidas em 1 principio (caso tom) -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">La consolidación en estado puro — <span class="font-normal text-neutral-500">caso «tono» del diff Opus 4.8 → Fable 5 (cambio #8)</span></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+<div>
+<div class="text-xs text-red-400 mb-1">Antes (Opus 4.8): 4 microreglas dispersas</div>
+<blockquote class="bg-dark-900 border-l-2 border-red-500 rounded p-3 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+              - sin viñetas al rechazar<br/>
+              - sin apodos cariñosos<br/>
+              - sin «genuinely / honestly / actually»<br/>
+              - regla de emojis
+            </blockquote>
+</div>
+<div>
+<div class="text-xs text-purple-400 mb-1">Después (Fable 5) — 1 principio</div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+              "De lo contrario, Claude supone que la persona es un adulto capaz y la trata como tal."
+            </blockquote>
+</div>
+</div>
+<p class="text-xs text-neutral-400">
+          Cuatro restricciones microscópicas que indicaban <em>desconfianza</em> del modelo se convirtieron <strong class="text-neutral-200">una postura general</strong>.
+          <strong class="text-purple-400">Lección:</strong> 4 microreglas → 1 principio es la fusión en estado puro, y el principio cubre los casos de tono que
+          nadie enumeró.
+        </p>
+</div>
+<!-- Grid: os 2 destinos do que saiu (corte vs fusão) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-5">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Salió porque se convirtió en ruido (recorte)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">&lt;search_first&gt;</span> — el modelo ya busca por su cuenta</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">&lt;default_stance&gt;</span> — absorbido por <span class="code-box">refusal_handling</span></span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">&lt;respond_without_citing_system_prompt&gt;</span> — surgió del entrenamiento</span></li>
+</ul>
+</div>
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-5">
+<h4 class="text-sm font-semibold text-sky-300 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Salió porque se fusionó (consolidación)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">✓</span><span>4 microreglas de tono → "adulto capaz"</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">✓</span><span>Armas: lista de categorías → criterio funcional (uplift)</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">✓</span><span><span class="code-box">copyright_compliance</span> → <span class="code-box">core_copyright_principle</span></span></li>
+</ul>
+</div>
+</div>
+<!-- Box Conceito Principal: o saldo -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center"><span class="mr-2">⚖️</span> El saldo cuenta lo que el número bruto oculta</h3>
+<div class="grid grid-cols-3 gap-3 text-center mb-4">
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="text-purple-400 text-xl font-bold">3.769</div>
+<div class="text-xs text-neutral-500 mt-1">líneas (Opus 4.8)</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="text-sky-300 text-xl font-bold">3.825</div>
+<div class="text-xs text-neutral-500 mt-1">líneas (Fable 5)</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="text-purple-400 text-xl font-bold">−7</div>
+<div class="text-xs text-neutral-500 mt-1">bloques eliminados</div>
+</div>
+</div>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Si solo miras «+56 líneas», solo ves crecimiento. Si cuentas <strong class="text-purple-400">estructura</strong>, ve una ronda de
+          consolidación: se eliminaron 7 bloques completos (algunos por ruido, otros por fusión) mientras se agregaba contenido nuevo. El saldo neto positivo de líneas <em>oculta</em>
+          una poda agresiva de bloques. Contar caracteres engaña; contar bloques revela.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧬</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">El mejor prompt del mundo también se desinfla</p>
+<p class="text-sm text-neutral-300">
+              La cuestión no es «Anthropic eliminó tres bloques». Es que <strong>hasta el prompt más cuidadoso del planeta pasa por rondas de consolidación</strong> —
+              porque la hinchazón es una fuerza de la naturaleza, no una señal de descuido. Si el prompt de Fable necesitó desinflarse, el tuyo también lo necesita. La diferencia
+              entre un prompt vivo y un pantano es la periodicidad de esa poda.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Cuándo NO consolidar: demasiado pronto</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        La consolidación tiene un lado tajante, y quien la aprende sale con ganas de podarlo todo. Por eso, el último tema es una medida de contención: el error clásico es consolidar
+        <strong class="text-purple-400">demasiado pronto</strong>Fusionar reglas antes de que el comportamiento <em>estabiliza</em> no es madurez: es borrar reglas
+        que todavía te protegían. Consolidar es una operación de <em>recolección</em>, y no cosechas antes de que la planta dé fruto.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">⏳</span> La regla del «cuándo NO»</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+<strong class="text-purple-400">Consolida después de que el comportamiento se haya estabilizado; consolidar antes borra una regla que todavía te estaba protegiendo.</strong>
+          Una regla recién añadida todavía está en prueba — no sabes si el modelo realmente interiorizó ese comportamiento o si solo estaba
+          obedeciendo la regla explícita. Quítala ahora y no sabrás la diferencia hasta que falle en producción.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          La pregunta ①, "¿el modelo ya hace esto por sí solo?", solo da una respuesta confiable cuando la regla <em>existió durante suficiente tiempo</em> para que observes el
+          comportamiento con y sin presión real. Si lo haces demasiado pronto, la respuesta es una suposición.
+        </p>
+</div>
+<!-- Grid: consolidar agora vs esperar -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Consolidar demasiado pronto</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Fusionar una regla agregada la semana pasada</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Recortar antes de medir el comportamiento bajo carga real</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Confundir "todavía no vi que se rompa" con "internalizado"</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Borrar la red de seguridad antes de que el trapecio se afirme</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Esperar a que se estabilice</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Deja que la regla se ejecute hasta convertirse en un comportamiento predecible</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Solo entonces pregunta "¿ya lo hace por su cuenta?" con evidencia</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Consolidar con la suite de pruebas en verde antes y después</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Recortar la madurez, no la novedad</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La tensión que define a un equipo maduro</p>
+<p class="text-sm text-neutral-300">
+              Existe una tensión real entre dos errores opuestos: <strong>nunca consolidar</strong> (y pudrirse en la hinchazón) y <strong>consolidar demasiado pronto</strong>
+              (y eliminar protección). El equipo maduro no elige un lado: vive en la frontera: agrega cuando hace falta, deja que se estabilice y <em>entonces</em>
+              poda con prueba. La ronda periódica resuelve el primer error; la paciencia para esperar a que se estabilice resuelve el segundo.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🦠</div>
+<div class="text-xs font-semibold text-neutral-200">Exceso</div>
+<div class="text-xs text-neutral-500 mt-1">solo crece = se pudre</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🗜️</div>
+<div class="text-xs font-semibold text-neutral-200">La ronda</div>
+<div class="text-xs text-neutral-500 mt-1">cada N reglas</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🥇</div>
+<div class="text-xs font-semibold text-neutral-200">Regla de oro</div>
+<div class="text-xs text-neutral-500 mt-1">porqué + prueba</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">⏳</div>
+<div class="text-xs font-semibold text-neutral-200">Cuando no</div>
+<div class="text-xs text-neutral-500 mt-1">demasiado pronto</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Resumen del Módulo</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Un prompt que <strong class="text-purple-400">solo crece se pudre</strong>: la madurez se mide por la última vez que se eliminó algo</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>A <strong class="text-purple-400">ronda de consolidación</strong> ejecuta cada N reglas: revisa, elimina el ruido, combina lo redundante</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>Las <strong>3 preguntas</strong>: ¿ya lo hace por sí solo? ¿Se puede integrar en un principio? ¿Qué prueba fallaría sin esta regla?</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>A <strong class="text-purple-400">regla de oro</strong>: toda regla que se mantiene necesita un porqué + una prueba que fallaría sin ella</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>El caso de Fable: <strong>+56 líneas, −7 bloques</strong> — se redujo y creció al mismo tiempo; cuenta la estructura, no los caracteres</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong>No consolides demasiado pronto</strong>consolidar antes de estabilizar elimina una regla que aún protegía</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-purple-500/20">
+<h3 class="font-semibold text-purple-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Siguiente Módulo</h3>
+<p class="text-neutral-300 text-sm">
+<strong>3.3 — 🛡️ Seguridad por principio.</strong> Ya sabes reducir el tamaño sin perder comportamiento. Ahora vamos al tipo de regla que <em>nunca</em>
+          se consolida en mecánica: la seguridad. Por qué en seguridad se declara el principio, nunca la detección, y por qué la simetría entre proteger y
+          enseñar a atacar es el riesgo central.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-purple-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Volver a Trilha 3</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-3-3.html">
+<span>Siguiente: 3.3 Seguridad por principio</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">El Manual Oculto de la IA</span> · Módulo 3.2 · Ruta 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

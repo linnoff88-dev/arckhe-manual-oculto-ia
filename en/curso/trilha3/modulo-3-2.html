@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>3.2 Consolidation: slim it down without losing behavior | The Hidden Manual of AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/modulo-3-2.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/modulo-3-2.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/modulo-3-2.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/modulo-3-2.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-3-2.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha3/modulo-3-2.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-purple-400 transition-colors" href="../../index.html">Beginning</a>
+<span>/</span>
+<a class="hover:text-purple-400 transition-colors" href="index.html">Track 3</a>
+<span>/</span>
+<span class="text-purple-400">Module 3.2</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-2xl">
+          🗜️
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MODULE 3.2</span>
+<span class="text-xs text-neutral-500">Track 3 — Advanced</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🗜️ Consolidation: slim down without losing behavior</h1>
+<p class="text-neutral-300 leading-relaxed">
+            Reading diffs (previous module) is the <strong class="text-purple-400">analysis</strong>; consolidating is the <strong class="text-purple-400">action</strong>.
+            Any prompt that only grows is rotting from within: every incident becomes a rule, none are removed, and six months later the model is navigating a
+            swamp of conflicting instructions. This module gives you the procedure to <em>slim down</em> without losing behavior — the consolidation round,
+            the 3 questions, the golden rule, and when <strong class="text-purple-400">no</strong> consolidate.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">📋</span><span>6 topics</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">⏱</span><span>~40 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">🎯</span><span>Advanced</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-purple-400">✂️</span><span>Maintenance</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: prompt inchado (muitas caixas) → consolidado (poucas caixas-princípio) -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagram of a system prompt consolidation: on the left, an bloated prompt with many small boxes of redundant stacked rules; a consolidation pass in the center filters these rules through three questions; on the right, the consolidated prompt, with a few larger principle boxes that absorb the little rules, and a balance of fifty-six more lines and seven fewer blocks removed" class="w-full h-auto" role="img" viewbox="0 0 960 380">
+<defs>
+<lineargradient id="m32-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="m32-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m32-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m32-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#c084fc" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m32-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="m32-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m32-grid)" height="380" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos de coluna -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="160" y="32">BLOATED prompt (rules that only keep growing)</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="480" y="32">the ROUND (3 questions)</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="800" y="32">CONSOLIDATED prompt (principles)</text>
+<!-- LADO ESQUERDO: prompt inchado, muitas caixinhas -->
+<rect fill="#0d1117" height="312" rx="14" stroke="#374151" stroke-width="1.5" width="252" x="34" y="50"></rect>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="160" y="72">400+ bullets · no one gets out</text>
+<!-- pilha de regrinhas redundantes -->
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="84"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="99">no bullets when refusing</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="112"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="127">no pet names</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="140"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="155">no "genuinely/honestly"</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="168"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="183">emoji rule</text>
+<rect fill="#2a2410" height="22" rx="6" stroke="#fbbf24" stroke-width="1.1" width="220" x="50" y="196"></rect>
+<text fill="#fcd34d" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="211">&lt;search_first&gt; (does it automatically)</text>
+<rect fill="#2a2410" height="22" rx="6" stroke="#fbbf24" stroke-width="1.1" width="220" x="50" y="224"></rect>
+<text fill="#fcd34d" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="239">&lt;default_stance&gt; (redundant)</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="252"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="267">cite the prompt? don't say…</text>
+<rect fill="#241016" height="22" rx="6" stroke="#f87171" stroke-width="1.1" width="220" x="50" y="280"></rect>
+<text fill="#fca5a5" font-family="JetBrains Mono,monospace" font-size="9.5" x="62" y="295">tone: kindness, no condescend…</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="9.5" opacity="0.85" text-anchor="middle" x="160" y="330">the model "gets lost" midway</text>
+<text fill="#f87171" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="160" y="347">grow ⟶ rot</text>
+<!-- CENTRO: o filtro das 3 perguntas -->
+<g filter="url(#m32-glow)">
+<rect fill="#160e26" height="180" rx="14" stroke="url(#m32-grad-pu)" stroke-width="2.2" width="320" x="320" y="100"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12" font-weight="700" text-anchor="middle" x="480" y="124">🗜️ consolidation round</text>
+<rect class="wf-a" fill="#1a1430" height="38" rx="9" stroke="#a855f7" stroke-width="1.6" width="284" x="338" y="136"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" x="354" y="153">① does the model already do this on its own?</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="354" y="167">if yes → cut (it became noise)</text>
+<rect class="wf-a" fill="#1a1430" height="38" rx="9" stroke="#a855f7" stroke-width="1.6" width="284" x="338" y="180"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" x="354" y="197">② can this be merged into a principle?</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="354" y="211">if yes → merge (little rules → 1)</text>
+<rect class="wf-a" fill="#0e1b26" height="38" rx="9" stroke="#38bdf8" stroke-width="1.6" width="284" x="338" y="224"></rect>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" x="354" y="241">③ what test would fail without it?</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="9" x="354" y="255">if none → cut; if any → keep + why</text>
+<!-- LADO DIREITO: prompt consolidado, poucas caixas-princípio -->
+<rect fill="#0d1117" height="312" rx="14" stroke="#374151" stroke-width="1.5" width="252" x="674" y="50"></rect>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="800" y="72">few principles · each with a test</text>
+<!-- caixa-princípio 1 (grande, glow) -->
+<g filter="url(#m32-glow)">
+<rect fill="#1a1430" height="64" rx="11" stroke="url(#m32-grad-pu)" stroke-width="2.2" width="220" x="690" y="84"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="700" x="704" y="106">🧠 capable adult</text>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="9" x="704" y="122">absorbs the 4 micro-rules of tone</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" x="704" y="136">test: respects adult requests without restrictions</text>
+<!-- caixa-princípio 2 -->
+<rect class="wf-a" fill="#1a1430" height="56" rx="11" stroke="#a855f7" stroke-width="1.8" width="220" x="690" y="158"></rect>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="704" y="178">⚖️ refusal due to real risk</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="9" x="704" y="193">absorbs default_stance + philosophy</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="8.5" x="704" y="206">test: refuses only when there is concrete harm</text>
+<!-- caixa-princípio 3 (ciano) -->
+<rect class="wf-a" fill="#0e1b26" height="56" rx="11" stroke="#38bdf8" stroke-width="1.8" width="220" x="690" y="224"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="704" y="244">🔒 principle-based safety</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="9" x="704" y="259">states the why, not the mechanics</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="8.5" x="704" y="272">test: no uplift, even when rephrased</text>
+<!-- saldo -->
+<rect fill="#0e1b26" height="54" rx="10" stroke="#38bdf8" stroke-width="1.4" width="220" x="690" y="290"></rect>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="800" y="311">net: +56 lines · −7 blocks</text>
+<text fill="#7ec8f5" font-family="Inter,sans-serif" font-size="9.5" text-anchor="middle" x="800" y="329">slimmed down and grew at the same time</text>
+<!-- setas: do inchado ao filtro, do filtro ao consolidado -->
+<path d="M272,190 C300,190 304,178 319,178" fill="none" marker-end="url(#m32-ah)" opacity="0.55" stroke="#c084fc" stroke-width="1.6"></path>
+<path d="M272,238 C300,238 306,200 319,200" fill="none" marker-end="url(#m32-ah)" opacity="0.5" stroke="#fbbf24" stroke-width="1.6"></path>
+<path d="M641,150 C660,150 668,116 689,116" fill="none" marker-end="url(#m32-ah)" opacity="0.6" stroke="#c084fc" stroke-width="1.6"></path>
+<path d="M641,200 C660,200 670,186 689,186" fill="none" marker-end="url(#m32-ah)" opacity="0.55" stroke="#a855f7" stroke-width="1.6"></path>
+<path d="M641,250 C660,250 672,252 689,252" fill="none" marker-end="url(#m32-ahc)" opacity="0.5" stroke="#38bdf8" stroke-width="1.6"></path>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">The bloat problem: a prompt that only grows goes bad</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Start with the diagnosis, because without it, consolidation looks like pointless pruning. The pathology has a name: <strong class="text-purple-400">bloat</strong>.
+        It happens on its own, without anyone deciding that it should. Every time something goes wrong in production, someone adds a rule. The rule fixes that
+        incident. No one comes back to remove it when it’s no longer needed. Six months later, the prompt has 400 bullets, half contradicting the other
+        half, and the model — which has finite attention — <em>is lost</em> in the middle.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🦠</span> The idea in one sentence</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          A prompt that only grows is <strong class="text-purple-400">rotting from within</strong>. Growing and evolving aren't the same thing: growing is
+          accumulating; evolving is accumulating <em>e</em> distill. A prompt’s maturity isn’t measured by its size—it’s measured by
+          <strong class="text-purple-400">the last time something was removed from it</strong>.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          The mechanism of harm is the <span class="code-box text-purple-400">finite attention</span>: every additional bullet divides the model’s focus one more way. At
+          some point, rule #380 isn’t protecting you—it’s stealing attention from the 10 rules that really matter.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-purple-400 mb-3">What it is</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+<strong class="text-purple-400">Prompt bloat</strong> is the monotonic accumulation of instructions: the prompt only gains lines, never loses them. Every
+          incident becomes a reactive rule; no cleanup pass ever happens. The result is a document that grows in size and <em>shrinks</em> in
+          signal—because the model’s attention, which is constant, gets diluted across more and more text.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Why diagnose first</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Because the temptation is to address the wrong symptom. When the agent makes a mistake, the reflex is to <em>add</em> a rule — exactly the move that caused the
+          bloat. A mature team recognizes that the problem isn’t "one more rule is missing," but "too many instructions are competing for attention." Diagnosing
+          the bloat is what turns "let’s write one more" into "let’s consolidate."
+        </p>
+</div>
+<!-- Grid: prompt saudável vs prompt inchado -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>The prompt that only grows</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Each incident becomes a new, reactive rule</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>No rule is removed — only added</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>400 bullets that contradict one another</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The model gets lost; the signal gets diluted</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>The prompt that evolves</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Accumulates content <em>e</em> distills structure</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Rules are removed when they’re no longer needed</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>A few principles that govern many cases</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Focused attention on what matters</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The measure of maturity</p>
+<p class="text-sm text-neutral-300">
+              A prompt’s maturity is measured by the <strong>the last time something was removed from it</strong>. If your prompt has never shrunk in structure,
+              it isn’t ready — it’s accumulated. A diff that <em>grows</em> in content but <em>shrinks</em> in blocks is the signature of a team that
+              understands that <strong>removing is also editing</strong>.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">The consolidation round: every N rules</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The cure for bloat isn't resisting the addition of rules—it's <strong class="text-purple-400">schedule the pruning</strong>. The practice is called
+        <strong class="text-purple-400">consolidation round</strong>: every N additions, you stop writing and open a session dedicated to <em>merge</em>
+        e <em>cut</em>. It's not an occasional guilt-driven cleanup; it's a recurring step in the maintenance cycle, as deliberate as adding.
+        The discipline's guiding principle fits in one sentence: <strong class="text-purple-400">consolidate &gt; add</strong>.
+      </p>
+<!-- Timeline: a rodada de consolidação -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">1</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Trigger: every N new rules</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Set a threshold (e.g., every 10 additions or every release). When it's exceeded, the review starts. The trigger being <em>mechanical</em> is what
+              keeps consolidation from being postponed forever — because no one prunes of their own accord.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">2</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Go through each rule with the 3 questions</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              For each existing rule, run it through the filter: <em>does the model already do this on its own? can it be merged with another into a principle? what test would fail without it?</em>
+              It’s the heart of the round—the filter that separates signal from noise. (Detailed in the next section.)
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">3</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Cut what has become noise</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              What the model already does on its own is removed entirely. That's how <span class="code-box">&lt;search_first&gt;</span>,
+              <span class="code-box">&lt;default_stance&gt;</span> e <span class="code-box">&lt;respond_without_citing_system_prompt&gt;</span> were removed from
+              Fable's prompt: behaviors internalized through training don't need a rule.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+<span class="text-purple-400 font-bold">4</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-1">Merge the redundant rules into one principle</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Several little rules that repeat the same value become <strong>a</strong> more general phrasing. The 4 Opus 4.8 tone micro-rules became
+              <em>"assumes the person is a capable adult"</em> in Fable. A principle also covers cases the list didn't anticipate.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 font-bold">5</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">What remains needs a reason + a test</h4>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Every rule that survives pruning remains <em>justified</em>: an explicit reason and a test that would fail without it. Without that, it becomes
+              a candidate for removal in the next round. (This is the golden rule — topic 4.)
+            </p>
+</div>
+</div>
+</div>
+<!-- Box Conceito Principal: template do principio -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🧩</span> The consolidated principle template</h3>
+<p class="text-neutral-300 leading-relaxed mb-3 text-sm">
+          The format that replaces three separate rules repeating the same value with a single one, with the cases as <em>consequences</em>:
+        </p>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 code-box">
+<span class="text-purple-400">{General value principle}</span> — from there follow: {caso 1}, {caso 2}, {caso 3}.
+        </blockquote>
+<p class="text-neutral-300 leading-relaxed mt-3 text-sm">
+          Notice the inversion: the list of cases doesn't disappear; it now <em>to drift</em> of the principle. The model stops memorizing three rules and starts
+          reasoning from one — and the reasoning extends to a fourth case no one wrote down.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🔁</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">The round mirrors reading a diff</p>
+<p class="text-sm text-neutral-300">
+              It's the same lens as Module 3.1, turned inward. There, you asked about each <em>removal</em> someone else’s: "did it become noise or was it consolidated?".
+              Here you ask about each <em>your rule</em>: "should this become noise or be consolidated?" Reading diffs is the analysis; the round is the action that
+              produces the next diff—ideally, one that shrinks structurally.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">The 3 questions: the test for every rule</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        The round lives or dies by the three questions. They are a <strong class="text-purple-400">serial screening</strong>: you apply them in order to each
+        existing rule. The first two look for reasons to <em>remove</em> (turned into noise? can they be merged?); the third is the final safeguard — only it authorizes
+        <em>keep</em>. A rule that doesn’t pass any of the three has no right to take up attention in the prompt.
+      </p>
+<!-- Caixa mono verbatim: as 3 perguntas como checklist -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">The round’s checklist— <span class="font-normal text-neutral-500">run in order, for each existing rule</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box leading-relaxed">
+<span class="text-purple-400">FOR EACH prompt rule:</span><br/><br/>
+<span class="text-purple-300">①</span> the model already does this on its own?  ── YES → <span class="text-red-300">CUT</span> (turned into noise)<br/>
+<span class="text-purple-300">②</span> can they be combined into one principle?   ── YES → <span class="text-purple-300">DEEP</span> (N rules → 1)<br/>
+<span class="text-sky-300">③</span> what test would fail without it?    ── NONE → <span class="text-red-300">CUT</span><br/>
+                                           SOME   → <span class="text-purple-300">KEEP</span> + write down why<br/><br/>
+<span class="text-neutral-500"># didn't pass any of the three? then it doesn't protect you — cut it.</span>
+</blockquote>
+<p class="text-xs text-neutral-400">
+          The order matters: ask first whether you can <strong>leave</strong> (① and ②), only then should you <strong>stay</strong> (③). The round’s default bias is toward
+          removing — the rule needs to <em>gain</em> the right to remain.
+        </p>
+</div>
+<!-- Os 3 cards das perguntas -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-2 flex items-center"><span class="code-box bg-dark-900 text-purple-300 px-1.5 rounded mr-2">①</span> Can you do it on your own yet?</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">The behavior was <strong>internalized through training</strong>? If the model already does it without the rule, the rule has become noise. Test: remove the rule and see whether the behavior disappears. If it doesn't, cut it.</p>
+</div>
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-purple-400 mb-2 flex items-center"><span class="code-box bg-dark-900 text-purple-300 px-1.5 rounded mr-2">②</span> Can it be combined?</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">This rule and others <strong>repeat the same value</strong>? If three rules follow from one principle, state the principle and let the cases follow from it. Less text, more coverage.</p>
+</div>
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-2 flex items-center"><span class="code-box bg-dark-900 text-sky-300 px-1.5 rounded mr-2">③</span> What test would fail?</h4>
+<p class="text-sm text-neutral-300 leading-relaxed">There is a concrete case that <strong>breaks without it</strong>? If you can't name the test that fails, the rule is faith, not engineering. Without a test, cut it.</p>
+</div>
+</div>
+<!-- Box Alerta / nuance -->
+<div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 mb-5">
+<h3 class="text-lg font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> The third question is the one most often betrayed</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          "What test would fail without it?" sounds easy and is almost never actually answered. The temptation is to say "oh, it’s important" without naming the case. But if
+          you can’t write the input that produces the failure, you don’t know whether the rule works — you only <em>believes</em>. The question filters out exactly
+          the placebo rules: the ones added out of fear, not evidence, that no one dares remove because no one knows what they do.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">🧪</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Turn question 3 into a test suite</p>
+<p class="text-sm text-neutral-300">
+              When you answer "what test would fail without it?" with a concrete case, <strong>save this case</strong>. Every justified rule becomes an
+              entry in your regression suite. Over time, you no longer consolidate by intuition: run the suite before and after pruning and see, objectively,
+              that no behavior that matters broke. The run stops being risky because it becomes <em>verifiable</em>.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">The golden rule: why + a test that would fail</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Here’s the principle behind everything: <strong class="text-purple-400">every rule kept needs a reason and a test that would fail without it</strong>.
+        This isn’t a best-practice suggestion — it’s a condition for staying. A rule without a reason is folklore: no one remembers why it’s there, so no one dares
+        remove it. A rule without a test is faith: you believe it does something, but you can’t prove it. Put the two together and you have the <em>immortal bloat</em> —
+        rules no one understands and no one removes.
+      </p>
+<!-- Caixa mono verbatim: o formato da regra justificada -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-dark-800 border border-red-500/30 rounded-xl p-4">
+<div class="text-xs font-semibold text-red-400 mb-2">Orphaned rule <span class="font-normal text-neutral-500">(candidate for removal)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-red-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+            - Always confirm before deleting.<br/>
+            - Never use the word “simply.”<br/>
+            - Respond in no more than 3 paragraphs.
+          </blockquote>
+<p class="text-xs text-neutral-400">No why, no test. Why do they exist? What case breaks without them? Nobody knows—so nobody removes them.</p>
+</div>
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-4">
+<div class="text-xs font-semibold text-purple-400 mb-2">Justified rule <span class="font-normal text-neutral-500">(passed the round)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+            - Confirm before deleting.<br/>
+              <span class="text-purple-300"># why:</span> deletion is irreversible.<br/>
+              <span class="text-sky-300"># test:</span> "delete the logs" → ask for confirmation.
+          </blockquote>
+<p class="text-xs text-neutral-400">Explicit rationale + nameable test. You can audit it, and safely remove it if the test changes.</p>
+</div>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed text-sm">
+        Notice the second-order effect: the golden rule <strong class="text-purple-400">makes removal safe</strong>. When every rule carries its test,
+        you never remove one blindly — run the test, see that it still passes without the rule (because the model has internalized it), and cut it with confidence. The golden rule is
+        what distinguishes surgical pruning from blind pruning.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🥇</span> The two labels every rule needs</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+<div class="bg-dark-700 rounded-lg p-4">
+<div class="text-purple-400 font-semibold text-sm mb-1">🧠 The Why</div>
+<div class="text-neutral-300 text-xs leading-relaxed">The intent behind the rule, in one line. It answers "why does this exist?" Without it, nobody can remove a rule with confidence—it becomes untouchable folklore.</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-4">
+<div class="text-sky-300 font-semibold text-sm mb-1">🧪 The test that would fail</div>
+<div class="text-neutral-300 text-xs leading-relaxed">A concrete case that breaks without the rule. Answers "what proves it works?" Without it, the rule is faith — you believe it protects, but you don't verify.</div>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">📓</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Write the why in the comment, not in memory</p>
+<p class="text-sm text-neutral-300">
+              The reason needs to live <strong>next to the rule</strong> — in a comment, in a block note — and not in the head of the person who wrote it. People
+              leave the team; the reason goes with them. A rule whose rationale exists only in someone’s memory becomes an orphaned rule the day that person moves to another
+              project. Document the intent, and the next consolidation round will know exactly what it can touch.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">The real Fable case: +56 lines, −7 blocks</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Consolidation isn't slide theory—it happened during the evolution <span class="code-box text-purple-400">Opus 4.8 → Fable 5</span>. The numbers tell the
+        whole story in one line: the diff had <strong class="text-purple-400">net +56 lines, but removed 7 entire blocks</strong>. More new content,
+        less structure. It's living proof that <em>evolve ≠ grow</em>: the prompt grew in content and shrank in structure at the same time.
+      </p>
+<!-- Caixa mono verbatim: 3 regras redundantes fundidas em 1 principio (caso tom) -->
+<div class="bg-dark-800 border border-purple-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-purple-400 mb-3">Consolidation in its purest form— <span class="font-normal text-neutral-500">“tone” case in the Opus 4.8 → Fable 5 diff (change #8)</span></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+<div>
+<div class="text-xs text-red-400 mb-1">Before (Opus 4.8) — 4 scattered micro-rules</div>
+<blockquote class="bg-dark-900 border-l-2 border-red-500 rounded p-3 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+              - no bullets when refusing<br/>
+              - no pet names<br/>
+              - no “genuinely / honestly / actually”<br/>
+              - emoji rule
+            </blockquote>
+</div>
+<div>
+<div class="text-xs text-purple-400 mb-1">After (Fable 5) — 1 principle</div>
+<blockquote class="bg-dark-900 border-l-2 border-purple-500 rounded p-3 font-mono text-xs text-neutral-300 code-box leading-relaxed">
+              "Otherwise, Claude assumes the person is a capable adult and treats them as such."
+            </blockquote>
+</div>
+</div>
+<p class="text-xs text-neutral-400">
+          Four microscopic safeguards that signaled <em>distrust</em> of the model became <strong class="text-neutral-200">a general stance</strong>.
+          <strong class="text-purple-400">Lesson:</strong> 4 micro-rules → 1 principle is fusion in its purest form—and the principle covers tone cases
+          no one listed.
+        </p>
+</div>
+<!-- Grid: os 2 destinos do que saiu (corte vs fusão) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-5">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Removed because it became noise (cut)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">&lt;search_first&gt;</span> — the model already searches on its own</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">&lt;default_stance&gt;</span> — absorbed by <span class="code-box">refusal_handling</span></span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span><span class="code-box">&lt;respond_without_citing_system_prompt&gt;</span> — emerged from training</span></li>
+</ul>
+</div>
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-5">
+<h4 class="text-sm font-semibold text-sky-300 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Removed because it was merged (consolidation)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">✓</span><span>4 micro-rules for tone → “capable adult”</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">✓</span><span>Weapons: category list → functional criterion (uplift)</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300 mt-0.5">✓</span><span><span class="code-box">copyright_compliance</span> → <span class="code-box">core_copyright_principle</span></span></li>
+</ul>
+</div>
+</div>
+<!-- Box Conceito Principal: o saldo -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-5">
+<h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center"><span class="mr-2">⚖️</span> The balance shows what the raw number hides</h3>
+<div class="grid grid-cols-3 gap-3 text-center mb-4">
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="text-purple-400 text-xl font-bold">3.769</div>
+<div class="text-xs text-neutral-500 mt-1">lines (Opus 4.8)</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="text-sky-300 text-xl font-bold">3.825</div>
+<div class="text-xs text-neutral-500 mt-1">lines (Fable 5)</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3">
+<div class="text-purple-400 text-xl font-bold">−7</div>
+<div class="text-xs text-neutral-500 mt-1">removed blocks</div>
+</div>
+</div>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          If you only look at "+56 lines", you see growth and nothing else. If you count <strong class="text-purple-400">structure</strong>, see a consolidation round: 7 entire blocks were removed (some for noise, some by merging) while new content was added. The net line count <em>hides</em>
+          aggressive pruning of blocks. Counting characters is misleading; counting blocks reveals the truth.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧬</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Even the world's best prompt slims down</p>
+<p class="text-sm text-neutral-300">
+              The point isn’t “Anthropic cut three blocks.” It’s that <strong>even the most carefully crafted prompt in the world goes through consolidation rounds</strong> —
+              because bloat is a force of nature, not a sign of neglect. If Fable’s prompt needed trimming, yours does too. The difference
+              between a living prompt and a swamp is how often you prune it.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">When NOT to consolidate: too soon</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Consolidation has a sharp edge, and those who learn it come away wanting to prune everything. That's why the last topic is a safeguard: the classic mistake is to consolidate
+        <strong class="text-purple-400">too early</strong>. Merge rules before the behavior <em>stabilize</em> it isn’t maturity — it’s erasing rules
+        that were still protecting you. Consolidating is an operation of <em>harvest</em>, and you don’t reap before the plant bears fruit.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-purple-900/30 to-dark-800 rounded-xl border border-purple-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">⏳</span> The “WHEN NOT” rule</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+<strong class="text-purple-400">Consolidate after the behavior has stabilized; consolidating too soon erases a rule that was still protecting you.</strong>
+          A newly added rule is still being tested — you don't know whether the model has really internalized that behavior or was just
+          following the explicit rule. Remove it now and you won't know the difference until something breaks in production.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Question ①, "does the model already do this on its own?", only gives a reliable answer when the rule <em>existed long enough</em> so you can observe the
+          behavior with and without real pressure. Too early, and the answer is a guess.
+        </p>
+</div>
+<!-- Grid: consolidar agora vs esperar -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Consolidate too soon</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Merge a rule added last week</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Cut before measuring behavior under real load</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Confusing "I haven't seen it break yet" with "internalized"</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Removing the safety net before the trapeze is secure</span></li>
+</ul>
+</div>
+<div class="bg-purple-900/20 border border-purple-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-purple-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Wait for it to stabilize</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Let the rule run until it becomes predictable behavior</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Only then ask "can it do it on its own?" with evidence</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Consolidate with the test suite passing before and after</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5">✓</span><span>Trim maturity, not novelty</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">The tension that defines a mature team</p>
+<p class="text-sm text-neutral-300">
+              There is a real tension between two opposite errors: <strong>never consolidate</strong> (and let it rot through bloat) and <strong>consolidate too early</strong>
+              (and remove protection). A mature team doesn’t pick a side — it lives at the boundary: adds when needed, lets things stabilize, and <em>so</em>
+              prune with a test. The periodic round fixes the first error; the patience to wait for stabilization fixes the second.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🦠</div>
+<div class="text-xs font-semibold text-neutral-200">Bloat</div>
+<div class="text-xs text-neutral-500 mt-1">only grows = rots</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">🗜️</div>
+<div class="text-xs font-semibold text-neutral-200">The round</div>
+<div class="text-xs text-neutral-500 mt-1">after every N rules</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🥇</div>
+<div class="text-xs font-semibold text-neutral-200">Golden rule</div>
+<div class="text-xs text-neutral-500 mt-1">reason + test</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-purple-400 text-lg mb-1">⏳</div>
+<div class="text-xs font-semibold text-neutral-200">When not</div>
+<div class="text-xs text-neutral-500 mt-1">too early</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-2xl border border-purple-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Module Summary</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>A prompt that <strong class="text-purple-400">only grows rots</strong>: maturity is measured by the last time something was removed</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>A <strong class="text-purple-400">consolidation round</strong> runs every N rules: scans, cuts noise, merges redundancies</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>The <strong>3 questions</strong>: does it already do this on its own? Can it be folded into a principle? What test would fail without it?</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>A <strong class="text-purple-400">golden rule</strong>: every rule that stays must have a reason + a test that would fail without it</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span>The Fable case: <strong>+56 lines, −7 blocks</strong> — it slimmed down and grew at the same time; count structure, not characters</span></li>
+<li class="flex items-start space-x-2"><span class="text-purple-400 mt-0.5 flex-shrink-0">✓</span><span><strong>Don’t consolidate too early</strong>: consolidating before stabilizing erases a rule that was still protecting you</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-purple-500/20">
+<h3 class="font-semibold text-purple-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Next Module</h3>
+<p class="text-neutral-300 text-sm">
+<strong>3.3 — 🛡️ Security by principle.</strong> You already know how to slim things down without losing behavior. Now let’s move on to the kind of rule that <em>never</em>
+          consolidates into a mechanism: safety. Why safety states the principle, never the detection—and why the symmetry between protecting and
+          teaching how to attack is the central risk.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-purple-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Back to Track 3</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-3-3.html">
+<span>Next: 3.3 Safety by principle</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">The AI's Hidden Manual</span> · Module 3.2 · Track 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>1.3 Structural patterns | The Hidden Manual of AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Emerald — T1) ===== */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-emerald-300 { color: #047857; }
+    html:not(.dark) .text-emerald-200 { color: #065f46; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/30 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.06); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .border-emerald-500\/20 { border-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:border-emerald-500\/30:hover { border-color: rgba(5, 150, 105, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha1/modulo-1-3.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha1/modulo-1-3.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha1/modulo-1-3.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha1/modulo-1-3.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="modulo-1-3.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha1/modulo-1-3.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-emerald-400 bg-emerald-500/10" href="index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-emerald-400 transition-colors" href="../../index.html">Beginning</a>
+<span>/</span>
+<a class="hover:text-emerald-400 transition-colors" href="index.html">Track 1</a>
+<span>/</span>
+<span class="text-emerald-400">Module 1.3</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 rounded-2xl border border-emerald-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-2xl">
+          🏗️
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MODULE 1.3</span>
+<span class="text-xs text-neutral-500">Track 1 — Fundamentals</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🏗️ Structural patterns</h1>
+<p class="text-neutral-300 leading-relaxed">
+            In the previous module, you opened the note and saw its parts. Now let's look at the <strong class="text-emerald-400">form</strong> of these pieces:
+            how professionals <em>put in order</em> a system prompt to make it clear, organized, and easy to maintain. There are five
+            "templates" that appear in almost every real prompt — and a warning about when <strong class="text-emerald-400">no</strong> use the most famous one.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">📋</span><span>6 topics</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">⏱</span><span>~35 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">🎯</span><span>Basic</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-emerald-400">🧱</span><span>Structure</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: blocos <tag> planos modulares de um prompt -->
+<div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagram of a system prompt assembled as stacked modular blocks: each block is a flat, named XML tag—identity, capabilities, tone, tools, and safety—aligned one above the other; on the right, an example of an open block shows the opening tag, the content, and the closing tag, illustrating that each block’s name serves as a label to help the AI find the right rule" class="w-full h-auto" role="img" viewbox="0 0 960 380">
+<defs>
+<lineargradient id="m13-grad-em" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#34d399"></stop><stop offset="1" stop-color="#10b981"></stop>
+</lineargradient>
+<lineargradient id="m13-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m13-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m13-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#34d399" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m13-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m13-grid)" height="380" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos de coluna -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="250" y="34">the prompt = stacked blocks</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="720" y="34">one block, inside</text>
+<line opacity="0.35" stroke="#9ca3af" stroke-dasharray="6,6" stroke-width="1.2" x1="480" x2="480" y1="20" y2="362"></line>
+<!-- LADO ESQUERDO: a pilha de blocos modulares -->
+<!-- bloco identidade (em destaque) -->
+<g filter="url(#m13-glow)">
+<rect fill="#0e2018" height="44" rx="11" stroke="url(#m13-grad-em)" stroke-width="2.5" width="360" x="70" y="58"></rect>
+</g>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" x="90" y="79">&lt;identity&gt;</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="10.5" x="90" y="95">who it is · where it operates · what it knows</text>
+<!-- bloco capacidades -->
+<rect class="wf-a" fill="#102a20" height="44" rx="11" stroke="#34d399" stroke-width="2" width="360" x="70" y="112"></rect>
+<text fill="#6ee7b7" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" x="90" y="133">&lt;capabilities&gt;</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="10.5" x="90" y="149">what it can do · with which tools</text>
+<!-- bloco tom -->
+<rect class="wf-a" fill="#0e1b26" height="44" rx="11" stroke="#38bdf8" stroke-width="2" width="360" x="70" y="166"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" x="90" y="187">&lt;tone_and_style&gt;</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10.5" x="90" y="203">how it speaks · response format</text>
+<!-- bloco ferramentas -->
+<rect class="wf-a" fill="#102a20" height="44" rx="11" stroke="#34d399" stroke-width="2" width="360" x="70" y="220"></rect>
+<text fill="#6ee7b7" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" x="90" y="241">&lt;tool_calling&gt;</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="10.5" x="90" y="257">when and in what order to use each one</text>
+<!-- bloco seguranca -->
+<rect class="wf-a" fill="#0e1b26" height="44" rx="11" stroke="#38bdf8" stroke-width="2" width="360" x="70" y="274"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" x="90" y="295">&lt;safety&gt;</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10.5" x="90" y="311">the limits it does not cross</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="250" y="344">FLAT blocks (without nesting one inside another)</text>
+<!-- LADO DIREITO: um bloco aberto, por dentro -->
+<!-- linha tag de abertura -->
+<rect fill="#0e2018" height="34" rx="9" stroke="url(#m13-grad-em)" stroke-width="2" width="380" x="520" y="92"></rect>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="540" y="114">&lt;identity&gt;</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="9.5" text-anchor="end" x="884" y="114">opens the block</text>
+<!-- conteudo do bloco -->
+<rect fill="#0d1117" height="96" rx="9" stroke="#374151" stroke-width="1.5" width="360" x="540" y="134"></rect>
+<text fill="#bdf0dd" font-family="ui-monospace,monospace" font-size="11" x="558" y="160">You are Perplexity Computer.</text>
+<text fill="#9fb0c0" font-family="ui-monospace,monospace" font-size="11" x="558" y="182">Your goal is to solve as many</text>
+<text fill="#9fb0c0" font-family="ui-monospace,monospace" font-size="11" x="558" y="200">things on your own as possible.</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="9.5" x="558" y="222">↑ the content (the actual rule)</text>
+<!-- linha tag de fechamento -->
+<rect fill="#0e2018" height="34" rx="9" stroke="url(#m13-grad-em)" stroke-width="2" width="380" x="520" y="238"></rect>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="540" y="260">&lt;/identity&gt;</text>
+<text fill="#6b7280" font-family="Inter,sans-serif" font-size="9.5" text-anchor="end" x="884" y="260">closes the block</text>
+<!-- etiqueta: o nome é a etiqueta -->
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="720" y="300">the tag NAME is the label</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="720" y="318">is how the AI finds the right rule</text>
+<!-- ponte: o bloco aberto vem da pilha -->
+<line marker-end="url(#m13-ahc)" opacity="0.55" stroke="#38bdf8" stroke-dasharray="5,4" stroke-width="1.5" x1="432" x2="518" y1="80" y2="109"></line>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">The Identity Block: "You are..."</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Almost every system prompt in the world starts with the same two words: <span class="code-box text-emerald-400">"You are..."</span>
+        ("You are..."). It's the <strong class="text-emerald-400">first line</strong>, and it does a huge amount of work: it anchors who the AI is
+        before any rule. Without that anchor, the AI <em>drift</em> — changes personality mid-conversation, makes up tools it doesn’t have, talks about things it doesn’t know as if it did.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center"><span class="mr-2">🪪</span> The idea in one sentence</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          The Identity Block answers three questions right at the beginning: <strong class="text-emerald-400">who</strong> is the AI,
+          <strong class="text-emerald-400">where</strong> she operates and <strong class="text-emerald-400">what</strong> she knows (including the limits of her knowledge).
+          It’s the “anchor” that everything else in the prompt refers to.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Think of an employee’s ID badge on their first day: name, job title, department. In three lines, everyone (including the AI itself) knows
+          who they’re talking to. No biography — just the essentials to establish its self-image.
+        </p>
+</div>
+<!-- Exemplo verbatim: identidade real (OpenAI 3 linhas) -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Real identity, 3 lines — <span class="font-normal text-neutral-500">OpenAI, gpt-5.5-instant.md (line 1)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          You are ChatGPT, a large language model trained by OpenAI, based on GPT 5.5.<br/>
+          Knowledge cutoff: 2025-08<br/>
+          Current date: 2026-06-01
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          The three canonical elements in three lines: <strong class="text-neutral-200">persona</strong> ("You are ChatGPT..."),
+          <strong class="text-neutral-200">knowledge cutoff</strong> e <strong class="text-neutral-200">today's date</strong>. Clean, short, no fluff.
+        </p>
+</div>
+<!-- Exemplo verbatim: identidade real (Perplexity, com objetivo) -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-sky-300 mb-3">Real identity, with a goal — <span class="font-normal text-neutral-500">Perplexity, perplexity-computer.md (opening)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-sky-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          You are Perplexity Computer.<br/><br/>
+          Your goal is to solve as many things on your own as possible. Use tools to answer your own questions and explore.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Here, the identity comes with the <strong class="text-neutral-200">goal</strong> pasted together: who you are + what you came to do. "Solve
+          as much as possible on your own" isn't a rule by itself — it's the <em>mission</em> that gives meaning to all the other instructions.
+        </p>
+</div>
+<!-- Grid: âncora boa vs identidade ausente -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-emerald-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-xs">✓</span>
+<span>WITH a good identity at the top</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>AI maintains the same persona from beginning to end</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Knows what it can and can’t do</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Doesn’t make up facts after the cutoff date</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Short: 3 to 5 lines, just who/where/when</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>NO identity (or buried in the middle)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>"Turns into" another AI mid-conversation</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Claims to have tools that don’t exist</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Responds about events it doesn’t know about</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Bloated with backstory that no one uses</span></li>
+</ul>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🪪</div>
+<div class="text-xs font-semibold text-neutral-200">Who</div>
+<div class="text-xs text-neutral-500 mt-1">"You are ChatGPT..."</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📍</div>
+<div class="text-xs font-semibold text-neutral-200">Where</div>
+<div class="text-xs text-neutral-500 mt-1">"You operate in Cursor"</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📅</div>
+<div class="text-xs font-semibold text-neutral-200">What it knows</div>
+<div class="text-xs text-neutral-500 mt-1">"Knowledge cutoff:..."</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⚓</div>
+<div class="text-xs font-semibold text-neutral-200">It’s an anchor</div>
+<div class="text-xs text-neutral-500 mt-1">not biography</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">The Capabilities Statement: What It Can Do</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Right after saying <em>who</em> yes, a good prompt says <em>what the AI can do</em>. It seems obvious, but it's the
+        step most people forget—and the result is an AI that offers to generate an image it doesn't know how to generate,
+        or that <strong class="text-emerald-400">ignores</strong> a tool it had all along. The Capabilities Declaration is the
+        <strong class="text-emerald-400">list of superpowers</strong> of the AI, each with its own rule for when to use it.
+      </p>
+<!-- O que e -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3">What it is</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          A section that lists each capability with three things: <strong class="text-emerald-400">what it does</strong>,
+          <strong class="text-emerald-400">when to use</strong> e a <strong class="text-emerald-400">condition/limit</strong> ("if the user asks...",
+          "only when it's urgent..."). The secret is that capability without conditions turns into a mess: the AI ends up using the right tool at the wrong time.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Why learn</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Because “giving powers” isn’t enough—you also have to teach <em>when</em> use them. The difference between an AI that fumbles around and one that
+          executes directly is here. And note: every real capability comes with a <strong class="text-neutral-200">embedded condition</strong>, and
+          that’s what keeps the AI from barreling ahead.
+        </p>
+</div>
+<!-- Exemplo verbatim Grok -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Capability + condition on the same line — <span class="font-normal text-neutral-500">xAI, grok-4.1-beta.md (~line 11)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          If it seems like the user wants an image generated, ask for confirmation, instead of directly generating one.
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          See how the capability (“generate image”) already comes with the <strong class="text-neutral-200">protocol</strong> ("ask for confirmation first").
+          It's not just "you can generate images" — it's <em>when</em> e <em>how</em>. This is a clearly defined capability.
+        </p>
+</div>
+<!-- Exemplo verbatim Google (assinaturas de função) -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-sky-300 mb-3">Capability as a function signature — <span class="font-normal text-neutral-500">Google, gemini-2.5-pro-api.md (~line 18)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-sky-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          def concise_search(query: str, max_num_results: int = 3):<br/>
+            """Does a search for the query and prints up to the max_num_results results."""
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Google declares capabilities such as <strong class="text-neutral-200">function signatures</strong>: the scope, parameters, and even the
+          default value (<span class="code-box text-sky-300">max_num_results = 3</span>) are unambiguous. There’s no doubt about what can be done.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Identity ≠ Capabilities (don’t confuse them)</p>
+<p class="text-sm text-neutral-300">
+              A <strong>Identity</strong> says <em>who</em> the AI is; the <strong>Capability Declaration</strong> says <em>what</em> she
+              can do. In plain chat, without tools, this section becomes "what I <strong>no</strong> I can do that” — short, but useful
+              so the AI doesn’t promise what it can’t deliver.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🧰</div>
+<div class="text-xs font-semibold text-neutral-200">What it does</div>
+<div class="text-xs text-neutral-500 mt-1">list of superpowers</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎯</div>
+<div class="text-xs font-semibold text-neutral-200">When to use</div>
+<div class="text-xs text-neutral-500 mt-1">the trigger for each one</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🚧</div>
+<div class="text-xs font-semibold text-neutral-200">The condition</div>
+<div class="text-xs text-neutral-500 mt-1">"if the user asks..."</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🚫</div>
+<div class="text-xs font-semibold text-neutral-200">No tool?</div>
+<div class="text-xs text-neutral-500 mt-1">list what is NOT allowed</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">The XML Compartment: each topic in its own drawer</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Imagine a thousand-line prompt written as one huge block of text without paragraphs. Finding a rule in there would be a nightmare.
+        The solution the labs adopted is simple and powerful: put <strong class="text-emerald-400">each topic in its own labeled “drawer”</strong>.
+        These drawers are the XML tags — <span class="code-box text-emerald-400">&lt;tone_and_style&gt;</span>,
+        <span class="code-box text-emerald-400">&lt;tool_calling&gt;</span>, <span class="code-box text-emerald-400">&lt;safety&gt;</span> — and they make the prompt navigable.
+        It’s the diagram at the top: stacked blocks, each with its own name.
+      </p>
+<!-- Timeline: como um bloco XML funciona -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+<span class="text-emerald-400 text-lg">🏷️</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-emerald-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-emerald-400 mb-1">1. The opening tag— <span class="code-box">&lt;tone_and_style&gt;</span></h4>
+<p class="text-sm text-neutral-500 mb-2">Marks the beginning of the drawer and names it.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              The tag’s name works as <strong class="text-emerald-400">etiquette</strong>: the AI "pulls" the right block at the right time. When
+              the conversation calls for a certain tone, it goes straight to the drawer <span class="code-box text-emerald-400">tone</span>.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">📦</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">2. The content — the rules for that subject</h4>
+<p class="text-sm text-neutral-500 mb-2">Everything related to tone (and tone alone) lives here.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Don't mix them: a safety rule doesn't belong in the tone drawer. Each topic <strong class="text-sky-300">isolated</strong> —
+              that’s what makes the prompt easy to read and edit.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+<span class="text-emerald-400 text-lg">🔚</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-emerald-400 mb-1">3. The closing tag — <span class="code-box">&lt;/tone_and_style&gt;</span></h4>
+<p class="text-sm text-neutral-500 mb-2">Close the drawer. The next drawer (another topic) starts right below.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              With clear beginnings and endings, you can <strong class="text-emerald-400">replace an entire drawer</strong> without touching the others —
+              and you can compare two versions of the prompt and say exactly "the tone block changed".
+            </p>
+</div>
+</div>
+</div>
+<!-- Exemplo verbatim Cursor: duas gavetas vizinhas -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-5">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Two neighboring drawers, each with its own subject— <span class="font-normal text-neutral-500">Cursor, cursor.md (~lines 80–93)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          &lt;tone_and_formatting&gt;<br/>
+          - Only use emojis if the user explicitly requests it...<br/>
+          &lt;/tone_and_formatting&gt;<br/><br/>
+          &lt;tool_calling&gt;<br/>
+          You have tools at your disposal...<br/>
+          &lt;/tool_calling&gt;
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          To change the tone policy, edit <strong class="text-neutral-200">only</strong> the first block—the rest stays intact.
+          The tags are <strong class="text-neutral-200">flat</strong> (side by side), not nested one inside another.
+          We’ll return to the word "flat" in Topic 6.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🗂️</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Why this helps people, not just AI</p>
+<p class="text-sm text-neutral-300">
+              A compartmentalized prompt becomes <strong>navigable by a team</strong>. You can “code review” a block, compare
+              versions, and say “Anthropic removed the block <span class="code-box text-sky-300">&lt;search_first&gt;</span>" — a precise sentence. Without the drawers, it would be "something changed somewhere".
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🏷️</div>
+<div class="text-xs font-semibold text-neutral-200">Open</div>
+<div class="text-xs text-neutral-500 mt-1">&lt;nome&gt;</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📦</div>
+<div class="text-xs font-semibold text-neutral-200">Content</div>
+<div class="text-xs text-neutral-500 mt-1">only that topic</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🔚</div>
+<div class="text-xs font-semibold text-neutral-200">Closes</div>
+<div class="text-xs text-neutral-500 mt-1">&lt;/nome&gt;</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🧩</div>
+<div class="text-xs font-semibold text-neutral-200">Modular</div>
+<div class="text-xs text-neutral-500 mt-1">swap one without touching the others</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">The Rule by Example: show instead of describe</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        "Format the citations appropriately." Appropriately <em>how</em>? This sentence allows a thousand interpretations—and the AI will choose one, probably the wrong one. The template that solves this is simple: <strong class="text-emerald-400">show an example</strong>
+        instead of (just) describing. A concrete example clears up ambiguity all at once in a way three paragraphs of explanation can’t.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center"><span class="mr-2">🎯</span> Show &gt; describe</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          AI matches patterns much better than it follows verbal specifications. Instead of explaining a format in prose, you paste
+          <strong class="text-emerald-400">an example of what’s right</strong> (and, even better, a pair <em>right × wrong</em>). The example
+          carries the rule — sometimes even before the prose explains it.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          It's the difference between saying "assemble the furniture correctly" and <em>design</em> the assembled piece of furniture. The design leaves no doubt.
+        </p>
+</div>
+<!-- Exemplo verbatim VERBATIM Perplexity: regra de citação por exemplo (caixa mono pedida) -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-sky-300 mb-3">The example-based citation rule — <span class="font-normal text-neutral-500">Perplexity, perplexity-computer.md (&lt;citation_instructions&gt;)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-sky-500 rounded p-3 font-mono text-xs text-neutral-300 mb-3 code-box leading-relaxed">
+          The anchor text must be the source name, publication, or a natural descriptive phrase — never a generic word like "source" or "link", and never a raw URL.<br/><br/>
+          WRONG: "The population grew 5% (<span class="text-red-400">[source]</span>(https://...))”<br/>
+          RIGHT: "The population grew 5% (<span class="text-emerald-400">[World Bank]</span>(https://...))”<br/>
+          RIGHT: "According to <span class="text-emerald-400">[World Bank data]</span>(https://...), the population grew 5%”
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Notice the engineering: the rule in prose ("the link text must be <em>source name</em>, never a generic word like
+          'source' or 'link'") would already be good — but it’s reinforced by a pair <strong class="text-emerald-400">WRONG/RIGHT</strong> that shows
+          exactly what’s wrong and what’s right. Impossible to misinterpret.
+        </p>
+</div>
+<!-- Exemplo verbatim Notion: schema inline -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-6">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Format shown on two lines — <span class="font-normal text-neutral-500">Notion, notion-ai.md (~lines 121–125)</span></div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 mb-2 code-box">
+          Example: &lt;database url="URL" inline&gt;Title&lt;/database&gt;<br/>
+          Example: &lt;database url="URL" locked&gt;Title&lt;/database&gt;
+        </blockquote>
+<p class="text-xs text-neutral-400">
+          Two example lines replace an entire paragraph describing attributes. The AI sees the format and copies it
+          <em>pattern</em> — not the literal word.
+        </p>
+</div>
+<!-- Grid: bom uso vs overfit -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-emerald-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Example used well</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Shows the <strong>format</strong> and the mechanics</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Use a WRONG/RIGHT pair</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>It’s short—a shortcut, not an encyclopedia</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Make it obvious what to “fill in here”</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>The danger: overfitting to the example</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>AI copies the example <strong>literally</strong></span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Treats the list of examples as exhaustive</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Example as long as the expected output</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Use an example to <em>judgment</em> (locks down)</span></li>
+</ul>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">👀</div>
+<div class="text-xs font-semibold text-neutral-200">Show</div>
+<div class="text-xs text-neutral-500 mt-1">not just describe</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⚖️</div>
+<div class="text-xs font-semibold text-neutral-200">Right×wrong pair</div>
+<div class="text-xs text-neutral-500 mt-1">WRONG / RIGHT</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📐</div>
+<div class="text-xs font-semibold text-neutral-200">It’s for formatting</div>
+<div class="text-xs text-neutral-500 mt-1">not for judgment</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">⚠️</div>
+<div class="text-xs font-semibold text-neutral-200">Beware of overfitting</div>
+<div class="text-xs text-neutral-500 mt-1">don’t copy it word for word</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Naming blocks: the name itself is an instruction</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Here’s a lovely detail that’s easy to miss: <strong class="text-emerald-400">the name you give a block also teaches the AI</strong>.
+        It’s not just an administrative label. Change the name — even if the content stays the same — and the AI starts behaving
+        differently. There’s a real case from Anthropic that proves this in an almost poetic way.
+      </p>
+<!-- Exemplo verbatim: o rename copyright -->
+<div class="bg-dark-800 border border-emerald-500/30 rounded-xl p-5 mb-4">
+<div class="text-xs font-semibold text-emerald-400 mb-3">Same rule, different name— <span class="font-normal text-neutral-500">Anthropic, Opus 4.8 → Fable 5</span></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div>
+<div class="text-xs text-neutral-500 mb-1">Before (Opus 4.8) — one command:</div>
+<blockquote class="bg-dark-900 border-l-2 border-red-500 rounded p-3 font-mono text-xs text-neutral-300 code-box">
+              &lt;claude_prioritizes_copyright_compliance&gt;
+            </blockquote>
+</div>
+<div>
+<div class="text-xs text-neutral-500 mb-1">After (Fable 5) — one value:</div>
+<blockquote class="bg-dark-900 border-l-2 border-emerald-500 rounded p-3 font-mono text-xs text-neutral-300 code-box">
+              &lt;core_copyright_principle&gt;
+            </blockquote>
+</div>
+</div>
+<p class="text-xs text-neutral-400 mt-3">
+          The hard rule on the inside remains the same (“Copyright compliance is NON-NEGOTIABLE”). Only the <strong class="text-neutral-200">block name</strong> changed:
+          from <span class="code-box text-red-400">compliance</span> ("follow the rules") to <span class="code-box text-emerald-400">principle</span> ("respect intellectual property").
+        </p>
+</div>
+<!-- Box: por que o nome muda o comportamento -->
+<div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center"><span class="mr-2">🧠</span> Why this changes everything</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          "Compliance" is a <strong class="text-emerald-400">order</strong>: the AI follows it only in the listed cases. "Principle" is a
+          <strong class="text-emerald-400">value</strong>: the AI <em>reasons from it</em> and covers even cases no one anticipated.
+          The name changes the AI's posture toward a new situation.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          In other words: the block name is the first line the AI reads about that topic—and it already "gets in the right mindset" because of it.
+          That's why choosing good names is part of the work, not decoration.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Name it by value, not mechanics</p>
+<p class="text-sm text-neutral-300">
+              Prefer <span class="code-box text-emerald-400">&lt;respects_user_privacy&gt;</span> a
+              <span class="code-box text-neutral-400">&lt;privacy_rules_v2&gt;</span>. The first name says <em>why</em> and invites the AI to
+              reason; the second is just a soulless drawer. This principle returns in force in Module 1.6 ("from rule to principle").
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🏷️</div>
+<div class="text-xs font-semibold text-neutral-200">The name teaches</div>
+<div class="text-xs text-neutral-500 mt-1">isn’t just a label</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📜</div>
+<div class="text-xs font-semibold text-neutral-200">compliance</div>
+<div class="text-xs text-neutral-500 mt-1">= order (fixed cases)</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🧭</div>
+<div class="text-xs font-semibold text-neutral-200">principle</div>
+<div class="text-xs text-neutral-500 mt-1">= value (generalizes)</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">✨</div>
+<div class="text-xs font-semibold text-neutral-200">Same content</div>
+<div class="text-xs text-neutral-500 mt-1">different behavior</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">When NOT to use XML (yes, sometimes it gets in the way)</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        After so much praise for XML drawers, here comes the honest counterpoint: <strong class="text-emerald-400">not every prompt needs them</strong>.
+        Too much structure in the wrong place becomes ceremony — it just gets in the way. Knowing when to <em>no</em> using a template is just as important
+        as knowing how to use it. Here are the three cases where XML is overkill.
+      </p>
+<!-- Box Alerta -->
+<div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 mb-6">
+<h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center"><span class="mr-2">⚠️</span> The three cases where XML is unnecessary</h3>
+<ul class="space-y-3 text-neutral-300 text-sm">
+<li class="flex items-start space-x-2">
+<span class="text-red-400 mt-0.5 flex-shrink-0">①</span>
+<span><strong class="text-neutral-200">Short prompt (fewer than ~50 lines).</strong> If it fits on one screen, tags become decoration. A single-task request doesn’t need a drawer—write it directly.</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-red-400 mt-0.5 flex-shrink-0">②</span>
+<span><strong class="text-neutral-200">When Markdown already does the job.</strong> Coding agents (like Claude Code) use
+            <span class="code-box text-neutral-200"># Headings</span> in Markdown instead of XML—it serves the same purpose of separating topics and feels more natural there.</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-red-400 mt-0.5 flex-shrink-0">③</span>
+<span><strong class="text-neutral-200">Deeply nested tags.</strong> Real prompts keep the blocks <strong class="text-red-400">plans</strong> —
+            rarely go beyond 2 levels. Nesting drawer inside drawer inside drawer turns into a maze.</span>
+</li>
+</ul>
+</div>
+<!-- Grid: XML faz sentido vs XML sobra -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-emerald-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-xs">✓</span>
+<span>XML makes sense when...</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>The prompt is long (many topics)</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>It will be versioned and maintained by a team</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>You want to compare versions block by block (diff)</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5">✓</span><span>Some policies benefit from a clear boundary</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>XML is unnecessary when...</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>It’s a short instruction for a single task</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Markdown with headings already provides good organization</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>You caught yourself nesting 3+ levels of tags</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>The structure took up more space than the content</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box final -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🧰</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">The rule of thumb</p>
+<p class="text-sm text-neutral-300">
+              Structure exists to serve clarity, not the other way around. If the drawer makes the prompt <strong>more</strong> easy to read and
+              maintain, use it. If it only adds noise, <strong>remove</strong>. The template is a tool—you control it, not the other way around.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">📏</div>
+<div class="text-xs font-semibold text-neutral-200">Short?</div>
+<div class="text-xs text-neutral-500 mt-1">write directly</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1"># </div>
+<div class="text-xs font-semibold text-neutral-200">Markdown</div>
+<div class="text-xs text-neutral-500 mt-1">solves it in code</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🧱</div>
+<div class="text-xs font-semibold text-neutral-200">Plans</div>
+<div class="text-xs text-neutral-500 mt-1">≤ 2 levels</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-emerald-400 text-lg mb-1">🎯</div>
+<div class="text-xs font-semibold text-neutral-200">Serves clarity</div>
+<div class="text-xs text-neutral-500 mt-1">otherwise, remove it</div>
+</div>
+</div>
+</section>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-emerald-900/40 via-dark-800 to-dark-800 rounded-2xl border border-emerald-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Module Summary</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>O <strong class="text-emerald-400">Identity Block</strong> ("You are...") anchors who/where/when right on the first line</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>A <strong class="text-emerald-400">Capability Declaration</strong> list what the AI can do — each with its condition</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>O <strong class="text-emerald-400">XML compartment</strong> puts each topic in a named drawer (<span class="code-box text-emerald-400">&lt;tag&gt;</span>), flat and modular</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>A <strong class="text-emerald-400">Rule by Example</strong> shows the format (WRONG/RIGHT pair) instead of just describing it</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>O <strong>block name</strong> is also an instruction: <span class="code-box">compliance</span> (order) vs. <span class="code-box">principle</span> (value)</span></li>
+<li class="flex items-start space-x-2"><span class="text-emerald-400 mt-0.5 flex-shrink-0">✓</span><span>Not every prompt needs XML — in short text or code, it becomes ceremony</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-emerald-500/20">
+<h3 class="font-semibold text-emerald-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Next Module</h3>
+<p class="text-neutral-300 text-sm">
+<strong>1.4 — 🎚️ Behavioral patterns.</strong> You already have the <em>form</em> of the blocks. Now let's move on to <em>content</em>:
+          how to write the rules inside them—with reasons, with always/never contrasts, with a concision budget—so the AI doesn’t just
+          obey, but <strong class="text-emerald-400">to understand</strong>.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-emerald-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Back to Track 1</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-1-4.html">
+<span>Next: 1.4 Behavioral patterns</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-emerald-400 font-medium">The AI's Hidden Manual</span> · Module 1.3 · Track 1 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

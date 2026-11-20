@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Track 1 — Fundamentals | O Manual Oculto da IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+      .wf-a:nth-child(5){animation-delay:1s}
+      .wf-a:nth-child(6){animation-delay:1.25s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Emerald — T1) ===== */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-emerald-300 { color: #047857; }
+    html:not(.dark) .text-emerald-200 { color: #065f46; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/30 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.06); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .border-emerald-500\/20 { border-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:border-emerald-500\/30:hover { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha1/" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha1/" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha1/" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha1/" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="./" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha1/" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-emerald-400 bg-emerald-500/10" href="index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- HEADER DE TRILHA -->
+<header class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<span class="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-full mb-4 uppercase tracking-wider">
+        TRACK 1
+      </span>
+<h1 class="text-3xl sm:text-4xl font-bold mb-4">🧱 Fundamentals</h1>
+<p class="text-lg text-neutral-400 max-w-3xl leading-relaxed">
+        If you’ve never instructed an AI before, start here. No jargon, with everyday analogies and lots of real examples,
+        you’ll discover the invisible piece that decides who the AI is: the <strong class="text-emerald-400">system prompt</strong>.
+        Let’s open this note up, look at the pieces that make it up, the patterns that give it shape and voice, the
+        mistakes that ruin everything — and the shift from thinking in <em>rules</em> to think about <em>principles</em>.
+      </p>
+<!-- Stats Grid -->
+<div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-emerald-400">6</div>
+<div class="text-xs text-neutral-400">Modules</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-emerald-400">36</div>
+<div class="text-xs text-neutral-400">Topics</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-emerald-400">~3.5h</div>
+<div class="text-xs text-neutral-400">Duration</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-emerald-400">Basic</div>
+<div class="text-xs text-neutral-400">Level</div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<!-- HERO SVG FUTURISTA: as peças de um prompt -->
+<div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-3 sm:p-4 mb-12 overflow-hidden">
+<svg aria-label="The parts of a system prompt: identity, tone, tools, safety, and priority stack into interlocking blocks that form the invisible note, and that note shapes every AI response in the conversation between you and the assistant" class="w-full h-auto" role="img" viewbox="0 0 1000 320">
+<defs>
+<lineargradient id="t1h-grad-em" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#34d399"></stop><stop offset="1" stop-color="#10b981"></stop>
+</lineargradient>
+<lineargradient id="t1h-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="t1h-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="30" id="t1h-grid" patternunits="userSpaceOnUse" width="30">
+<circle cx="1.3" cy="1.3" fill="#34d399" opacity="0.10" r="1.3"></circle>
+</pattern>
+<marker id="t1h-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#34d399"></path>
+</marker>
+<marker id="t1h-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Background grid -->
+<rect fill="url(#t1h-grid)" height="320" rx="16" width="1000" x="0" y="0"></rect>
+<!-- Coluna 1: as peças empilhadas -->
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="50" y="30">THE PARTS OF A PROMPT</text>
+<g font-family="Inter,sans-serif" font-size="11">
+<g class="wf-a"><rect fill="#0e2018" height="30" rx="8" stroke="#34d399" stroke-width="2" width="210" x="50" y="44"></rect><text fill="#9ad6ff" x="66" y="63">🪪 Identity — who she is</text></g>
+<g class="wf-a"><rect fill="#0e2018" height="30" rx="8" stroke="#34d399" stroke-width="2" width="210" x="50" y="80"></rect><text fill="#9ad6ff" x="66" y="99">✍️ Tone — how she speaks</text></g>
+<g class="wf-a"><rect fill="#0e2018" height="30" rx="8" stroke="#34d399" stroke-width="2" width="210" x="50" y="116"></rect><text fill="#9ad6ff" x="66" y="135">🛠️ Tools — what they do</text></g>
+<g class="wf-a"><rect fill="#0e2018" height="30" rx="8" stroke="#34d399" stroke-width="2" width="210" x="50" y="152"></rect><text fill="#9ad6ff" x="66" y="171">🛡️ Safety — what it doesn't do</text></g>
+<g class="wf-a"><rect fill="#0e1b26" height="30" rx="8" stroke="#38bdf8" stroke-width="2" width="210" x="50" y="188"></rect><text fill="#bfe6ff" x="66" y="207">🪜 Priority — who’s in charge</text></g>
+</g>
+<!-- Setas pecas -> bilhete -->
+<g fill="none" opacity="0.5" stroke="#34d399" stroke-width="1.8">
+<path d="M260,90  C330,90  340,120 418,128" marker-end="url(#t1h-ah)"></path>
+<path d="M260,180 C330,180 340,150 418,156" marker-end="url(#t1h-ah)"></path>
+</g>
+<!-- Coluna 2: o bilhete invisivel (system prompt) -->
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="510" y="30">THE INVISIBLE NOTE</text>
+<g filter="url(#t1h-glow)">
+<rect fill="#0e2018" height="86" rx="14" stroke="url(#t1h-grad-em)" stroke-width="2.5" width="184" x="418" y="100"></rect>
+</g>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="14" font-weight="700" text-anchor="middle" x="510" y="132">🔒 system prompt</text>
+<text fill="#bdf0dd" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="510" y="152">the pieces fitted together</text>
+<text fill="#9ad6ff" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="510" y="168">you can't see on screen</text>
+<!-- Seta bilhete -> conversa -->
+<path d="M602,143 C680,143 700,150 760,150" fill="none" marker-end="url(#t1h-ah)" opacity="0.55" stroke="#34d399" stroke-width="1.8"></path>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="10" opacity="0.8" text-anchor="middle" x="690" y="135">shapes every response</text>
+<!-- Coluna 3: a conversa (user + assistant) -->
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="852" y="30">THE CONVERSATION</text>
+<rect fill="#0e1b26" height="34" rx="9" stroke="#38bdf8" stroke-width="2" width="184" x="760" y="62"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" text-anchor="middle" x="852" y="83">💬 you (user)</text>
+<g filter="url(#t1h-glow)">
+<rect fill="#0e2018" height="40" rx="11" stroke="url(#t1h-grad-em)" stroke-width="2.5" width="184" x="760" y="106"></rect>
+</g>
+<text fill="#34d399" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" text-anchor="middle" x="852" y="131">🤖 AI (assistant)</text>
+<rect fill="#0e1b26" height="34" rx="9" stroke="#38bdf8" stroke-width="2" width="184" x="760" y="156"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" text-anchor="middle" x="852" y="177">💬 you (user)</text>
+<!-- O caminho do curso: erros -> principio (faixa inferior) -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="50" y="248">THE PATH THROUGH THE COURSE</text>
+<g font-family="Inter,sans-serif" font-size="10.5">
+<rect fill="#0e2018" height="34" rx="9" stroke="#34d399" stroke-width="1.8" width="150" x="50" y="260"></rect>
+<text fill="#bdf0dd" text-anchor="middle" x="125" y="281">what it is + the pieces</text>
+<path d="M205,277 L243,277" fill="none" marker-end="url(#t1h-ah)" opacity="0.6" stroke="#34d399" stroke-width="1.6"></path>
+<rect fill="#0e2018" height="34" rx="9" stroke="#34d399" stroke-width="1.8" width="150" x="248" y="260"></rect>
+<text fill="#bdf0dd" text-anchor="middle" x="323" y="281">patterns + errors</text>
+<path d="M403,277 L441,277" fill="none" marker-end="url(#t1h-ahc)" opacity="0.6" stroke="#38bdf8" stroke-width="1.6"></path>
+<rect fill="#0e1b26" height="38" rx="10" stroke="#38bdf8" stroke-width="2" width="172" x="446" y="258"></rect>
+<text fill="#bfe6ff" font-weight="600" text-anchor="middle" x="532" y="276">the turning point</text>
+<text fill="#9ad6ff" text-anchor="middle" x="532" y="289">rule → principle</text>
+</g>
+<!-- Legenda -->
+<rect fill="#0e2018" height="9" rx="2" stroke="#34d399" stroke-width="1.5" width="13" x="700" y="262"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="720" y="270">what the AI receives</text>
+<rect fill="#0e1b26" height="9" rx="2" stroke="#38bdf8" stroke-width="1.5" width="13" x="700" y="280"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="720" y="288">what appears on the screen</text>
+</svg>
+</div>
+<!-- MAPA DA TRILHA (Sec 7.4b) -->
+<section class="mb-12">
+<h2 class="text-2xl font-bold mb-6">Learning path map</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all" href="#modulo-1-1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold text-sm">1.1</span>
+<span class="text-xs text-neutral-500">~30 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🧭 What is a system prompt</h3>
+<p class="text-xs text-neutral-400">The invisible note</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all" href="#modulo-1-2">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold text-sm">1.2</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🧩 The parts of a prompt</h3>
+<p class="text-xs text-neutral-400">Open the note and look inside</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all" href="#modulo-1-3">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold text-sm">1.3</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🏗️ Structural patterns</h3>
+<p class="text-xs text-neutral-400">The prompt skeleton</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all" href="#modulo-1-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold text-sm">1.4</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🎚️ Behavioral patterns</h3>
+<p class="text-xs text-neutral-400">The AI's voice and judgment</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all" href="#modulo-1-5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold text-sm">1.5</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🚫 The 5 mistakes that ruin a prompt</h3>
+<p class="text-xs text-neutral-400">An antidote for each one</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all" href="#modulo-1-6">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold text-sm">1.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🔄 The shift: from rule to principle</h3>
+<p class="text-xs text-neutral-400">Fewer rules, better judgment</p>
+</a>
+</div>
+</section>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- ====================== MÓDULO 1.1 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-1-1">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold">1.1</span>
+<span class="text-xs text-neutral-500">~30 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🧭 What is a system prompt</h3>
+<p class="text-neutral-400 text-sm">Before you type anything, the AI has already read an invisible text that decides who it is. Learn about the part almost no one sees, without jargon and with everyday analogies.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">📜</span>
+<div><span class="font-medium">AI already has rules before you speak</span><span class="text-neutral-500 text-sm ml-2">— the note that arrives first</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">A set of instructions that reaches the AI before your first message and stays in effect for the whole conversation—its "operating mode," which you don’t see on screen.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Almost everything that frustrates or delights you about an AI starts here. Knowing the note exists is the first step toward no longer suffering through AI and starting to guide it.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Invisible · comes first · stays connected to the entire conversation · is the adjustable part.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🎭</span>
+<div><span class="font-medium">Analogy: the actor’s script and the employee handbook</span><span class="text-neutral-500 text-sm ml-2">— two images that stick</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Two comparisons: the script defines the character for the same actor; the manual defines how the employee serves customers. The system prompt is both at once.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">These are the analogies you’ll carry through the entire course — change the script, follow the manual without reciting it. They anchor everything that comes next.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">The script defines the character · the manual defines the rules · same talent · works behind the scenes.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🗣️</span>
+<div><span class="font-medium">The 3 voices: system, user, and assistant</span><span class="text-neutral-500 text-sm ml-2">— who speaks in each turn</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Every conversation has three voices: <span class="code-box text-emerald-400">system</span> (the invisible director), <span class="code-box text-sky-300">user</span> (you) and <span class="code-box text-emerald-400">assistant</span> (the AI responding).</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">You see only two, but the third controls everything. Knowing how to distinguish the voices is the basic vocabulary for reading any conversation with AI.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">system (director) · user (you) · assistant (the AI) · who wins the conflict.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🎯</span>
+<div><span class="font-medium">Why this exists: consistency and safety</span><span class="text-neutral-500 text-sm ml-2">— the two pillars</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The two practical reasons for the note: consistency (the AI acts the same way with everyone) and safety (it knows what not to do).</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Without a system prompt, AI would be unpredictable and dangerous. Understanding why explains why this text exists in every serious AI system.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Consistency · security · predictable behavior · safeguards.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🔀</span>
+<div><span class="font-medium">Change the prompt, change the behavior</span><span class="text-neutral-500 text-sm ml-2">— same model, different face</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The same AI, with two different notes, becomes two different things—we saw Grok as a "study buddy" and as a "medical advisor," verbatim.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s proof that the ticket is powerful—and adjustable. Watch out for the wrong conclusion: it changes behavior, not knowledge.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Same model · different prompts · it’s the script · it’s not knowledge.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🪪</span>
+<div><span class="font-medium">Everyday examples: each AI's "personality"</span><span class="text-neutral-500 text-sm ml-2">— the 1st line gives it away</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Each AI's "style" starts with the first line of the prompt—we saw Cursor (<span class="code-box">"You are an AI coding assistant…"</span>) and Grok, for real.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">That feeling that every AI has its own personality is real — and it’s the choice of whoever wrote the note, not just the model.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Identity on the 1st line · where it operates · stance · is a choice made by whoever wrote it.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-1-1')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors" href="modulo-1-1.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 1.2 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-1-2">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold">1.2</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🧩 The parts of a prompt</h3>
+<p class="text-neutral-400 text-sm">Now that you know the note exists, let’s open it and look at the parts inside: identity, tone, tools, safety, priority—and how it all fits together.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🪪</span>
+<div><span class="font-medium">Identity: who the AI is</span><span class="text-neutral-500 text-sm ml-2">— the "You are…" anchor</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The part that says who the AI is, what it is (the model), and even how current its knowledge is (the knowledge cutoff), stated right at the opening.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Without an anchor, AI drifts—it becomes another persona or invents powers. Identity is the first piece and the only one present in 100% of prompts.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Persona · base model · knowledge cutoff · mission scope.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">✍️</span>
+<div><span class="font-medium">Tone: how the AI speaks</span><span class="text-neutral-500 text-sm ml-2">— the voice of the note</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The part that defines the writing style: formal or casual, brief or detailed, with or without lists—the tone calibrated to the product.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It's the element that most changes the "feel" of using AI—and the one that most separates a pleasant chatbot from a robotic one.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Formal vs. casual · prose vs. list · honesty · calibrated tone.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🛠️</span>
+<div><span class="font-medium">Tools: what the AI does</span><span class="text-neutral-500 text-sm ml-2">— beyond conversation</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The part that lists what the AI can do in the world: search, read files, run code—each action with its scope and conditions for use.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s what turns a chatbot that only talks into an agent that acts. A weak declaration makes the AI promise what it can’t do or ignore what it can.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Action in the world · scope · conditions of use · agent vs. chatbot.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🛡️</span>
+<div><span class="font-medium">Safety: what AI doesn’t do</span><span class="text-neutral-500 text-sm ml-2">— the boundaries</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The part that states refusals and limits, placed early to signal precedence: safety comes before usefulness.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">A blunt prohibition is easy to work around. A rule with a reason generalizes to situations its author never anticipated — you can see that right here.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Refusal · safety &gt; usefulness · early stance · rule with a reason.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🪜</span>
+<div><span class="font-medium">Priority: what takes precedence in a conflict</span><span class="text-neutral-500 text-sm ml-2">— the command order</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The part that sets precedence when two instructions conflict: central policy &gt; system &gt; user &gt; default.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Without a clear order, conflicting instructions leave behavior to chance—the prompt needs to say who wins.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Precedence · central policy · conflict resolution · user &gt; default.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🏷️</span>
+<div><span class="font-medium">How the pieces fit together: the XML compartment</span><span class="text-neutral-500 text-sm ml-2">— each topic in its own drawer</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The way to organize the pieces: each block in a named "drawer" with an XML tag (&lt;tone_and_style&gt;, &lt;tool_calling&gt;), real ones from Cursor.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s what makes a long prompt readable and easy to maintain. The drawer’s name is already half the instruction.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Named block · XML drawer · organization · the name already gives instructions.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-1-2')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors" href="modulo-1-2.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 1.3 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-1-3">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold">1.3</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🏗️ Structural patterns</h3>
+<p class="text-neutral-400 text-sm">The patterns that give the prompt its SHAPE—the skeleton that appears before any behavioral rule: identity, capabilities, XML container, rule by example.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🪪</span>
+<div><span class="font-medium">The Identity Block: "You are…"</span><span class="text-neutral-500 text-sm ml-2">— the universal anchor</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The first structural pattern: “You are X” + model + knowledge cutoff, seen in 100% of real prompts.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Identity is an anchor, not a biography — recognizing the pattern avoids the antipattern of a buried or bloated persona.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Anchor · "You are…" · 100% universal · short and precise.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🛠️</span>
+<div><span class="font-medium">The Capabilities Statement: What It Can Do</span><span class="text-neutral-500 text-sm ml-2">— scope and conditions</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The pattern of listing capabilities in a structured way—each with “what it does,” “when to use it,” and “limits.”</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">A clear list avoids both extremes: offering what doesn't exist and ignoring what does.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Scope · "if the user…" condition · limits · anti-overpromising.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🏷️</span>
+<div><span class="font-medium">The XML Compartment: each topic in its own drawer</span><span class="text-neutral-500 text-sm ml-2">— named flat blocks</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The pattern of wrapping each logical block in a named XML tag—flat (few levels) and modular.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s what makes a prompt with thousands of lines maintainable and the diff between versions readable.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Named block · flat · modular · diffable (Markdown works too).</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">📝</span>
+<div><span class="font-medium">The Rule by Example: show instead of describe</span><span class="text-neutral-500 text-sm ml-2">— input → output</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The pattern of pairing an abstract rule with a concrete demonstration (input → output)—like Perplexity’s citation format.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">A well-chosen example reinforces behavior better than three paragraphs—the AI learns by imitation.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Demonstration · input → output · imitation · rule + example.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🔖</span>
+<div><span class="font-medium">Naming blocks: the name itself is an instruction</span><span class="text-neutral-500 text-sm ml-2">— the label that guides</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The pattern of choosing meaningful block names—the drawer’s title guides behavior; it doesn’t just organize.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">A good name saves lines of rules and sets the stage for the turn in Module 1.6 (the block's name is an instruction).</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Meaningful name · guiding label · fewer rules · semantics.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🚧</span>
+<div><span class="font-medium">When NOT to use XML (yes, sometimes it gets in the way)</span><span class="text-neutral-500 text-sm ml-2">— the pattern limit</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Cases where the XML compartment becomes too much ceremony: short prompts, code (where Markdown headers are enough).</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Every pattern has a limit. Knowing when NOT to apply it is what separates those who copy from those who understand.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Pattern limit · too much ceremony · short prompt · Markdown is enough.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-1-3')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors" href="modulo-1-3.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 1.4 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-1-4">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold">1.4</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🎚️ Behavioral patterns</h3>
+<p class="text-neutral-400 text-sm">The patterns that give the model its VOICE and JUDGMENT—how it acts, decides, and speaks: rule with a reason, Always/Never contrast, concision budget, and tool contract.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">❓</span>
+<div><span class="font-medium">Rule with a Reason: explain why, not just what to do</span><span class="text-neutral-500 text-sm ml-2">— the reason that generalizes</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The pattern of pairing every rule with the reasoning behind it, instead of a blunt command.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The rationale lets AI generalize to unforeseen cases, instead of obeying mechanically and failing at the edges.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Explicit reasoning · generalization · edge-case robustness · intent over wording.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">⚖️</span>
+<div><span class="font-medium">Always / Never contrast: the pair that clears things up</span><span class="text-neutral-500 text-sm ml-2">— the two poles</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The pair that sets the desired and prohibited behaviors side by side—we saw Cursor (<span class="code-box">"NEVER create files… ALWAYS prefer editing…"</span>).</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The contrast removes the ambiguity in the middle: the AI knows exactly which pole to move toward and which to avoid.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">ALWAYS/NEVER · desired/forbidden pair · no middle ground · emphasis.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">📏</span>
+<div><span class="font-medium">Concision Budget: brevity as policy</span><span class="text-neutral-500 text-sm ml-2">— how much to say</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The explicit instruction about the ideal response length—Grok (<span class="code-box">"You provide the shortest answer you can…"</span>).</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Without a budget, the AI "pads the response"; with one, it calibrates density to the channel (terminal, chat, API).</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Target length · expand/cut · density by channel · anti-verbosity.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🔌</span>
+<div><span class="font-medium">Tool Contract: the rules for WHEN to use each thing</span><span class="text-neutral-500 text-sm ml-2">— intro</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Behavior rules for tools: when to call them, in what order, when to stop — the first look at a topic from Track 2.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Declaring the tool isn't enough — its usage contract is what prevents redundant, out-of-order, or unnecessary calls.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">When to call · order · prerequisite · when to stop.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">💰</span>
+<div><span class="font-medium">Emphasis is a currency—and inflation is real</span><span class="text-neutral-500 text-sm ml-2">— scarce resource</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The idea that ALL CAPS, "MUST," and "CRITICAL" are currency: overspending devalues every rule.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">When everything is shouting, nothing stands out. Treating emphasis as a scarce resource is what keeps the prompt audible—and anticipates Error 1 in Module 1.5.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Emphasis as currency · inflation · scarce resource · audibility.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🎯</span>
+<div><span class="font-medium">Always / never, but sparingly</span><span class="text-neutral-500 text-sm ml-2">— use the absolute path carefully</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The rule for using absolutes (always/never) only when there really are no exceptions — otherwise they clash and lose their force.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Too many absolutes create conflicts that are impossible to obey. Restraint is what keeps every “always” meaningful.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">True absolutes · restraint · avoid collisions · preserve strength.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-1-4')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors" href="modulo-1-4.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 1.5 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-1-5">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold">1.5</span>
+<span class="text-xs text-neutral-500">~35 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🚫 The 5 mistakes that ruin a prompt</h3>
+<p class="text-neutral-400 text-sm">The five anti-patterns that sabotage the outcome—and the antidote for each. Before → after grids show how to go from a chaotic prompt to a clean one.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">📣</span>
+<div><span class="font-medium">Error 1 — Emphasis inflation (when everything shouts)</span><span class="text-neutral-500 text-sm ml-2">— nothing stands out</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Stuff the prompt with ALL CAPS, "MUST," and "CRITICAL" until the emphasis loses all its value.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s the most common beginner mistake. The antidote: treat emphasis as currency and save it for what really matters.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Everything screams · emphasis loses its value · antidote: restraint · audibility.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🧅</span>
+<div><span class="font-medium">Error 2 — Onion prompt (rule upon rule)</span><span class="text-neutral-500 text-sm ml-2">— layers that contradict each other</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Adding rule after rule with each problem without ever removing the old ones—the prompt becomes layers of contradictory onion.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s how prompts bloat until they become unmanageable. The antidote: consolidate—remove and rewrite, don’t just add.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Layers · internal contradiction · bloat · antidote: consolidate.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">⚙️</span>
+<div><span class="font-medium">Error 3 — Mechanical rule (the list that teaches the error)</span><span class="text-neutral-500 text-sm ml-2">— describing the danger teaches</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Describe the exact mechanics of what to avoid (step by step) instead of the principle—a list that ends up teaching what it meant to prohibit.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s the seed of the security lesson in Track 3. The antidote: state the principle, not the recipe.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Mechanics vs. principle · dangerous symmetry · antidote: the why · high-level.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🗂️</span>
+<div><span class="font-medium">Error 4 — Everything-in-the-prompt (mixing the fixed with the day’s context)</span><span class="text-neutral-500 text-sm ml-2">— stable vs. dynamic</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Put what should be current context (date, user, task) into the stable prompt — mixing what doesn't change with what changes each turn.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Confusing the layers leads to fragile prompts and wrong conclusions when reading a leak. The antidote: separate fixed from dynamic.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Stable vs. dynamic · current context · harness · antidote: separate them.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🔬</span>
+<div><span class="font-medium">Error 5 — Microscopic distrust (micromanaging everything)</span><span class="text-neutral-500 text-sm ml-2">— overwhelm the model</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Specify every tiny step out of distrust, without letting the AI use its own judgment — instructions that suffocate instead of guide.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Micromanaging breaks generalization. The antidote: trust the AI’s judgment by giving it principles instead of step-by-step recipes.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Micromanagement · stifled judgment · loss of generalization · antidote: trust.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🧮</span>
+<div><span class="font-medium">Synthesis — "Emphasis is currency" and the antidote to each error</span><span class="text-neutral-500 text-sm ml-2">— the full picture</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The wrap-up that brings the 5 errors and their antidotes together in a single table, with "emphasis is currency" as the guiding thread.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Seeing all five together turns a list of cautions into a mental checklist you can apply to any prompt.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Emphasis is currency · 5 mistakes + 5 antidotes · mental checklist · synthesis.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-1-5')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors" href="modulo-1-5.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 1.6 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-1-6">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-emerald-400 font-bold">1.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🔄 The shift: from rule to principle</h3>
+<p class="text-neutral-400 text-sm">The field’s big shift between 2024 and 2026: fewer mechanical rules, more principles. We follow a real diff case—Opus 4.8 → Fable 5—and what it teaches us.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🌊</span>
+<div><span class="font-medium">The 2024 → 2026 trend: the tide has turned</span><span class="text-neutral-500 text-sm ml-2">— the field has matured</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The field’s change in direction: from prompts packed with rigid rules to prompts built on generalizable principles.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Understanding the trend puts you ahead — you start writing in the style the labs are moving toward, not what’s already outdated.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Trend · rule → principle · field maturity · labs’ direction.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🔬</span>
+<div><span class="font-medium">The real case: Opus 4.8 → Fable 5</span><span class="text-neutral-500 text-sm ml-2">— the diff that tells the story</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">A real diff between two versions of a lab prompt—the annotated comparison that shows the shift happening in practice.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Reading changes through diffs is the core skill of Track 3 — here you get your first look at it in a concrete, narrated example.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Version diff · real case · annotated comparison · read the evolution.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">📐</span>
+<div><span class="font-medium">"Evolving ≠ growing": +56 lines, but −7 blocks</span><span class="text-neutral-500 text-sm ml-2">— more text, fewer rules</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The case’s paradox: the prompt gained 56 lines but lost 7 rule blocks—it grew in explanation and shrank in mechanics.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It challenges the intuition that "bigger = better." The right direction is to consolidate rules into principles, even if the text gets longer.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Evolve ≠ grow · +56 / −7 · consolidation · quality &gt; size.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🔖</span>
+<div><span class="font-medium">The block’s name is an instruction</span><span class="text-neutral-500 text-sm ml-2">— renaming changes the meaning</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">In the real case, <span class="code-box">copyright_compliance</span> became <span class="code-box">core_copyright_principle</span> — renaming alone changes the AI’s stance.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">From "follow a rule" to "honor a principle": the name carries the intent. Small change, big effect.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Renaming instructs · compliance → principle · stance · intention in the name.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">➖</span>
+<div><span class="font-medium">Every removal is information</span><span class="text-neutral-500 text-sm ml-2">— the output teaches too</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The view that every block removed between versions reveals a decision—what was removed matters as much as what was added.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Beginners only look at what was added. Learning to read deletions is half the skill of interpreting a diff.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Removal = information · decision revealed · read what was removed · double signal.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🚀</span>
+<div><span class="font-medium">What this means for you: principle &gt; rule</span><span class="text-neutral-500 text-sm ml-2">— your compass from here on</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-emerald-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The practical takeaway: when writing or adjusting a prompt, always prefer a principle that generalizes over a rule that covers only one case.</p></div>
+<div><span class="text-emerald-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It's the compass that closes Track 1 and opens Track 2—you'll be ready to get hands-on with the right mindset.</p></div>
+<div><span class="text-emerald-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Principle &gt; rule · generalization · practical compass · bridge to Track 2.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-1-6')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors" href="modulo-1-6.html">View Full</a>
+</div>
+</div>
+<!-- NAVEGAÇÃO FINAL -->
+<div class="flex flex-col sm:flex-row gap-4 mt-12">
+<a class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors" href="../../index.html">
+        ← Back to Home
+      </a>
+<a class="flex-1 text-center px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-500 transition-colors" href="../trilha2/index.html">
+        Next Track → 🛠️ Practice
+      </a>
+</div>
+</main>
+<!-- MODAIS (Sec 9.3) -->
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-1-1" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-emerald-400 font-bold">1.1</span><span class="font-semibold">🧭 What is a system prompt</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-1-1.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-1-2" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-emerald-400 font-bold">1.2</span><span class="font-semibold">🧩 The parts of a prompt</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-1-2.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-1-3" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-emerald-400 font-bold">1.3</span><span class="font-semibold">🏗️ Structural patterns</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-1-3.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-1-4" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-emerald-400 font-bold">1.4</span><span class="font-semibold">🎚️ Behavioral patterns</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-1-4.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-1-5" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-emerald-400 font-bold">1.5</span><span class="font-semibold">🚫 The 5 mistakes that ruin a prompt</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-1-5.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-1-6" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-emerald-400 font-bold">1.6</span><span class="font-semibold">🔄 The shift: from rule to principle</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-1-6.html"></iframe>
+</div>
+</div>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-emerald-400 font-medium">The AI's Hidden Manual</span> · Track 1 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Toggle de tópicos
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800');
+      if (moduleCard) {
+        moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      }
+      explanation.classList.toggle('active');
+    }
+
+    // Modal
+    function openModal(modalId) {
+      const m = document.getElementById(modalId);
+      if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+    }
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+      document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

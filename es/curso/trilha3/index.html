@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ruta 3 — Avanzado | El Manual Oculto de la IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+      .wf-a:nth-child(5){animation-delay:1s}
+      .wf-a:nth-child(6){animation-delay:1.25s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../../en/curso/trilha3/" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="./" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">Manual oculto de la IA</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Práctica</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Avanzado</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- HEADER DE TRILHA -->
+<header class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<span class="inline-block px-3 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded-full mb-4 uppercase tracking-wider">
+        RUTA 3
+      </span>
+<h1 class="text-3xl sm:text-4xl font-bold mb-4">🧠 Avanzado</h1>
+<p class="text-lg text-neutral-400 max-w-3xl leading-relaxed">
+        Para quienes ya dominan y quieren el nivel de los laboratorios, donde se <strong class="text-purple-400">marca la diferencia</strong>. Aprendes a
+        leer la evolución de un prompt por <em>diffs</em>, a consolidar sin perder el comportamiento, a tratar la seguridad por principio, a apilar
+        prioridades y capas — y llega al corazón del curso: <strong class="text-purple-400">destilar el cerebro</strong> de un agente a partir
+        de sus propios registros, combinar disposición con bloqueos estrictos y versionar tu system prompt como un investigador.
+      </p>
+<!-- Stats Grid -->
+<div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">7</div>
+<div class="text-xs text-neutral-400">Módulos</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">42</div>
+<div class="text-xs text-neutral-400">Temas</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">~5h</div>
+<div class="text-xs text-neutral-400">Duración</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">Avanzado</div>
+<div class="text-xs text-neutral-400">Nivel</div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<!-- HERO SVG FUTURISTA: destilação — recuperar o cérebro a partir dos logs -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-12 overflow-hidden">
+<svg aria-label="El laboratorio del nivel avanzado: a la izquierda, los logs sin procesar de un agente (archivos JSONL con cientos de turnos) pasan por un destilador que reduce el ruido, perfila el comportamiento con cifras y sintetiza una guía de decisiones; a la derecha, ese cerebro destilado se aplica a un modelo nuevo y queda sujeto a garantías estrictas —hooks y nivel de esfuerzo—, formando el prompt versionado" class="w-full h-auto" role="img" viewbox="0 0 1000 320">
+<defs>
+<lineargradient id="t3h-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="t3h-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="t3h-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="30" id="t3h-grid" patternunits="userSpaceOnUse" width="30">
+<circle cx="1.3" cy="1.3" fill="#c084fc" opacity="0.10" r="1.3"></circle>
+</pattern>
+<marker id="t3h-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="t3h-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Background grid -->
+<rect fill="url(#t3h-grid)" height="320" rx="16" width="1000" x="0" y="0"></rect>
+<!-- Coluna 1: os logs brutos -->
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="50" y="30">LOS LOGS DEL AGENTE</text>
+<g font-family="JetBrains Mono,monospace" font-size="10">
+<g class="wf-a"><rect fill="#1a1430" height="28" rx="7" stroke="#a855f7" stroke-width="1.8" width="200" x="50" y="44"></rect><text fill="#d8b4fe" x="64" y="62">📄 session-01.jsonl</text></g>
+<g class="wf-a"><rect fill="#1a1430" height="28" rx="7" stroke="#a855f7" stroke-width="1.8" width="200" x="50" y="78"></rect><text fill="#d8b4fe" x="64" y="96">📄 session-02.jsonl</text></g>
+<g class="wf-a"><rect fill="#1a1430" height="28" rx="7" stroke="#a855f7" stroke-width="1.8" width="200" x="50" y="112"></rect><text fill="#d8b4fe" x="64" y="130">📄 session-…  jsonl</text></g>
+</g>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="150" y="166">429 turnos · sin pesos, con rastro</text>
+<!-- Seta logs -> destilador -->
+<path d="M252,100 C300,100 308,130 358,134" fill="none" marker-end="url(#t3h-ah)" opacity="0.55" stroke="#c084fc" stroke-width="1.8"></path>
+<!-- Coluna 2: o destilador -->
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="450" y="30">EL DESTILADOR</text>
+<g filter="url(#t3h-glow)">
+<rect fill="#1a1430" height="92" rx="14" stroke="url(#t3h-grad-pu)" stroke-width="2.5" width="184" x="358" y="92"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="13.5" font-weight="700" text-anchor="middle" x="450" y="116">🧠 recuperar el cerebro</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="450" y="136">① reducir el ruido (script)</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="450" y="152">② perfilar (los números)</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="450" y="168">③ sintetizar (la guía)</text>
+<!-- Seta destilador -> guia/modelo -->
+<path d="M542,138 C600,138 620,140 678,140" fill="none" marker-end="url(#t3h-ahc)" opacity="0.55" stroke="#38bdf8" stroke-width="1.8"></path>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="10" opacity="0.85" text-anchor="middle" x="610" y="128">apunta la guía</text>
+<!-- Coluna 3: cérebro novo + travas -->
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="788" y="30">CEREBRO NUEVO + RESTRICCIONES</text>
+<g filter="url(#t3h-glow)">
+<rect fill="#1a1430" height="40" rx="11" stroke="url(#t3h-grad-pu)" stroke-width="2.5" width="220" x="678" y="56"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" text-anchor="middle" x="788" y="81">🤖 modelo nuevo + guía</text>
+<rect fill="#0e1b26" height="36" rx="9" stroke="#38bdf8" stroke-width="2" width="106" x="678" y="104"></rect>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="731" y="122">⚓ hooks</text>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="731" y="135">bloqueo estricto</text>
+<rect fill="#0e1b26" height="36" rx="9" stroke="#38bdf8" stroke-width="2" width="106" x="792" y="104"></rect>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="845" y="122">🎚️ effortLevel</text>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="845" y="135">densidad</text>
+<rect fill="#1a1430" height="34" rx="9" stroke="#a855f7" stroke-width="1.8" width="220" x="678" y="148"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" text-anchor="middle" x="788" y="169">🏁 prompt versionado</text>
+<!-- O caminho da trilha (faixa inferior) -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="50" y="248">EL CAMINO DE LA RUTA</text>
+<g font-family="Inter,sans-serif" font-size="10.5">
+<rect fill="#1a1430" height="34" rx="9" stroke="#a855f7" stroke-width="1.8" width="150" x="50" y="260"></rect>
+<text fill="#d8b4fe" text-anchor="middle" x="125" y="281">leer diffs · consolidar</text>
+<path d="M205,277 L243,277" fill="none" marker-end="url(#t3h-ah)" opacity="0.6" stroke="#c084fc" stroke-width="1.6"></path>
+<rect fill="#1a1430" height="34" rx="9" stroke="#a855f7" stroke-width="1.8" width="160" x="248" y="260"></rect>
+<text fill="#d8b4fe" text-anchor="middle" x="328" y="281">seguridad · prioridad · capas</text>
+<path d="M413,277 L451,277" fill="none" marker-end="url(#t3h-ahc)" opacity="0.6" stroke="#38bdf8" stroke-width="1.6"></path>
+<rect fill="#0e1b26" height="38" rx="10" stroke="#38bdf8" stroke-width="2" width="182" x="456" y="258"></rect>
+<text fill="#7dd3fc" font-weight="600" text-anchor="middle" x="547" y="276">destilar el cerebro ⭐</text>
+<text fill="#7dd3fc" text-anchor="middle" x="547" y="289">disposición × restricciones · controlar versiones</text>
+</g>
+<!-- Legenda -->
+<rect fill="#1a1430" height="9" rx="2" stroke="#a855f7" stroke-width="1.5" width="13" x="720" y="262"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="740" y="270">el análisis (el método)</text>
+<rect fill="#0e1b26" height="9" rx="2" stroke="#38bdf8" stroke-width="1.5" width="13" x="720" y="280"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="740" y="288">la acción (lo que bloquea y versiona)</text>
+</svg>
+</div>
+<!-- MAPA DA TRILHA (Sec 7.4b) -->
+<section class="mb-12">
+<h2 class="text-2xl font-bold mb-6">Mapa del recorrido</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.1</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🔬 Leer la evolución mediante diffs</h3>
+<p class="text-xs text-neutral-400">Cada línea +/− es una decisión</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-2">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.2</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🗜️ Consolidación</h3>
+<p class="text-xs text-neutral-400">Reducir sin perder comportamiento</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-3">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.3</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🛡️ Seguridad por principio</h3>
+<p class="text-xs text-neutral-400">El principio, nunca el mecanismo</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.4</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🪜 Prioridad y capas</h3>
+<p class="text-xs text-neutral-400">Quién manda y qué es dinámico</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-purple-500/30 hover:border-purple-500/30 p-5 transition-all ring-1 ring-purple-500/20" href="#modulo-3-5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.5</span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🧠 Destilación: recuperar el cerebro</h3>
+<p class="text-xs text-neutral-400">El corazón del curso — de los logs a la guía ⭐</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-6">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">⚙️ Esfuerzo × garantía estricta</h3>
+<p class="text-xs text-neutral-400">Guía flexible + barreras que no fallan</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-7">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.7</span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🏁 Proyecto final</h3>
+<p class="text-xs text-neutral-400">Tu system prompt versionado</p>
+</a>
+</div>
+</section>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Contenido detallado</h2>
+<!-- ====================== MÓDULO 3.1 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-1">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.1</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🔬 Leer la evolución mediante diffs</h3>
+<p class="text-neutral-400 text-sm">Cuando un laboratorio cambia de versión, deja un rastro: el diff entre el prompt antiguo y el nuevo. Leer ese rastro es arqueología de decisiones: cada línea añadida, eliminada o renombrada cuenta por qué alguien cambió de opinión. Aquí lees un diff como investigador.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🔀</span>
+<div><span class="font-medium">Los 4 tipos de cambios en un diff</span><span class="text-neutral-500 text-sm ml-2">— clasifica antes de interpretar</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Adición, eliminación, reescritura y cambio de nombre: cada tipo tiene una intención diferente. El primer paso de la lectura es separar qué cambió de cómo cambió.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">El lector aficionado solo ve las adiciones y confunde reescritura con cambio de nombre. Distinguir los cuatro tipos permite separar registrar de entender un cambio.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Adición (+) · eliminación (−) · reescritura (≈) · cambio de nombre (~) · caso de estudio Opus 4.8 → Fable 5.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">➖</span>
+<div><span class="font-medium">Toda eliminación es información</span><span class="text-neutral-500 text-sm ml-2">— lee los − como lees los +</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla más subestimada: quien solo lee lo que entró lee la mitad del libro. Lo que salió fue asimilado durante el entrenamiento (se convirtió en ruido) o se consolidó en un principio.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">La madurez de un prompt se mide por la última vez que se eliminó algo de él. Un prompt que solo crece se está pudriendo por dentro.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Interiorizado = ruido · consolidado = principio · <span class="code-box">search_first</span> desapareció · quitar también es editar.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🧪</span>
+<div><span class="font-medium">Inferir la motivación detrás de cada cambio</span><span class="text-neutral-500 text-sm ml-2">— siempre como hipótesis</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Reconstruir el problema que probablemente resuelve el cambio — las armas se convirtieron en principio, las drogas obtuvieron una excepción vital, se empezó a respetar el fin de la conversación.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">La motivación inferida es una interpretación tuya, no una declaración del lab. Inferir es válido siempre que no confundas una hipótesis con una verdad declarada.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">¿A qué incidente responde esto? · motivación probable · honestidad epistémica · el diff es un registro de problemas vividos.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🏷️</span>
+<div><span class="font-medium">El nombre del bloque también es una instrucción</span><span class="text-neutral-500 text-sm ml-2">— la etiqueta moldea la cognición</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El cambio más sutil no modifica ninguna palabra del contenido: <span class="code-box">copyright_compliance</span> → <span class="code-box">core_copyright_principle</span>. El texto permanece, la etiqueta cambia.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Siempre eliges cómo se ve el modelo obedeciendo — y eso cambia cómo obedece. «Compliance» cumple; «principle» razona ante casos nuevos.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Prohibición vs. principio · compliance vs core_principle · renombra según la intención · el nombre de un valor generaliza.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🎓</span>
+<div><span class="font-medium">Extraer la lección generalizable</span><span class="text-neutral-500 text-sm ml-2">— el principio, no el caso</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Cada cambio específico esconde una lección que sirve fuera de contexto. La reescritura de self-harm se convierte en «ejemplo + criterio generador &gt; solo ejemplos».</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Si solo guardas el caso, nada se transfiere. La lección se aplica a tu siguiente prompt, como estudiar partidas de ajedrez para aprender los principios.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Caso × lección · principio &gt; lista · evolucionar ≠ crecer · heredar el método sin heredar la mente.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🔬</span>
+<div><span class="font-medium">El método para leer un diff (paso a paso)</span><span class="text-neutral-500 text-sm ml-2">— tipo → motivación → lección</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El protocolo completo: para cada cambio, clasifica el tipo, infiere la motivación probable y destila la lección — y revisa el saldo (+56 líneas / −7 bloques).</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">La misma lente de análisis es la que usas para reducir tu propio prompt después. Leer diffs cierra el ciclo con la consolidación del 3.2.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Clasifica · lee los − · extrae la lección · el saldo (estructura &gt; caracteres).</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-1')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-1.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.2 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-2">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.2</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🗜️ Consolidación: reducir el volumen sin perder el comportamiento</h3>
+<p class="text-neutral-400 text-sm">En 3.1 leíste la evolución desde afuera; ahora toca actuar. La ronda de consolidación toma un prompt que no deja de crecer y lo desinfla — fusionando reglas pequeñas en principios — sin perder ni una garantía de comportamiento. La regla de oro: nada se elimina sin motivo y sin prueba.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🎈</span>
+<div><span class="font-medium">El problema del crecimiento desmedido: un prompt que solo crece se pudre</span><span class="text-neutral-500 text-sm ml-2">— cada incidente se convierte en una regla</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La entropía del prompt: cada problema se convierte en una regla nueva, ninguna se elimina y el documento acaba siendo un monstruo que nadie se atreve a tocar.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Un prompt inflado diluye la atención del modelo y oculta contradicciones. Reconocer el síntoma es el primer paso para tratarlo.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Entropía del prompt · regla por incidente · atención diluida · nadie se atreve a borrar.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🔁</span>
+<div><span class="font-medium">La ronda de consolidación: cada N reglas</span><span class="text-neutral-500 text-sm ml-2">— un ritual periódico</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Un ritual programado: cada N reglas que agregues, detente y revisa todo de una vez — fusiona, elimina, reescribe — en vez de seguir acumulando.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Consolidar de manera intencional y periódica es lo que evita el deterioro. Es mantenimiento, no una reparación de emergencia.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Ritual periódico · cada N reglas · refactorizar el prompt · mantenimiento, no pánico.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🔎</span>
+<div><span class="font-medium">Las 3 preguntas: el filtro de cada regla</span><span class="text-neutral-500 text-sm ml-2">— ¿ya lo hace? ¿Se puede fusionar? ¿Qué prueba?</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El filtro aplicado a cada regla: ¿el modelo ya hace esto por sí solo? ¿se puede fusionar en un principio más general? ¿qué prueba fallaría sin ella?</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Las tres preguntas convierten la "limpieza por intuición" en una decisión justificable. Cada regla demuestra su valor o se elimina.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">¿Ya lo hace por su cuenta? · ¿Se puede fusionar? · ¿Qué prueba falla si falta? · Decisión justificable.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🥇</span>
+<div><span class="font-medium">La regla de oro: por qué + una prueba que fallaría</span><span class="text-neutral-500 text-sm ml-2">— nada entra ni sale sin pruebas</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La barrera de consolidación: toda regla lleva el motivo de su existencia y una prueba que fallaría sin ella. Sin ambas cosas, no merece quedarse.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es lo que te protege de eliminar algo importante por error — y de conservar algo inútil por miedo. La prueba decide, no la intuición.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Porqué documentado · prueba que fallaría · evidencia por regla · pruebas &gt; miedo.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">📊</span>
+<div><span class="font-medium">El caso real de Fable: +56 líneas, −7 bloques</span><span class="text-neutral-500 text-sm ml-2">— evolucionar ≠ crecer</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El ejemplo canónico: la evolución de Opus 4.8 → Fable 5 ganó contenido (+56 líneas), pero perdió estructura (−7 bloques). Creció y se desinfló al mismo tiempo.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es la prueba viva de que «evolucionar ≠ crecer». Un equipo maduro agrega lo que faltaba y elimina lo que el entrenamiento ya incorporó, en el mismo diff.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">+56 líneas / −7 bloques · el contenido aumenta, la estructura disminuye · el saldo &gt; el volumen · la madurez es visible.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">⏳</span>
+<div><span class="font-medium">Cuándo NO consolidar: demasiado pronto</span><span class="text-neutral-500 text-sm ml-2">— sin datos, no concluyas</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El contrapunto: consolidar antes de haber visto el comportamiento real es optimización prematura. Sin suficientes casos, fusionas reglas que todavía no entiendes.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Reducir demasiado pronto es tan peligroso como aumentar: puedes generalizar un principio equivocado. Espera a tener datos antes de fusionar.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Optimización prematura · espera los datos · principio equivocado · la madurez tiene su momento.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-2')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-2.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.3 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-3">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.3</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🛡️ Seguridad por principio, no por mecánica</h3>
+<p class="text-neutral-400 text-sm">La lección más delicada de los labs: en seguridad, lo que escribes para proteger también puede enseñar a atacar. La solución es declarar el principio, nunca la mecánica de detección, y darle al modelo un desencadenante de rechazo que pueda reconocer mediante su propio razonamiento.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧒</span>
+<div><span class="font-medium">La lección de la seguridad infantil: mantenerse en el nivel del patrón</span><span class="text-neutral-500 text-sm ml-2">— no detalles qué detecta</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El caso de Fable 5: la política de seguridad infantil se mantiene en el nivel del principio y del patrón, sin detallar las señales que usa la detección.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Detallar la mecánica de detección en un prompt es dar el mapa para eludirla. El nivel adecuado es el principio, no el procedimiento.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Nivel del principio · no detallar señales · basta con el patrón · el prompt es legible para quien ataca.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">⚖️</span>
+<div><span class="font-medium">La simetría es peligrosa</span><span class="text-neutral-500 text-sm ml-2">— lo que educa también arma</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El riesgo central de la seguridad: el conocimiento que protege es simétrico al que ataca. Explicar cómo detectar es explicar cómo evadir.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Reconocer la simetría es lo que te hace pensarlo dos veces antes de escribir la mecánica. La defensa y el ataque comparten la misma información.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Simetría del conocimiento · educar = armar · piensa en el lector hostil · información de doble filo.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">📜</span>
+<div><span class="font-medium">Declara el principio, nunca la mecánica de detección</span><span class="text-neutral-500 text-sm ml-2">— el alto nivel protege</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla práctica: escribe el valor de alto nivel («protege X») y deja que el modelo derive cómo aplicarlo, sin enumerar cómo reconocer cada intento.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">El principio cubre el caso que la lista no previó y no impone el método. Es más sólido y más seguro a la vez.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Principio &gt; mecánica · alto nivel · derivar la aplicación · no entregues el método.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🚦</span>
+<div><span class="font-medium">El disparador de rechazo: el reencuadre es la señal</span><span class="text-neutral-500 text-sm ml-2">— "if you find yourself reframing… REFUSE"</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Un disparador introspectivo: <span class="code-box">if you find yourself reframing…</span> entonces rechaza. La señal de alerta es que el propio modelo se sorprenda eludiendo la regla.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">En lugar de una lista de prohibiciones que se puede eludir, el detonante usa el razonamiento del modelo como sensor: detecta la evasión y se detiene.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Desencadenante introspectivo · el reenmarcado como señal · REFUSE · el razonamiento es el sensor.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🧯</span>
+<div><span class="font-medium">Precaución tras una negativa</span><span class="text-neutral-500 text-sm ml-2">— el cuidado no termina en el «no»</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El paso siguiente al «no»: mantenerte alerta en los turnos posteriores, porque la solicitud puede volver dividida en partes o reformulada para eludir la negativa.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Una negativa aislada no cierra el riesgo si el modelo «olvida» en el turno siguiente. La precaución debe mantenerse incluso después de la propia negativa.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Atención tras el rechazo · solicitud fragmentada · reformulación a continuación · el riesgo persiste.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">💬</span>
+<div><span class="font-medium">El tono al rechazar: conversacional, sin viñetas</span><span class="text-neutral-500 text-sm ml-2">— rechazar sin sonar como un robot</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La forma del rechazo: una respuesta conversacional y humana, sin volcar listas de políticas ni dar sermones, que preserve la dignidad de la conversación.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Una negativa fría y burocrática aleja al usuario legítimo y no ayuda a nadie. El tono correcto rechaza la solicitud sin castigar a la persona.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Conversacional · sin viñetas · sin sermones · firme y humano.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-3')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-3.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.4 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-4">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.4</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🪜 Prioridad y capas</h3>
+<p class="text-neutral-400 text-sm">Cuando dos instrucciones entran en conflicto, ¿cuál prevalece? ¿Y qué es eso de <span class="code-box">&lt;system-reminder&gt;</span> que aparece en medio de la conversación? Este módulo separa el comportamiento estable (el prompt) del estado dinámico (la capa inyectada por el harness) — y muestra por qué esta arquitectura escala con el tiempo.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🪜</span>
+<div><span class="font-medium">Jerarquía de prioridades: quién manda cuando hay un conflicto</span><span class="text-neutral-500 text-sm ml-2">— el orden declarado</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla que establece la precedencia entre instrucciones en conflicto: la política central está por encima de system, system por encima del usuario, el usuario por encima de lo predeterminado.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Sin un orden explícito, el conflicto entre instrucciones deja el comportamiento al azar. La jerarquía indica de antemano cuál prevalece.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Precedencia declarada · política central al principio · resolver conflictos · nada al azar.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🔗</span>
+<div><span class="font-medium">La cadena de precedencia, eslabón por eslabón</span><span class="text-neutral-500 text-sm ml-2">— seguridad &gt; system &gt; user &gt; predeterminado</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La cadena, desglosada eslabón por eslabón, con el ejemplo real de precedencia de copyright: desde la seguridad en la cima hasta el comportamiento predeterminado.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Ver la cadena completa muestra dónde encaja cada instrucción de tu prompt y por qué una regla «débil» no derriba una «fuerte».</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Eslabón por eslabón · cadena de precedencia de copyright · seguridad innegociable · cada nivel en su lugar.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">📡</span>
+<div><span class="font-medium">Recordatorio del sistema: la capa dinámica del harness</span><span class="text-neutral-500 text-sm ml-2">— inyectado en tiempo de ejecución</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">O <span class="code-box">&lt;system-reminder&gt;</span>: una capa de contexto inyectada por el harness durante la ejecución: estado del momento, no una regla fija del prompt.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es como el sistema transmite información dinámica (conversación larga, recordatorio de una regla) sin reescribir el prompt estable. Entenderlo explica muchos comportamientos.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm"><span class="code-box">&lt;system-reminder&gt;</span> · inyectado por el harness · estado actual · capa dinámica.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🚧</span>
+<div><span class="font-medium">Reminder ≠ orden del usuario: es contexto, no instrucción</span><span class="text-neutral-500 text-sm ml-2">— "injected by the harness, not the user"</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La distinción crucial: el reminder es <span class="code-box">injected by the harness, not the user</span> — es contexto que orienta, no una instrucción del usuario que deba obedecerse ciegamente.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Tratar el contexto como una orden (o viceversa) rompe la jerarquía. El modelo necesita saber el origen para ponderar correctamente lo que lee.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Contexto ≠ instrucción · el origen importa · no es el usuario quien habla · pondera según la fuente.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🧱</span>
+<div><span class="font-medium">Comportamiento estable frente a estado dinámico: por qué separarlos</span><span class="text-neutral-500 text-sm ml-2">— prompt fijo, contexto móvil</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La separación de responsabilidades: el prompt guarda el comportamiento que siempre se aplica; el reminder lleva el estado que cambia de turno en turno.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Mezclar ambos infla el prompt con cosas efímeras. Mantener cada capa en su lugar deja el prompt estable y conciso, y el estado actualizado.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Estable vs. dinámico · cada capa en su lugar · no infla el prompt · separación de responsabilidades.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🥇</span>
+<div><span class="font-medium">La regla de oro: usuario &gt; memoria</span><span class="text-neutral-500 text-sm ml-2">— lo actual vence a lo recordado</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La regla que resuelve el conflicto entre lo que pide el usuario ahora y lo que guardó antes la memoria/auto-memory: prevalece la solicitud actual del usuario.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">La memoria que se impone al usuario genera un agente terco, atado a preferencias antiguas. Lo que el usuario informa ahora debe prevalecer sobre lo recordado.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Usuario &gt; memoria · el presente prevalece · sin terquedad · una preferencia antigua no es un obstáculo.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-4')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-4.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.5 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-purple-500/30 mb-6 ring-1 ring-purple-500/20" id="modulo-3-5">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.5 <span class="ml-2 text-xs font-semibold bg-purple-500/20 border border-purple-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider align-middle">⭐ el corazón</span></span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🧠 Destilación: recuperar el cerebro</h3>
+<p class="text-neutral-400 text-sm">El corazón del curso. Perdimos los pesos de Fable, pero quedaron los logs. Este módulo te enseña el método para recuperar el «cerebro» de un agente a partir de sus propios registros: encontrar los JSONL, reducir el ruido con un script, perfilar el comportamiento con números y sintetizar una guía de decisión para indicar a un modelo nuevo.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧬</span>
+<div><span class="font-medium">La premisa: sin los pesos, pero con los logs</span><span class="text-neutral-500 text-sm ml-2">— el comportamiento quedó registrado</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La idea fundacional: no tienes los pesos del modelo, pero sí el rastro de lo que hizo, y el comportamiento de un buen agente está íntegro en esos logs.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Replantea qué significa "recuperar" un modelo: no es volver a entrenarlo, sino destilar el método observable del rastro que dejó.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Sin pesos, con logs · comportamiento observable · destilar ≠ entrenar · el rastro basta.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">📂</span>
+<div><span class="font-medium">Encontrar los JSONL — dónde vive el registro</span><span class="text-neutral-500 text-sm ml-2">— localizar las sesiones</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El paso práctico: localizar los archivos <span class="code-box">.jsonl</span> de sesión donde queda registrado cada turno del agente: entrada, razonamiento, acción y resultado.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Sin saber dónde vive el registro, no hay materia prima. Encontrar los JSONL es abrir la caja negra del comportamiento.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Archivos <span class="code-box">.jsonl</span> · sesiones registradas · turno a turno · la materia prima.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🧹</span>
+<div><span class="font-medium">Reducir el ruido: el script, no el contexto</span><span class="text-neutral-500 text-sm ml-2">— procesa en Python, no en el chat</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La disciplina clave: filtrar y resumir los logs con un script Python; nunca volcar cientos de turnos sin procesar en la ventana de contexto del modelo.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Poner el log sin procesar en el contexto es caro, lento y supera el límite. El script hace el trabajo pesado fuera del modelo y entrega solo la señal.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Script &gt; contexto · procesar fuera del modelo · señal, no ruido · no satures la ventana.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🎯</span>
+<div><span class="font-medium">Filtrar por el agente objetivo</span><span class="text-neutral-500 text-sm ml-2">— aísla el cerebro que quieres</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El recorte: entre todos los turnos, aislar solo los del agente cuyo comportamiento quieres destilar — separando el cerebro objetivo del resto del sistema.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Mezclar agentes diferentes confunde los patrones y diluye el perfil. Filtrar según el objetivo es lo que da foco a la destilación.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Segmentación por agente · aislar el objetivo · no mezclar cerebros · centrarse en el perfil.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">📈</span>
+<div><span class="font-medium">Perfilar el comportamiento: las cifras</span><span class="text-neutral-500 text-sm ml-2">— 97% razonamiento · 84% antes de la 1.ª acción</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Cuantificar el perfil a partir de los 429 turnos: 97% con razonamiento, 84% razonando antes de la primera acción, 87% reevaluando, 23% con prueba real.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Los números convierten una impresión en un retrato. Revelan qué prioriza realmente el agente: pensar mucho antes de actuar, reevaluar casi siempre.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">429 turnos · 97% razonamiento · 84% antes de la acción · 87% reevalúa · 23% prueba real.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🧠</span>
+<div><span class="font-medium">Sintetizar la guía: el decision loop, señalado</span><span class="text-neutral-500 text-sm ml-2">— del perfil a la guía y al nuevo modelo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El paso final: convertir el perfil numérico en una guía para decidir —el decision loop destilado— y dirigir la sesión de un modelo nuevo a esa guía.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es aquí donde el cerebro «vuelve»: el método observado se convierte en una instrucción reutilizable. Heredas la disciplina del agente sin tener sus pesos.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Perfil → guía · el decision loop · señalar el nuevo modelo · el cerebro recuperado.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-5')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-5.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.6 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-6">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">⚙️ Esfuerzo × garantía estricta</h3>
+<p class="text-neutral-400 text-sm">Una guía de comportamiento es solo «mejor esfuerzo» — el modelo intenta seguirla, pero puede fallar. Para lo que debe garantizarse, no lo pides: lo bloqueas. Este módulo separa la disposición (flexible) de las garantías estrictas — densidad de razonamiento mediante <span class="code-box">effortLevel</span>, hábito determinista mediante hook, y muestra dónde vive cada regla.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🤲</span>
+<div><span class="font-medium">Por qué una guía de comportamiento es solo «el mejor esfuerzo»</span><span class="text-neutral-500 text-sm ml-2">— el prompt sugiere, no garantiza</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La naturaleza de la guía: las instrucciones de comportamiento inclinan al modelo en una dirección, pero no la imponen. Es una disposición, no una garantía.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Confiar en un prompt para algo que siempre debe salir bien es apostar. Conocer el límite de la guía te indica cuándo recurrir a una restricción estricta.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Mejor esfuerzo · disposición ≠ garantía · el prompt inclina · conoce el límite.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🎚️</span>
+<div><span class="font-medium">Densidad de razonamiento = effortLevel, no el antiguo token budget</span><span class="text-neutral-500 text-sm ml-2">— xhigh/max, no MAX_THINKING_TOKENS</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La palanca adecuada para «pensar más»: el <span class="code-box">effortLevel</span> (xhigh/max), que controla la densidad del razonamiento, no el antiguo <span class="code-box">MAX_THINKING_TOKENS</span>.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Pedir «piensa con cuidado» en el prompt es una intención; subir el effortLevel es una configuración que realmente cambia cuánto razona el modelo.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm"><span class="code-box">effortLevel</span> xhigh/max · densidad de razonamiento · configuración, no prompt · ≠ presupuesto de tokens.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">⚓</span>
+<div><span class="font-medium">Hábito determinista = el hook PostToolUse</span><span class="text-neutral-500 text-sm ml-2">— obliga a probar después de editar</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La barrera estricta: un hook <span class="code-box">PostToolUse</span> que activa la prueba automáticamente después de cada edición — el harness la ejecuta, el modelo no la «recuerda».</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Lo que debe ocurrir siempre no puede depender de la disposición del modelo. El hook garantiza el hábito de forma determinista.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm"><span class="code-box">PostToolUse</span> · el harness lo fuerza · determinista · hábito garantizado.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🗂️</span>
+<div><span class="font-medium">Dónde reside la regla: CLAUDE.md vs auto-memory</span><span class="text-neutral-500 text-sm ml-2">— siempre se carga × relevance-gated</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La decisión sobre dónde ubicarlo: el <span class="code-box">CLAUDE.md</span> siempre se carga (en cada sesión), mientras que la auto-memory está condicionada por la relevancia: solo se incluye cuando el contexto la requiere.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Poner una regla crítica solo en la auto-memory es arriesgarse a que no aparezca cuando importa. El lugar donde está la regla determina si es confiable.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm"><span class="code-box">CLAUDE.md</span> siempre se carga · auto-memory condicionada por la relevancia · dónde &gt; qué · garantizar la presencia.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🎭</span>
+<div><span class="font-medium">Los output styles sirven para el tono y el papel, no para la disciplina agéntica</span><span class="text-neutral-500 text-sm ml-2">— estilo ≠ comportamiento</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El alcance adecuado de los output styles: moldean cómo suena el agente y qué papel representa, pero no imponen la disciplina del proceso (probar, reevaluar, verificar).</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Esperar disciplina agéntica de un estilo de salida es usar la herramienta equivocada. El tono es el tono; el comportamiento operativo va en otro lugar.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Tono y papel · ≠ disciplina · herramienta adecuada para el fin adecuado · el estilo no verifica.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🔗</span>
+<div><span class="font-medium">Unir los dos: disposición (flexible) + bloqueos estrictos = garantía</span><span class="text-neutral-500 text-sm ml-2">— la guía orienta, el bloqueo garantiza</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La síntesis: la guía de disposición da dirección y sentido común; las barreras estrictas (hooks, effortLevel, dónde vive la regla) garantizan lo que no puede fallar. Juntas, forman el sistema.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Solo el prompt es frágil; solo el bloqueo es rígido y ciego. La combinación es lo que produce un agente flexible y confiable a la vez.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">La guía orienta + las barreras garantizan · flexible + firme · flexible y confiable · el sistema completo.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-6')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-6.html">Ver completo</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.7 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-7">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.7</span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🏁 Proyecto final: tu system prompt versionado</h3>
+<p class="text-neutral-400 text-sm">El momento de unirlo todo. Tú creas tu propio system prompt —PMV, persona, loop y seguridad—, lo versionas con diffs, escribes el porqué y la prueba de cada regla, redactas tu guía de disposición y la complementas con límites estrictos. El entregable es tuyo: un prompt y una guía versionados, listos para evolucionar como evolucionan los labs.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧩</span>
+<div><span class="font-medium">Unir todo: PMV + persona + loop + seguridad</span><span class="text-neutral-500 text-sm ml-2">— armar el prompt completo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">El armado del prompt final reúne las piezas del curso: el Mínimo Viable, la persona de cuatro ejes, el Loop operativo y los bloques de seguridad.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es la integración de todo lo que practicaste, sin repetir el error de recargarlo todo. Cada pieza se incluye porque tu caso la necesita, no «por si acaso».</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">PMV + persona + loop + seguridad · integrar sin inflar · solo lo que el caso requiere · prompt completo.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🗃️</span>
+<div><span class="font-medium">Crear versiones: guardar versiones y hacer diff</span><span class="text-neutral-500 text-sm ml-2">— trata el prompt como código</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Trata el prompt como un artefacto versionado: guarda cada versión y compárala con diff, cerrando el ciclo que aprendiste a leer en el 3.1.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Crear versiones hace que la evolución sea visible y reversible. Empiezas a leer tu propio diff y a aplicarte el método que usabas en los labs.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Prompt como código · guardar versiones · diff propio · evolución visible y reversible.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🧾</span>
+<div><span class="font-medium">Escribir el porqué y la prueba de cada regla</span><span class="text-neutral-500 text-sm ml-2">— la regla que se justifica</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Aplicar la regla de oro del 3.2 a tu prompt: cada regla acompañada de por qué existe y de la prueba que fallaría sin ella.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es lo que hace que tu prompt sea auditable y se pueda podar en el futuro: tú (u otra persona) sabes por qué está ahí cada línea y cómo verificar si aún sirve.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Porqué por regla · prueba que fallaría · prompt auditable · se puede eliminar después.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🧠</span>
+<div><span class="font-medium">Armar tu guía de disposición (tu Fable Mindset)</span><span class="text-neutral-500 text-sm ml-2">— el decision loop, por escrito</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Redactar tu guía de comportamiento — tu "Fable Mindset" — destilando el decision loop que quieres que siga el agente, con el espíritu de 3.5.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">La guía es la disposición que orienta al agente en los casos que el prompt rígido no contempla. Escribirla es plasmar tu método en un texto reutilizable.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Guía de disposición · tu Fable Mindset · decision loop escrito · método reutilizable.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">⚙️</span>
+<div><span class="font-medium">Combinar con las restricciones (hooks + effortLevel + dónde está la regla)</span><span class="text-neutral-500 text-sm ml-2">— disposición + garantía</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">Aplicar el 3.6 a tu proyecto: combinar la guía flexible con barreras firmes — hooks para el hábito, effortLevel para el razonamiento y la elección de dónde vive cada regla.</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Es lo que saca tu prompt del «espero que funcione» y lo lleva al «garantizo lo que hace falta». La combinación cierra la brecha entre intención y ejecución.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Hooks + effortLevel · dónde vive la regla · guía + barreras · la intención se convierte en ejecución.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">✅</span>
+<div><span class="font-medium">Checklist de entrega: el self-check antes de decir "listo"</span><span class="text-neutral-500 text-sm ml-2">— demostrar que está completo</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">Qué es:</span> <p class="text-neutral-300 text-sm">La autoverificación final: una lista de verificación que confirma que el prompt, la guía, las pruebas y los bloqueos están completos y son coherentes antes de declarar "listo".</p></div>
+<div><span class="text-purple-400 font-semibold">Por qué aprender:</span> <p class="text-neutral-300 text-sm">Cierra el curso con el mismo rigor que enseña: nada está "listo" por sensación; está listo después de verificar cada punto.</p></div>
+<div><span class="text-purple-400 font-semibold">Conceptos clave:</span> <p class="text-neutral-300 text-sm">Checklist de entrega · listo mediante verificación · prompt + guía + pruebas + bloqueos · coherencia final.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-7')">Ver en Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-7.html">Ver completo</a>
+</div>
+</div>
+<!-- NAVEGAÇÃO ENTRE TRILHAS -->
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-10 pt-8 border-t border-dark-600">
+<a class="group flex items-center space-x-3 px-5 py-3 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-xl transition-colors w-full sm:w-auto" href="../trilha2/index.html">
+<span class="text-blue-400 text-xl">←</span>
+<div>
+<div class="text-xs text-neutral-500">Volver</div>
+<div class="font-semibold text-sm group-hover:text-blue-400 transition-colors">Ruta 2 — Práctica</div>
+</div>
+</a>
+<a class="group flex items-center space-x-3 px-5 py-3 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-xl transition-colors w-full sm:w-auto sm:text-right" href="../../index.html">
+<div class="flex-1">
+<div class="text-xs text-neutral-500">Inicio del curso</div>
+<div class="font-semibold text-sm group-hover:text-purple-400 transition-colors">El Manual Oculto de la IA</div>
+</div>
+<span class="text-purple-400 text-xl">→</span>
+</a>
+</div>
+</main>
+<!-- MODAIS (Sec 9.3) -->
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-1" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.1</span><span class="font-semibold">🔬 Leer la evolución mediante diffs</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-1.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-2" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.2</span><span class="font-semibold">🗜️ Consolidación: reducir el volumen sin perder el comportamiento</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-2.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-3" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.3</span><span class="font-semibold">🛡️ Seguridad por principio, no por mecánica</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-3.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-4" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.4</span><span class="font-semibold">🪜 Prioridad y capas</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-4.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-5" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.5</span><span class="font-semibold">🧠 Destilación: recuperar el cerebro</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-5.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-6" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.6</span><span class="font-semibold">⚙️ Esfuerzo × garantía estricta</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-6.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-7" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.7</span><span class="font-semibold">🏁 Proyecto final: tu system prompt versionado</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-7.html"></iframe>
+</div>
+</div>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">El Manual Oculto de la IA</span> · Ruta 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Toggle de tópicos
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800');
+      if (moduleCard) {
+        moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      }
+      explanation.classList.toggle('active');
+    }
+
+    // Modal
+    function openModal(modalId) {
+      const m = document.getElementById(modalId);
+      if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+    }
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+      document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

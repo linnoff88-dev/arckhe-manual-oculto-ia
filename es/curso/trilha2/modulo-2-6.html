@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>2.6 Cómo crear una Skill y un agente | El Manual Oculto de la IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Blue — T2) ===== */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-blue-300 { color: #1d4ed8; }
+    html:not(.dark) .text-blue-200 { color: #1e40af; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/30 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .border-blue-500\/20 { border-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:border-blue-500\/30:hover { border-color: rgba(37, 99, 235, 0.25); }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha2/modulo-2-6.html" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha2/modulo-2-6.html" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha2/modulo-2-6.html" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha2/modulo-2-6.html" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="../../../en/curso/trilha2/modulo-2-6.html" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">EN</a><a href="modulo-2-6.html" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">Manual oculto de la IA</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentos</span>
+</a>
+<!-- Trilha 2 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-blue-400 bg-blue-500/10" href="index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Práctica</span>
+</a>
+<!-- Trilha 3 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors" href="../trilha3/index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Avanzado</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- MAIN CONTENT -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-sm text-neutral-500 mb-6">
+<a class="hover:text-blue-400 transition-colors" href="../../index.html">Inicio</a>
+<span>/</span>
+<a class="hover:text-blue-400 transition-colors" href="index.html">Ruta 2</a>
+<span>/</span>
+<span class="text-blue-400">Módulo 2.6</span>
+</div>
+<!-- Header do Módulo -->
+<div class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 rounded-2xl border border-blue-500/30 p-6 sm:p-8 mb-8">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-2xl">
+          🛠️
+        </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-3 mb-2">
+<span class="text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/30 px-2 py-1 rounded-full uppercase tracking-wider">MÓDULO 2.6</span>
+<span class="text-xs text-neutral-500">Ruta 2 — Práctica</span>
+</div>
+<h1 class="text-2xl font-bold text-neutral-100 mb-2">🛠️ Cómo crear una Skill y un Agente</h1>
+<p class="text-neutral-300 leading-relaxed">
+            El system prompt fue solo el comienzo. Ahora subes un nivel: vas a empaquetar una habilidad en una
+            <strong class="text-blue-400">Skill</strong> (que se activa por sí sola con la <em>description</em>) y, cuando el trabajo lo requiera,
+            va <strong class="text-sky-300">"contratar" a un agente</strong> con un principio y un final bien definidos. Veamos las cinco capas
+            del sistema agéntico, dónde encaja cada pieza y cuándo conviene paralelizar — con un ejemplo real de INEMA al final.
+          </p>
+<!-- Stats -->
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">📋</span><span>6 temas</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">⏱</span><span>~40 min</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">🎯</span><span>Práctico</span>
+</div>
+<div class="flex items-center space-x-1.5 text-sm text-neutral-400">
+<span class="text-blue-400">🧩</span><span>Skills y agentes</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SVG FUTURISTA: a pilha de 5 camadas do Agentic OS -->
+<div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-4 mb-10 overflow-hidden">
+<svg aria-label="Diagrama de la pila de cinco capas de un sistema agéntico (Agentic OS), de la base a la cima: capa 1, identidad en la base (quién es, datos, objetivos); capa 2, reglas y hooks encima; capa 3, skills en el medio (habilidades que se activan mediante la description); capa 4, agentes y subagentes en cian (roles con inicio y fin definidos que pueden ejecutarse en paralelo); y capa 5, herramientas, MCPs y CLIs en la cima (las manos que ejecutan). Cada capa se apoya en la de abajo" class="w-full h-auto" role="img" viewbox="0 0 960 420">
+<defs>
+<lineargradient id="m26-grad-bl" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#60a5fa"></stop><stop offset="1" stop-color="#2563eb"></stop>
+</lineargradient>
+<lineargradient id="m26-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="m26-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="28" id="m26-grid" patternunits="userSpaceOnUse" width="28">
+<circle cx="1.2" cy="1.2" fill="#60a5fa" opacity="0.10" r="1.2"></circle>
+</pattern>
+<marker id="m26-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#60a5fa"></path>
+</marker>
+<marker id="m26-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Fundo grid -->
+<rect fill="url(#m26-grid)" height="420" rx="16" width="960" x="0" y="0"></rect>
+<!-- Rótulos -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" opacity="0.7" text-anchor="middle" x="480" y="30">la pila del Agentic OS · cada capa se apoya en la de abajo</text>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" transform="rotate(-90 44 70)" x="44" y="70">▲ arriba · ejecuta</text>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="middle" transform="rotate(-90 44 372)" x="44" y="372">base · fundamento ▼</text>
+<!-- Camada 5 — ferramentas / MCPs / CLIs (topo) -->
+<g filter="url(#m26-glow)">
+<rect class="wf-a" fill="#0e1b26" height="56" rx="12" stroke="#38bdf8" stroke-width="2" width="720" x="120" y="52"></rect>
+</g>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="140" y="78">⑤</text>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="13" font-weight="600" x="166" y="78">Herramientas · MCPs · CLIs</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" x="166" y="96">las manos: buscar, ejecutar código, guardar en la base de datos, llamar a una API</text>
+<!-- Camada 4 — agentes / subagentes -->
+<rect class="wf-a" fill="#0e1b26" height="56" rx="12" stroke="#38bdf8" stroke-width="2" width="720" x="120" y="124"></rect>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="140" y="150">④</text>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="13" font-weight="600" x="166" y="150">Agentes y subagentes</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" x="166" y="168">roles con inicio y fin definidos · pueden ejecutarse en paralelo</text>
+<!-- dois subagentes ilustrados em ciano, lado a lado, paralelos -->
+<rect class="wf-a" fill="#0b2030" height="36" rx="8" stroke="#38bdf8" stroke-width="1.4" width="86" x="640" y="134"></rect>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="683" y="156">sub ‖</text>
+<rect class="wf-a" fill="#0b2030" height="36" rx="8" stroke="#38bdf8" stroke-width="1.4" width="86" x="734" y="134"></rect>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="777" y="156">sub ‖</text>
+<!-- Camada 3 — skills (meio, em destaque) -->
+<g filter="url(#m26-glow)">
+<rect class="wf-a" fill="#13213f" height="56" rx="12" stroke="url(#m26-grad-bl)" stroke-width="2.5" width="720" x="120" y="196"></rect>
+</g>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="140" y="222">③</text>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="13" font-weight="600" x="166" y="222">Skills</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" x="166" y="240">habilidades empaquetadas · se activan solas por la descripción</text>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="end" x="824" y="228">⚡ activador</text>
+<!-- Camada 2 — regras / hooks -->
+<rect class="wf-a" fill="#0e1830" height="56" rx="12" stroke="url(#m26-grad-bl)" stroke-width="2" width="720" x="120" y="268"></rect>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="140" y="294">②</text>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="13" font-weight="600" x="166" y="294">Reglas y Hooks</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" x="166" y="312">los rieles: lo que siempre se aplica + automatizaciones que se activan ante eventos</text>
+<!-- Camada 1 — identidade (base, larga) -->
+<g filter="url(#m26-glow)">
+<rect class="wf-a" fill="#0e1830" height="56" rx="12" stroke="url(#m26-grad-bl)" stroke-width="2.5" width="768" x="96" y="340"></rect>
+</g>
+<text fill="#60a5fa" font-family="Inter,sans-serif" font-size="13" font-weight="700" x="116" y="366">①</text>
+<text fill="#93c5fd" font-family="Inter,sans-serif" font-size="13" font-weight="600" x="142" y="366">Identidad</text>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" x="142" y="384">el fundamento: quién es, los datos, los objetivos — todo se apoya aquí</text>
+<!-- setas verticais: cada camada se apoia na de baixo (base → topo) -->
+<path d="M888,338 L888,256" fill="none" marker-end="url(#m26-ah)" opacity="0.55" stroke="#60a5fa" stroke-width="1.6"></path>
+<path d="M888,266 L888,256" fill="none" opacity="0" stroke="#60a5fa" stroke-width="0"></path>
+<path d="M906,324 L906,256" fill="none" opacity="0" stroke="#60a5fa" stroke-width="1.6"></path>
+<path d="M888,266 L888,184" fill="none" marker-end="url(#m26-ah)" opacity="0.55" stroke="#60a5fa" stroke-width="1.6"></path>
+<path d="M888,194 L888,112" fill="none" marker-end="url(#m26-ahc)" opacity="0.55" stroke="#38bdf8" stroke-width="1.6"></path>
+<path d="M888,122 L888,40" fill="none" opacity="0" stroke="#38bdf8" stroke-width="0"></path>
+<path d="M888,122 L888,114" fill="none" marker-end="url(#m26-ahc)" opacity="0.55" stroke="#38bdf8" stroke-width="1.6"></path>
+</svg>
+</div>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Contenido detallado</h2>
+<!-- TÓPICO 1 -->
+<section class="mb-14" id="topico-1">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">1</span>
+<h2 class="text-2xl font-bold">Qué es una Skill</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Hasta aquí escribiste un prompt para usar <em>ahora</em>, en la mano. Una <strong class="text-blue-400">Skill</strong> es el paso siguiente:
+        empaquetas una habilidad —"crear un video", "armar un cómic", "analizar un flujo"— de modo que la IA la active
+        <strong class="text-blue-400">por sí sola</strong> cuando la solicitud encaja. No pegas el prompt cada vez; la habilidad queda guardada y
+        aparece en el momento adecuado. El secreto de una buena skill está en solo dos partes.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center"><span class="mr-2">🧩</span> Una skill son dos cosas unidas</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          Toda skill tiene una <strong class="text-blue-400">description</strong> (la etiqueta que decide <em>cuándo</em> ella conecta) y un
+          <strong class="text-blue-400">cuerpo de instrucciones</strong> (qué hacer <em>después</em> que conectó). La descripción es la parte
+          que la IA lee todo el tiempo para decidir si esa solicitud "corresponde" a esa skill. El cuerpo solo se lee cuando se activa.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Por eso la regla de oro: <strong class="text-blue-400">la description es la parte más importante</strong>. Una instrucción
+          impecable que nunca se activa no sirve para nada. Escribe la etiqueta con activadores claros: las palabras reales que usaría el usuario.
+        </p>
+</div>
+<!-- O que e -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-blue-400 mb-3">Qué es</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Un paquetito con un nombre, una <span class="code-box text-blue-400">description</span> rica en activadores, y un cuerpo de
+          instrucciones (un <span class="code-box">SKILL.md</span>) que enseña a la IA a ejecutar esa tarea de principio a fin. Es como
+          darle a la IA una "receta grabada": reconoce la solicitud por la etiqueta y sigue los pasos sin que tengas que volver a explicarlo todo.
+        </p>
+</div>
+<!-- Por que aprender -->
+<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+<h3 class="text-lg font-semibold text-neutral-200 mb-3">Por qué importa</h3>
+<p class="text-neutral-300 text-sm leading-relaxed">
+          Porque una skill convierte un prompt que pegas cada vez en una capacidad que <em>habita</em> en tu sistema. Y porque
+          el principal punto de falla es el activador: las skills que "no se activan" casi siempre tienen una descripción vaga. Acertar con la etiqueta es lo
+          que separa una skill útil de una que duerme para siempre.
+        </p>
+</div>
+<!-- Caixa mono: uma description que dispara bem -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-4">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">Una description que activa bien <span class="font-normal text-neutral-500">SKILL.md (encabezado)</span></div>
+<span class="text-xs text-neutral-500 code-box">disparadores explícitos</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">name:</span> video-explicativo
+<span class="text-blue-400">description:</span> Cria vídeos explicativos em PT-BR a partir de um assunto —
+  roteiro, narração, cenas animadas e CTA. <span class="text-sky-300">Use quando o usuário pedir</span>
+  "fazer um vídeo", "vídeo explicativo", "vídeo sobre X", "vídeo pra
+  Shorts/Reels", "mini tutorial em vídeo", <span class="text-sky-300">ou quando der um assunto</span>
+  <span class="text-sky-300">e quiser um vídeo narrado pronto.</span> Cobre roteiro, locução,
+  animação, render e a CTA final.</pre>
+<p class="text-xs text-neutral-400 mt-3 leading-relaxed">
+          Observa: la description dice <strong class="text-blue-400">lo que hace</strong> y, sobre todo, <strong class="text-sky-300">cuándo
+          usar</strong> — con las frases exactas que activan la skill entre comillas. Eso es lo que hace que la skill se active con la solicitud correcta (y se quede quieta con las demás).
+        </p>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🏷️</div>
+<div class="text-xs font-semibold text-neutral-200">La description</div>
+<div class="text-xs text-neutral-500 mt-1">decide cuándo se activa</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">📜</div>
+<div class="text-xs font-semibold text-neutral-200">El cuerpo</div>
+<div class="text-xs text-neutral-500 mt-1">qué hacer después</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">⚡</div>
+<div class="text-xs font-semibold text-neutral-200">Desencadenantes claros</div>
+<div class="text-xs text-neutral-500 mt-1">las palabras del usuario</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">💤</div>
+<div class="text-xs font-semibold text-neutral-200">Sin activador</div>
+<div class="text-xs text-neutral-500 mt-1">la skill duerme para siempre</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 2 -->
+<section class="mb-14" id="topico-2">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">2</span>
+<h2 class="text-2xl font-bold">Las 5 capas de un sistema agéntico</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Una skill no existe por sí sola. Es una pieza de un todo más grande — lo que la gente llama <strong class="text-blue-400">Agentic OS</strong>un sistema operativo agéntico, ensamblado por capas. Mira la pila de arriba: cinco niveles, de la base a la cima, cada uno apoyado en el
+        de abajo. Conocer esa pila es saber <em>dónde vivirá cada cosa que creas</em>.
+      </p>
+<!-- Timeline das 5 camadas (base -> topo) -->
+<div class="space-y-4 mb-6">
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+<span class="text-blue-400 text-lg">🪪</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-blue-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-blue-400 mb-1">1. Identidad — los cimientos</h4>
+<p class="text-sm text-neutral-500 mb-2">La base de todo. Sin ella, todas las capas superiores quedan «directionally fluffy».</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Quién es el sistema, los datos que lo conectan con la realidad y los objetivos. En el ejemplo de salud del video fuente, es el panel de ADN, los marcadores,
+              las metas. <strong class="text-blue-400">"Si los datos no están organizados, construyes algo bonito que quizá ayude, pero no está hecho a tu medida."</strong>
+</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+<span class="text-blue-400 text-lg">🚦</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-blue-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-blue-400 mb-1">2. Reglas y Hooks — los rieles</h4>
+<p class="text-sm text-neutral-500 mb-2">Lo que siempre se mantiene, más las automatizaciones que se activan ante eventos.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+<strong class="text-blue-400">Reglas</strong> son el comportamiento estable («la verdad por encima de la adulación»). <strong class="text-blue-400">Hooks</strong>
+              son activadores automáticos que el harness fuerza en ciertos momentos — ej.: «después de editar un archivo, ejecuta las pruebas». La regla
+              <em>pide</em>; el hook <em>garantiza</em>.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+<span class="text-blue-400 text-lg">🧩</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-blue-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-blue-400 mb-1">3. Skills — las habilidades</h4>
+<p class="text-sm text-neutral-500 mb-2">La capa intermedia: recetas que se activan mediante la description.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Habilidades empaquetadas que el sistema activa cuando la solicitud coincide — análisis de dieta, resumen de la semana, extracción de informe.
+              Es exactamente lo que viste en el tema 1: <strong class="text-blue-400">description que conecta + cuerpo que ejecuta</strong>.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">🤖</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">4. Agentes y subagentes: los roles</h4>
+<p class="text-sm text-neutral-500 mb-2">Trabajadores con un papel, un inicio y un final definidos.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Un <strong class="text-sky-300">agente</strong> tiene un papel propio (p. ej.: "un coach general que lee mis marcadores antes de responder");
+              <strong class="text-sky-300">subagentes</strong> son especialistas a quienes llama (metabolismo, entrenamiento, suplementación). Esta es la capa
+              donde más gente «se adelanta» — volvemos a ella en el tema 4.
+            </p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center">
+<span class="text-sky-300 text-lg">🔧</span>
+</div>
+<div class="flex-1 bg-dark-800 border border-dark-600 rounded-xl p-5">
+<h4 class="font-semibold text-sky-300 mb-1">5. Herramientas · MCPs · CLIs: las manos</h4>
+<p class="text-sm text-neutral-500 mb-2">La cima: lo que realmente afecta al mundo.</p>
+<p class="text-neutral-300 text-sm leading-relaxed">
+              Buscar en la web, ejecutar código, guardar en una base de datos (en el ejemplo, un Supabase con 13 tablas), llamar a una API. Las capas inferiores
+              <em>deciden</em>; esta <strong class="text-sky-300">ejecuta</strong>Agrega una herramienta nueva solo cuando el sistema realmente la necesite.
+            </p>
+</div>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🎯</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">El orden es de abajo hacia arriba</p>
+<p class="text-sm text-neutral-300">
+              Construyes el sistema siguiendo el orden de las capas: primero la <strong>identidad</strong> (los datos), después
+              <strong>reglas/hooks</strong>, después <strong>skills</strong>, y solo entonces <strong>agentes</strong> e <strong>herramientas</strong> según
+              lo requiera el uso. Quien empieza por los agentes está construyendo el techo antes que los cimientos.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🪪</div>
+<div class="text-xs font-semibold text-neutral-200">1. Identidad</div>
+<div class="text-xs text-neutral-500 mt-1">el bedrock</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🚦</div>
+<div class="text-xs font-semibold text-neutral-200">2. Reglas/Hooks</div>
+<div class="text-xs text-neutral-500 mt-1">los rieles</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🧩</div>
+<div class="text-xs font-semibold text-neutral-200">3. Skills</div>
+<div class="text-xs text-neutral-500 mt-1">se activan por description</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🤖</div>
+<div class="text-xs font-semibold text-neutral-200">4. Agentes</div>
+<div class="text-xs text-neutral-500 mt-1">roles definidos</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🔧</div>
+<div class="text-xs font-semibold text-neutral-200">5. Herramientas</div>
+<div class="text-xs text-neutral-500 mt-1">las manos</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 3 -->
+<section class="mb-14" id="topico-3">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">3</span>
+<h2 class="text-2xl font-bold">Agente vs. subagente</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Las palabras <strong class="text-sky-300">agente</strong> e <strong class="text-sky-300">subagente</strong> se confunden porque parecen
+        lo mismo. No lo son. La diferencia es simple: uno <strong class="text-sky-300">agente</strong> es el trabajador que recibe la misión;
+        un <strong class="text-sky-300">subagente</strong> es un especialista que <em>ese</em> agente al que se le asigna una parte del trabajo — y que
+        devuelve solo el resultado, sin volcar todo el borrador de vuelta.
+      </p>
+<!-- Os dois lado a lado -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<div class="text-sky-300 text-2xl mb-2">🤖</div>
+<h3 class="text-base font-semibold text-sky-300 mb-2">Agente: el titular</h3>
+<p class="text-neutral-300 text-sm leading-relaxed mb-3">
+            Recibe la tarea, mantiene el hilo y decide el camino. Es quien conversa contigo y quien garantiza que el trabajo llegue a su fin.
+            En el ejemplo de salud: el <strong class="text-sky-300">coach general</strong> que lee tus marcadores antes de cualquier respuesta.
+          </p>
+<ul class="space-y-1.5 text-xs text-neutral-400">
+<li class="flex items-start space-x-2"><span class="text-sky-300">•</span><span>Tiene el contexto de toda la misión</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300">•</span><span>Decide cuándo llamar a un especialista</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300">•</span><span>Une las piezas y entrega el resultado</span></li>
+</ul>
+</div>
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5">
+<div class="text-sky-300 text-2xl mb-2">🧑‍🔬</div>
+<h3 class="text-base font-semibold text-sky-300 mb-2">Subagente: el especialista</h3>
+<p class="text-neutral-300 text-sm leading-relaxed mb-3">
+            El agente lo invoca para una parte específica, hace solo eso y devuelve una <strong class="text-sky-300">conclusión breve</strong> —
+            no la cantidad de archivos que leyó. En el ejemplo: un especialista de <strong class="text-sky-300">metabolismo</strong>, otro de
+            <strong class="text-sky-300">entrenamiento</strong>, otro de <strong class="text-sky-300">suplementación</strong>.
+          </p>
+<ul class="space-y-1.5 text-xs text-neutral-400">
+<li class="flex items-start space-x-2"><span class="text-sky-300">•</span><span>Mira solo la parte que te correspondió</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300">•</span><span>Trabaja en una ventana de contexto propia</span></li>
+<li class="flex items-start space-x-2"><span class="text-sky-300">•</span><span>Devuelve la conclusión, no el borrador</span></li>
+</ul>
+</div>
+</div>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center"><span class="mr-2">🧠</span> Por qué separarlos funciona</h3>
+<p class="text-neutral-300 leading-relaxed mb-3">
+          La mayor ventaja de un subagente es <strong class="text-blue-400">proteger el contexto del titular</strong>. Cuando una tarea
+          implicaría revisar decenas de archivos o registros, el agente delega: el subagente se sumerge en eso en la <em>propia</em> ventana y vuelve solo con la
+          conclusión. El titular se queda con la respuesta, no con la basura de la búsqueda.
+        </p>
+<p class="text-neutral-300 leading-relaxed text-sm">
+          Es la misma lógica del mundo real: un director no lee cada hoja de cálculo; se lo pide a un analista y recibe el resumen. Cada subagente es
+          un analista con <strong class="text-blue-400">un alcance y un entregable</strong>.
+        </p>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">Regla práctica</p>
+<p class="text-sm text-neutral-300">
+<strong>Skill</strong> = una receta que se activa sola. <strong>Agente</strong> = un trabajador con un papel.
+              <strong>Subagente</strong> = un ayudante al que el agente llama para una parte y que devuelve solo el resultado. La skill es <em>qué</em>;
+              el agente es <em>quién</em>.
+            </p>
+</div>
+</div>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🎯</div>
+<div class="text-xs font-semibold text-neutral-200">El agente decide</div>
+<div class="text-xs text-neutral-500 mt-1">mantiene la misión</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🔬</div>
+<div class="text-xs font-semibold text-neutral-200">El subagente ejecuta una parte</div>
+<div class="text-xs text-neutral-500 mt-1">un solo recorte</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">🪟</div>
+<div class="text-xs font-semibold text-neutral-200">Contexto propio</div>
+<div class="text-xs text-neutral-500 mt-1">protege al titular</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">📤</div>
+<div class="text-xs font-semibold text-neutral-200">Devuelve una conclusión</div>
+<div class="text-xs text-neutral-500 mt-1">no el borrador</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 4 -->
+<section class="mb-14" id="topico-4">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">4</span>
+<h2 class="text-2xl font-bold">Cuándo «contratar» a un agente</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Aquí está el error del que advierte el propio video de origen: <strong class="text-blue-400">"mucha gente se adelanta y crea agentes"</strong>.
+        La tentación es formar un ejército de agentes desde el comienzo, porque parece avanzado. Pero un agente solo se justifica cuando hay un
+        <strong class="text-blue-400">rol con una línea clara que indique dónde empieza y dónde termina</strong>. Sin esta frontera, creaste
+        complejidad, no capacidad.
+      </p>
+<!-- Box Conceito Principal -->
+<div class="bg-gradient-to-br from-blue-900/30 to-dark-800 rounded-xl border border-blue-500/30 p-6 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">📐</span> La prueba del "papel con principio y fin"</h3>
+<ul class="space-y-3 text-neutral-300">
+<li class="flex items-start space-x-2">
+<span class="text-blue-400 mt-1">①</span>
+<span><strong class="text-blue-400">¿Se puede nombrar el rol en una frase?</strong> "El agente que hace X." Si necesitas un párrafo, el rol aún no está claro.</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-blue-400 mt-1">②</span>
+<span><strong class="text-blue-400">¿Dónde empieza?</strong> ¿Cuál es el disparador que activa a este agente y no a otro?</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="text-blue-400 mt-1">③</span>
+<span><strong class="text-blue-400">¿Dónde termina?</strong> ¿Cuál es el entregable que indica que «terminó»? Sin una línea de llegada, el agente se vuelve un pozo sin fondo.</span>
+</li>
+</ul>
+</div>
+<!-- Grid: contratar agente CERTO vs CEDO DEMAIS -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-blue-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Cuándo vale la pena crear un agente</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>El rol cabe en una frase, con un inicio y un final claros</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>La tarea es mutuamente excluyente: no se superpone con otra</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Ya viste, en la práctica, cómo se repite este trabajo</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Hay un entregable concreto que indica que está "listo"</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>Cuándo es demasiado pronto (saltar el arma)</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Creas el agente «porque parece avanzado»</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Las reglas todavía se superponen: nada está delimitado</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>El rol solo describe en párrafos vagos dónde empieza y dónde termina</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Una skill simple ya resolvería el mismo trabajo</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-primary/10 border border-primary/40 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-primary text-lg flex-shrink-0">💡</span>
+<div>
+<p class="text-sm font-semibold text-primary mb-1">La disciplina, expresada por el propio código fuente</p>
+<p class="text-sm text-neutral-300">
+              "No tiene sentido agregar agentes al principio, porque todavía no he delimitado qué regla merece ser mutuamente excluyente
+              frente a las reglas que se superponen." Espera a que el trabajo <strong>si se revela</strong>Crea el agente cuando el límite de su función quede claro:
+              <strong>no antes</strong>.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 5 -->
+<section class="mb-14" id="topico-5">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">5</span>
+<h2 class="text-2xl font-bold">Paralelizar subagentes</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Una vez que tienes subagentes, llega un superpoder: <strong class="text-sky-300">ejecutar varios al mismo tiempo</strong>. Cuando dos
+        tareas no dependen una de otra, no hay motivo para hacerlas en fila. De hecho, este es un principio que los propios sistemas de vanguardia
+        declaran: <strong class="text-blue-400">"las llamadas independientes, sin dependencias entre sí, van en el mismo bloque"</strong> — en paralelo.
+      </p>
+<!-- Timeline: sequencial vs paralelo -->
+<div class="bg-dark-800 border border-sky-500/30 rounded-xl p-5 mb-6">
+<h3 class="text-lg font-semibold text-sky-300 mb-4 flex items-center"><span class="mr-2">⚡</span> La ventaja de ejecutarlos juntos</h3>
+<div class="flex flex-col sm:flex-row items-stretch gap-3 text-sm">
+<div class="flex-1 bg-dark-900 rounded-lg p-3 border border-dark-600">
+<div class="text-neutral-400 text-xs font-semibold mb-2">En fila (lento)</div>
+<div class="space-y-1.5">
+<div class="flex items-center space-x-2"><span class="w-4 h-4 rounded-full bg-sky-500/20 flex items-center justify-center text-[10px] text-sky-300">A</span><div class="h-2 w-16 rounded bg-sky-500/30"></div></div>
+<div class="flex items-center space-x-2"><span class="w-4 h-4 rounded-full bg-sky-500/20 flex items-center justify-center text-[10px] text-sky-300">B</span><div class="ml-16 h-2 w-16 rounded bg-sky-500/30"></div></div>
+<div class="flex items-center space-x-2"><span class="w-4 h-4 rounded-full bg-sky-500/20 flex items-center justify-center text-[10px] text-sky-300">C</span><div class="ml-32 h-2 w-16 rounded bg-sky-500/30"></div></div>
+</div>
+<div class="text-neutral-500 text-[11px] mt-2">uno termina, ahí empieza el otro: el tiempo se suma</div>
+</div>
+<div class="flex items-center justify-center text-sky-300 font-bold">vs</div>
+<div class="flex-1 bg-dark-900 rounded-lg p-3 border border-sky-500/30">
+<div class="text-sky-300 text-xs font-semibold mb-2">En paralelo (rápido)</div>
+<div class="space-y-1.5">
+<div class="flex items-center space-x-2"><span class="w-4 h-4 rounded-full bg-sky-500/20 flex items-center justify-center text-[10px] text-sky-300">A</span><div class="h-2 w-16 rounded bg-sky-500/40"></div></div>
+<div class="flex items-center space-x-2"><span class="w-4 h-4 rounded-full bg-sky-500/20 flex items-center justify-center text-[10px] text-sky-300">B</span><div class="h-2 w-16 rounded bg-sky-500/40"></div></div>
+<div class="flex items-center space-x-2"><span class="w-4 h-4 rounded-full bg-sky-500/20 flex items-center justify-center text-[10px] text-sky-300">C</span><div class="h-2 w-16 rounded bg-sky-500/40"></div></div>
+</div>
+<div class="text-neutral-500 text-[11px] mt-2">los tres empiezan juntos: el tiempo es el del más lento</div>
+</div>
+</div>
+</div>
+<!-- Grid: paraleliza CERTO vs ERRADO -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+<div class="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-blue-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-xs">✓</span>
+<span>Se puede paralelizar cuando…</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Las tareas son independientes: ninguna usa el resultado de la otra</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Cada subagente tiene su propio alcance y entregable</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>Quieres cubrir varios frentes de investigación a la vez</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5">✓</span><span>No hay un estado compartido que uno pueda pisar en el otro</span></li>
+</ul>
+</div>
+<div class="bg-red-900/20 border border-red-500/20 rounded-xl p-4">
+<h4 class="text-sm font-semibold text-red-400 mb-3 flex items-center space-x-2">
+<span class="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center text-xs">✗</span>
+<span>NO paralelices cuando…</span>
+</h4>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>El paso B necesita lo que descubrió el paso A (es una cadena)</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Dos agentes escribirían en el mismo archivo al mismo tiempo</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>El orden importa para el resultado final</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">✗</span><span>Es una tarea única y pequeña — paralelizarla solo agrega sobrecarga</span></li>
+</ul>
+</div>
+</div>
+<!-- Tip box -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">🌿</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">La pregunta que lo desbloquea todo</p>
+<p class="text-sm text-neutral-300">
+              Antes de despachar, pregúntate: <strong>"¿el siguiente paso necesita el resultado del anterior?"</strong> Si <em>no</em>,
+              envíalo junto. Si <em>sí</em>, es una cadena: respeta el orden. El trabajo independiente va en paralelo; el trabajo dependiente, en secuencia.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- TÓPICO 6 -->
+<section class="mb-14" id="topico-6">
+<div class="flex items-center space-x-4 mb-5">
+<span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl flex-shrink-0">6</span>
+<h2 class="text-2xl font-bold">Ejemplo real: una skill de INEMA</h2>
+</div>
+<p class="text-neutral-300 mb-6 leading-relaxed">
+        Basta de abstracciones: vamos a abrir una skill real de INEMA. A <strong class="text-blue-400">video-explicativo</strong> toma uno
+        <em>asunto</em> y devuelve un video narrado, animado y renderizado. Es el caso perfecto de
+        <strong class="text-blue-400">Contrato de herramienta (Técnica 8)</strong>cada etapa del pipeline tiene un disparador, un prerrequisito y un orden:
+        eso es lo que distingue a un agente que ejecuta de uno que va a tientas.
+      </p>
+<!-- Caixa mono: a skill como pipeline com contrato -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<div class="flex items-center justify-between mb-3">
+<div class="text-xs font-semibold text-blue-400">video-explicativo — el pipeline en orden <span class="font-normal text-neutral-500">SKILL.md</span></div>
+<span class="text-xs text-neutral-500 code-box">contrato de herramienta</span>
+</div>
+<pre class="bg-dark-900 border-l-2 border-blue-500 rounded p-4 font-mono text-xs text-neutral-300 overflow-x-auto code-box leading-relaxed"><span class="text-blue-400">DISPARA quando:</span> "fazer um vídeo", "vídeo sobre X", "vídeo pra Shorts"
+
+<span class="text-sky-300">① roteiro</span>     → escreve SCRIPT.md (beats do assunto)
+<span class="text-sky-300">② narração</span>    → gera os WAVs (TTS local)  · pré-req: roteiro pronto
+<span class="text-sky-300">③ composição</span>  → monta as cenas animadas   · pré-req: durações medidas
+<span class="text-sky-300">④ validar</span>     → lint + inspect (0 erro)   · antes de renderizar
+<span class="text-sky-300">⑤ render</span>      → HTML → MP4 (16:9 e 9:16)
+
+<span class="text-blue-400">REGRA DE OURO:</span> a CTA do INEMA.CLUB é sempre a última cena.</pre>
+<p class="text-xs text-neutral-400 mt-3 leading-relaxed">
+          Cada etapa solo se ejecuta <strong class="text-blue-400">después</strong> que entregó la anterior — la narración necesita el guion y la composición
+          necesita las duraciones. Este es el contrato: <strong class="text-sky-300">cuándo, en qué orden, con qué requisito previo</strong>. Sin él,
+          la IA intentaría renderizar antes de que existiera el audio.
+        </p>
+</div>
+<!-- Como as camadas aparecem nessa skill -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-xl p-5 mb-6">
+<h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center"><span class="mr-2">🧱</span> Dónde aparece cada capa aquí</h3>
+<div class="space-y-3 text-sm">
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center">①</span>
+<p class="text-neutral-300"><strong class="text-blue-400">Identidad:</strong> el estándar de INEMA — PT-BR, dark premium ámbar, voz local. Es el fundamento que la skill da por sentado.</p>
+</div>
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center">②</span>
+<p class="text-neutral-300"><strong class="text-blue-400">Regla:</strong> "el CTA de INEMA.CLUB siempre es la última escena" — innegociable, siempre aplica.</p>
+</div>
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center">③</span>
+<p class="text-neutral-300"><strong class="text-blue-400">Skill:</strong> la propia <span class="code-box">video-explicativo</span>, que se activa con una descripción rica en desencadenantes.</p>
+</div>
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-sky-500/10 text-sky-300 font-bold text-xs flex items-center justify-center">④</span>
+<p class="text-neutral-300"><strong class="text-sky-300">Agente:</strong> en un paquete más grande (el «productor»), un agente orquesta el plan → la dirección → el render, y llama a skills como esta.</p>
+</div>
+<div class="flex items-start space-x-3">
+<span class="flex-shrink-0 w-7 h-7 rounded-full bg-sky-500/10 text-sky-300 font-bold text-xs flex items-center justify-center">⑤</span>
+<p class="text-neutral-300"><strong class="text-sky-300">Herramientas/CLIs:</strong> el TTS local, HyperFrames (HTML→MP4), FFmpeg: las manos que realmente generan el archivo.</p>
+</div>
+</div>
+</div>
+<!-- Box: onde a paralelização entra -->
+<div class="bg-sky-900/30 border border-sky-500/30 rounded-xl p-4 mb-5">
+<div class="flex items-start space-x-3">
+<span class="text-sky-300 text-lg flex-shrink-0">⚡</span>
+<div>
+<p class="text-sm font-semibold text-sky-300 mb-1">Dónde se puede paralelizar (y dónde no)</p>
+<p class="text-sm text-neutral-300">
+              Los dos formatos — <strong>16:9 e 9:16</strong> — son independientes: se pueden renderizar en paralelo. En cambio, el pipeline en sí
+              (guion → narración → composición) es una <strong>cadena</strong>cada etapa necesita la anterior, así que se ejecuta en secuencia. Incluso dentro
+              de una skill, separas lo que es independiente de lo que es dependiente.
+            </p>
+</div>
+</div>
+</div>
+<!-- Box Alerta / nuance -->
+<div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 mb-5">
+<h3 class="text-lg font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> El punto ciego: verificar de verdad</h3>
+<p class="text-neutral-300 text-sm leading-relaxed mb-3">
+          La etapa que casi todos los pipelines tratan mal es la <strong class="text-red-400">verificación</strong>. No basta con que la skill diga «rendericé».
+          El contrato debe cerrarse con una <strong>cláusula de verificación</strong>:
+        </p>
+<ul class="space-y-2 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">1.</span><span><strong>El archivo existe</strong> en el destino correcto? (no confíes en el código de salida)</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">2.</span><span><strong>El lint pasó</strong> ¿con cero errores antes del render?</span></li>
+<li class="flex items-start space-x-2"><span class="text-red-400 mt-0.5">3.</span><span><strong>Narra fielmente</strong> lo que pasó — en vez de decir «listo» sin haberlo revisado.</span></li>
+</ul>
+</div>
+<!-- Conceitos-chave -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">📄</div>
+<div class="text-xs font-semibold text-neutral-200">Skill = pipeline</div>
+<div class="text-xs text-neutral-500 mt-1">con contrato</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">🔗</div>
+<div class="text-xs font-semibold text-neutral-200">El orden importa</div>
+<div class="text-xs text-neutral-500 mt-1">prerrequisito por etapa</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-sky-300 text-lg mb-1">⚡</div>
+<div class="text-xs font-semibold text-neutral-200">16:9 ‖ 9:16</div>
+<div class="text-xs text-neutral-500 mt-1">en paralelo cuando se pueda</div>
+</div>
+<div class="bg-dark-700 rounded-lg p-3 text-center">
+<div class="text-blue-400 text-lg mb-1">✅</div>
+<div class="text-xs font-semibold text-neutral-200">Verifica el resultado</div>
+<div class="text-xs text-neutral-500 mt-1">y narra con fidelidad</div>
+</div>
+</div>
+</section>
+<!-- ENTREGÁVEL PRÁTICO -->
+<div class="bg-dark-800 border border-blue-500/30 rounded-2xl p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-3 flex items-center"><span class="mr-3">🛠️</span> Manos a la obra: tu entregable</h2>
+<p class="text-neutral-300 leading-relaxed mb-5 text-sm">
+        Antes de seguir, haz un borrador de la tuya. En 15 minutos tendrás el esqueleto de una skill y la claridad para saber si necesita un agente o no.
+      </p>
+<ol class="space-y-3 text-sm text-neutral-300 mb-2">
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">1</span>
+<span>Elige una tarea repetitiva tuya (generar una publicación, resumir un informe, armar una diapositiva). Escribe la <span class="code-box">description</span> con 3 a 5 frases de activación — las palabras reales que usarías al pedirlo.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">2</span>
+<span>Enumera el pipeline en orden: cada etapa con su <strong>prerrequisito</strong> (qué debe estar listo antes). Es tu contrato de herramienta.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">3</span>
+<span>Aplica la prueba del tema 4: ¿esto es una <strong>skill</strong> (una receta que se activa) o pide un <strong>agente</strong> (¿un papel con principio y fin)? Ante la duda, quédate con la skill.</span>
+</li>
+<li class="flex items-start space-x-3">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex-shrink-0">4</span>
+<span>Marca qué etapas son <strong>independientes</strong> (podrían ejecutarse en paralelo) y termina con una línea de <strong>verificación</strong>cómo compruebas que la salida realmente existe.</span>
+</li>
+</ol>
+</div>
+<!-- RESUMO FINAL -->
+<div class="bg-gradient-to-br from-blue-900/40 via-dark-800 to-dark-800 rounded-2xl border border-blue-500/30 p-6 sm:p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">📝</span> Resumen del Módulo</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span>Una <strong class="text-blue-400">Skill</strong> é a <span class="code-box text-blue-400">description</span> que se activa + el cuerpo que ejecuta; la description es la parte más importante</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span>Las 5 capas del <strong class="text-blue-400">Agentic OS</strong>: identidad → reglas/hooks → skills → <span class="text-sky-300">agentes/subagentes</span> → <span class="text-sky-300">herramientas/MCPs/CLIs</span></span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-sky-300">Agente</strong> mantiene la misión; <strong class="text-sky-300">subagente</strong> procesa una parte en su propio contexto y devuelve solo la conclusión</span></li>
+</ul>
+<ul class="space-y-3 text-sm text-neutral-300">
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-blue-400">Contrata a un agente</strong> solo cuando el papel tiene un principio y un final claros — no te adelantes</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span><strong class="text-sky-300">Paraleliza</strong> qué es independiente; deja en secuencia lo que forma una cadena</span></li>
+<li class="flex items-start space-x-2"><span class="text-blue-400 mt-0.5 flex-shrink-0">✓</span><span>Una skill real es un <strong class="text-blue-400">pipeline con contrato</strong> (disparador, orden, requisito previo) que termina verificando el resultado</span></li>
+</ul>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-4 mb-6 border border-blue-500/20">
+<h3 class="font-semibold text-blue-400 mb-1 flex items-center"><span class="mr-2">➡️</span> Siguiente Módulo</h3>
+<p class="text-neutral-300 text-sm">
+<strong>2.7 — ✅ Verificación e informe fiel.</strong> Creaste la skill y diseñaste el agente. Ahora la pieza que lo completa todo:
+          cómo hacer que la IA <em>comprobar de verdad</em> que el trabajo salió bien, y narrar lo que pasó sin decir "listo" a ciegas.
+        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="inline-flex items-center justify-start space-x-2 text-neutral-400 hover:text-blue-400 text-sm font-medium px-4 py-2.5 rounded-xl bg-dark-700 hover:bg-dark-600 transition-colors" href="index.html">
+<span>←</span><span>Volver a Trilha</span>
+</a>
+<a class="inline-flex items-center justify-start space-x-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors" href="modulo-2-7.html">
+<span>Siguiente: 2.7 Verificación y reporte fiel</span><span>→</span>
+</a>
+</div>
+</div>
+</main>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-blue-400 font-medium">El Manual Oculto de la IA</span> · Módulo 2.6 · Ruta 2 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>

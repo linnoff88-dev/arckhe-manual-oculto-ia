@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Track 3 — Advanced | O Manual Oculto da IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    .code-box { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* SVG adaptado ao tema claro (so atinge os diagramas) */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+
+    /* Pulso para os blocos do SVG */
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s}
+      .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s}
+      .wf-a:nth-child(5){animation-delay:1s}
+      .wf-a:nth-child(6){animation-delay:1.25s}
+    }
+
+    /* ===== LIGHT MODE OVERRIDES — Parte 1: Base ===== */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* ===== Parte 2: Cores de acento (trilha Purple — T3) ===== */
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-purple-300 { color: #6d28d9; }
+    html:not(.dark) .text-purple-200 { color: #5b21b6; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/30 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.06); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .border-purple-500\/20 { border-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+
+    /* sky (ciano secundario) */
+    html:not(.dark) .bg-sky-500\/10 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .bg-sky-900\/30 { background-color: rgba(14, 165, 233, 0.08); }
+    html:not(.dark) .border-sky-500\/30 { border-color: rgba(14, 165, 233, 0.25); }
+    html:not(.dark) .text-sky-300 { color: #0284c7; }
+
+    /* ===== Parte 3: Remove gradientes + cores especiais ===== */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.22); }
+    html:not(.dark) .border-red-500\/20 { border-color: rgba(185, 28, 28, 0.18); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+
+    /* ===== Parte 4: Navbar ===== */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  </style>
+<link href="https://inematds.github.io/manual-oculto-ia/curso/trilha3/" hreflang="pt-BR" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/en/curso/trilha3/" hreflang="en" rel="alternate"/><link href="https://inematds.github.io/manual-oculto-ia/es/curso/trilha3/" hreflang="es" rel="alternate"/></head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen"><div class="inema-lang" style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:2px;padding:4px;border-radius:10px;background:rgba(12,12,16,.82);border:1px solid rgba(226,162,59,.45);font:600 12px/1 Sora,Inter,system-ui,sans-serif;backdrop-filter:blur(8px)" translate="no"><a href="../../../curso/trilha3/" hreflang="pt-BR" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">PT</a><a href="./" hreflang="en" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#1a1206;background:#E2A23B">EN</a><a href="../../../es/curso/trilha3/" hreflang="es" style="padding:6px 8px;border-radius:7px;text-decoration:none;color:#e9e9ee">ES</a></div>
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<!-- Logo + INEMA.CLUB -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors" href="../../index.html">
+<span class="text-xl">🧠</span>
+<span class="font-bold text-base hidden sm:inline">AI’s Hidden Manual</span>
+</a>
+<span class="text-neutral-600 hidden sm:inline">|</span>
+<a class="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+<!-- Trilhas + Theme Toggle -->
+<div class="flex items-center space-x-1 sm:space-x-2">
+<!-- Trilha 1 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors" href="../trilha1/index.html">
+<span class="sm:hidden">T1</span><span class="hidden sm:inline">Fundamentals</span>
+</a>
+<!-- Trilha 2 (inativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors" href="../trilha2/index.html">
+<span class="sm:hidden">T2</span><span class="hidden sm:inline">Practice</span>
+</a>
+<!-- Trilha 3 (ativa) -->
+<a class="px-3 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10" href="index.html">
+<span class="sm:hidden">T3</span><span class="hidden sm:inline">Advanced</span>
+</a>
+<!-- Theme Toggle -->
+<button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-1" id="theme-toggle">
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-dark-icon" viewbox="0 0 20 20">
+<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+</svg>
+<svg class="hidden w-4 h-4 text-neutral-300" fill="currentColor" id="theme-toggle-light-icon" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- HEADER DE TRILHA -->
+<header class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<span class="inline-block px-3 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded-full mb-4 uppercase tracking-wider">
+        TRACK 3
+      </span>
+<h1 class="text-3xl sm:text-4xl font-bold mb-4">🧠 Advanced</h1>
+<p class="text-lg text-neutral-400 max-w-3xl leading-relaxed">
+        For those who already have a strong grasp and want the lab-level version — where you <strong class="text-purple-400">makes the difference</strong>. You learn to
+        read a prompt’s evolution through <em>diffs</em>, to consolidate without losing behavior, handle safety by principle, stack
+        priorities and layers — and reach the heart of the course: <strong class="text-purple-400">distill the brain</strong> of an agent based on
+        its own logs, pair disposition with hard constraints, and version your system prompt like a researcher.
+      </p>
+<!-- Stats Grid -->
+<div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">7</div>
+<div class="text-xs text-neutral-400">Modules</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">42</div>
+<div class="text-xs text-neutral-400">Topics</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">~5h</div>
+<div class="text-xs text-neutral-400">Duration</div>
+</div>
+<div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+<div class="text-xl font-bold text-purple-400">Advanced</div>
+<div class="text-xs text-neutral-400">Level</div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<!-- HERO SVG FUTURISTA: destilação — recuperar o cérebro a partir dos logs -->
+<div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-12 overflow-hidden">
+<svg aria-label="The advanced-level lab: on the left, an agent's raw logs (JSONL files with hundreds of turns) pass through a distiller that reduces noise, profiles behavior in numbers, and synthesizes a decision guide; on the right, this distilled brain is pointed at a new model and locked down with hard guarantees — hooks and effort level — forming the versioned prompt" class="w-full h-auto" role="img" viewbox="0 0 1000 320">
+<defs>
+<lineargradient id="t3h-grad-pu" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#c084fc"></stop><stop offset="1" stop-color="#7c3aed"></stop>
+</lineargradient>
+<lineargradient id="t3h-grad-cy" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#38bdf8"></stop><stop offset="1" stop-color="#0ea5e9"></stop>
+</lineargradient>
+<filter height="180%" id="t3h-glow" width="180%" x="-40%" y="-40%">
+<fegaussianblur result="b" stddeviation="1.8"></fegaussianblur>
+<femerge><femergenode in="b"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+<pattern height="30" id="t3h-grid" patternunits="userSpaceOnUse" width="30">
+<circle cx="1.3" cy="1.3" fill="#c084fc" opacity="0.10" r="1.3"></circle>
+</pattern>
+<marker id="t3h-ah" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#c084fc"></path>
+</marker>
+<marker id="t3h-ahc" markerheight="9" markerwidth="9" orient="auto" refx="6.5" refy="4.5">
+<path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"></path>
+</marker>
+</defs>
+<!-- Background grid -->
+<rect fill="url(#t3h-grid)" height="320" rx="16" width="1000" x="0" y="0"></rect>
+<!-- Coluna 1: os logs brutos -->
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12" font-weight="600" x="50" y="30">THE AGENT'S LOGS</text>
+<g font-family="JetBrains Mono,monospace" font-size="10">
+<g class="wf-a"><rect fill="#1a1430" height="28" rx="7" stroke="#a855f7" stroke-width="1.8" width="200" x="50" y="44"></rect><text fill="#d8b4fe" x="64" y="62">📄 session-01.jsonl</text></g>
+<g class="wf-a"><rect fill="#1a1430" height="28" rx="7" stroke="#a855f7" stroke-width="1.8" width="200" x="50" y="78"></rect><text fill="#d8b4fe" x="64" y="96">📄 session-02.jsonl</text></g>
+<g class="wf-a"><rect fill="#1a1430" height="28" rx="7" stroke="#a855f7" stroke-width="1.8" width="200" x="50" y="112"></rect><text fill="#d8b4fe" x="64" y="130">📄 session-…  jsonl</text></g>
+</g>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10.5" text-anchor="middle" x="150" y="166">429 turns · no weights, with a trace</text>
+<!-- Seta logs -> destilador -->
+<path d="M252,100 C300,100 308,130 358,134" fill="none" marker-end="url(#t3h-ah)" opacity="0.55" stroke="#c084fc" stroke-width="1.8"></path>
+<!-- Coluna 2: o destilador -->
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="450" y="30">THE DISTILLER</text>
+<g filter="url(#t3h-glow)">
+<rect fill="#1a1430" height="92" rx="14" stroke="url(#t3h-grad-pu)" stroke-width="2.5" width="184" x="358" y="92"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="13.5" font-weight="700" text-anchor="middle" x="450" y="116">🧠 restore the brain</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="450" y="136">① reduce the noise (script)</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="450" y="152">② profile (the numbers)</text>
+<text fill="#c4b5fd" font-family="Inter,sans-serif" font-size="10" text-anchor="middle" x="450" y="168">③ synthesize (the guide)</text>
+<!-- Seta destilador -> guia/modelo -->
+<path d="M542,138 C600,138 620,140 678,140" fill="none" marker-end="url(#t3h-ahc)" opacity="0.55" stroke="#38bdf8" stroke-width="1.8"></path>
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="10" opacity="0.85" text-anchor="middle" x="610" y="128">points to the guide</text>
+<!-- Coluna 3: cérebro novo + travas -->
+<text fill="#38bdf8" font-family="Inter,sans-serif" font-size="12" font-weight="600" text-anchor="middle" x="788" y="30">NEW BRAIN + GUARDRAILS</text>
+<g filter="url(#t3h-glow)">
+<rect fill="#1a1430" height="40" rx="11" stroke="url(#t3h-grad-pu)" stroke-width="2.5" width="220" x="678" y="56"></rect>
+</g>
+<text fill="#c084fc" font-family="Inter,sans-serif" font-size="12.5" font-weight="700" text-anchor="middle" x="788" y="81">🤖 new model + guide</text>
+<rect fill="#0e1b26" height="36" rx="9" stroke="#38bdf8" stroke-width="2" width="106" x="678" y="104"></rect>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="731" y="122">⚓ hooks</text>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="731" y="135">hard constraint</text>
+<rect fill="#0e1b26" height="36" rx="9" stroke="#38bdf8" stroke-width="2" width="106" x="792" y="104"></rect>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="10" font-weight="600" text-anchor="middle" x="845" y="122">🎚️ effortLevel</text>
+<text fill="#7dd3fc" font-family="Inter,sans-serif" font-size="8.5" text-anchor="middle" x="845" y="135">density</text>
+<rect fill="#1a1430" height="34" rx="9" stroke="#a855f7" stroke-width="1.8" width="220" x="678" y="148"></rect>
+<text fill="#d8b4fe" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" text-anchor="middle" x="788" y="169">🏁 versioned prompt</text>
+<!-- O caminho da trilha (faixa inferior) -->
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="11" font-weight="600" x="50" y="248">THE PATH THROUGH THE COURSE</text>
+<g font-family="Inter,sans-serif" font-size="10.5">
+<rect fill="#1a1430" height="34" rx="9" stroke="#a855f7" stroke-width="1.8" width="150" x="50" y="260"></rect>
+<text fill="#d8b4fe" text-anchor="middle" x="125" y="281">read diffs · consolidate</text>
+<path d="M205,277 L243,277" fill="none" marker-end="url(#t3h-ah)" opacity="0.6" stroke="#c084fc" stroke-width="1.6"></path>
+<rect fill="#1a1430" height="34" rx="9" stroke="#a855f7" stroke-width="1.8" width="160" x="248" y="260"></rect>
+<text fill="#d8b4fe" text-anchor="middle" x="328" y="281">safety · priority · layers</text>
+<path d="M413,277 L451,277" fill="none" marker-end="url(#t3h-ahc)" opacity="0.6" stroke="#38bdf8" stroke-width="1.6"></path>
+<rect fill="#0e1b26" height="38" rx="10" stroke="#38bdf8" stroke-width="2" width="182" x="456" y="258"></rect>
+<text fill="#7dd3fc" font-weight="600" text-anchor="middle" x="547" y="276">distill the brain ⭐</text>
+<text fill="#7dd3fc" text-anchor="middle" x="547" y="289">disposition × guardrails · versioning</text>
+</g>
+<!-- Legenda -->
+<rect fill="#1a1430" height="9" rx="2" stroke="#a855f7" stroke-width="1.5" width="13" x="720" y="262"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="740" y="270">the analysis (the method)</text>
+<rect fill="#0e1b26" height="9" rx="2" stroke="#38bdf8" stroke-width="1.5" width="13" x="720" y="280"></rect>
+<text fill="#9ca3af" font-family="Inter,sans-serif" font-size="10" x="740" y="288">the action (what blocks and versions)</text>
+</svg>
+</div>
+<!-- MAPA DA TRILHA (Sec 7.4b) -->
+<section class="mb-12">
+<h2 class="text-2xl font-bold mb-6">Learning path map</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.1</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🔬 Reading evolution through diffs</h3>
+<p class="text-xs text-neutral-400">Each +/− line is a decision</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-2">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.2</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🗜️ Consolidation</h3>
+<p class="text-xs text-neutral-400">Prune without losing behavior</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-3">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.3</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🛡️ Principle-based safety</h3>
+<p class="text-xs text-neutral-400">The principle, never the mechanics</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.4</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🪜 Priority and layers</h3>
+<p class="text-xs text-neutral-400">Who’s in charge and what’s dynamic</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-purple-500/30 hover:border-purple-500/30 p-5 transition-all ring-1 ring-purple-500/20" href="#modulo-3-5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.5</span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🧠 Distillation: recover the brain</h3>
+<p class="text-xs text-neutral-400">The heart of the course—from logs to guide ⭐</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-6">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">⚙️ Willingness × hard guarantee</h3>
+<p class="text-xs text-neutral-400">Soft guide + guardrails that never fail</p>
+</a>
+<a class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-5 transition-all" href="#modulo-3-7">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold text-sm">3.7</span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="font-semibold mb-1 group-hover:text-purple-400 transition-colors">🏁 Final project</h3>
+<p class="text-xs text-neutral-400">Your version-controlled system prompt</p>
+</a>
+</div>
+</section>
+<!-- CONTEÚDO DETALHADO -->
+<h2 class="text-2xl font-bold mb-6">Detailed content</h2>
+<!-- ====================== MÓDULO 3.1 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-1">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.1</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🔬 Reading evolution through diffs</h3>
+<p class="text-neutral-400 text-sm">When a lab changes versions, it leaves a trail: the diff between the old prompt and the new one. Reading that trail is decision archaeology—each line added, removed, or renamed tells you why someone changed their mind. Here, you’ll read a diff like a researcher.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🔀</span>
+<div><span class="font-medium">The 4 types of change in a diff</span><span class="text-neutral-500 text-sm ml-2">— classify before interpreting</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Addition, removal, rewriting, and renaming—each type carries a different intent. The first step in reading is to separate what changed from how it changed.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The amateur reader sees only the additions and confuses a rewrite with a rename. Knowing the four types separates recording a change from understanding one.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Addition (+) · removal (−) · rewrite (≈) · rename (~) · Opus 4.8 → Fable 5 case study.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">➖</span>
+<div><span class="font-medium">Every removal is information</span><span class="text-neutral-500 text-sm ml-2">— read the − the same way you read the +</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The most underestimated rule: anyone who reads only what went in reads half the book. What came out was internalized through training (it became noise) or consolidated into a principle.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">A prompt’s maturity is measured by the last time something was removed from it. A prompt that only grows is rotting from within.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Internalized = noise · consolidated = principle · <span class="code-box">search_first</span> disappeared · removing it is editing too.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🧪</span>
+<div><span class="font-medium">Infer the motivation behind each change</span><span class="text-neutral-500 text-sm ml-2">— always as a hypothesis</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Reconstruct the problem the change probably solves — weapons became a principle, drugs gained a vital exception, the end of the conversation began to be respected.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The inferred motivation is your interpretation, not a statement from the lab. Inferring is legitimate as long as you don’t mistake a hypothesis for a stated fact.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">What incident does this address? · likely motivation · epistemic honesty · the diff is a record of problems experienced.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🏷️</span>
+<div><span class="font-medium">The block’s name is also an instruction</span><span class="text-neutral-500 text-sm ml-2">— the label shapes cognition</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The subtlest change doesn’t alter any words in the content: <span class="code-box">copyright_compliance</span> → <span class="code-box">core_copyright_principle</span>. The text stays; the label changes.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">You’re always choosing how the model sees itself obeying—and that changes how it obeys. "Compliance" follows instructions; "principle" reasons through new cases.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Prohibition vs. principle · compliance vs. core_principle · rename based on intent · a value-based name generalizes.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🎓</span>
+<div><span class="font-medium">Extract the generalizable lesson</span><span class="text-neutral-500 text-sm ml-2">— the principle, not the case</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Each specific change hides a lesson that applies beyond its context. The self-harm rewrite becomes “example + generative criterion &gt; examples alone.”</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">If you only keep the case, nothing transfers. The lesson applies to your next prompt—like studying chess games for their principles.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Case × lesson · principle &gt; list · evolve ≠ grow · inherit the method without inheriting the mind.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🔬</span>
+<div><span class="font-medium">The method for reading a diff (step by step)</span><span class="text-neutral-500 text-sm ml-2">— type → motivation → lesson</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The complete protocol: for each change, classify the type, infer the likely motivation, and distill the lesson — then check the balance (+56 lines / −7 blocks).</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The same lens of analysis is what you use to trim down your own prompt afterward. Reading diffs closes the loop with the consolidation in 3.2.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Classify · read the − · extract the lesson · the takeaway (structure &gt; characters).</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-1')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-1.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.2 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-2">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.2</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🗜️ Consolidation: slim down without losing behavior</h3>
+<p class="text-neutral-400 text-sm">In 3.1, you read about the evolution from the outside; now it's time to take action. The consolidation round takes a prompt that keeps growing and pares it down — merging little rules into principles — without losing a single behavioral guarantee. The golden rule: nothing is removed without a reason and a test.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🎈</span>
+<div><span class="font-medium">The bloat problem: a prompt that only grows goes bad</span><span class="text-neutral-500 text-sm ml-2">— every incident becomes a rule</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Prompt entropy: every problem becomes a new rule, none are removed, and the document turns into a monster nobody dares touch.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">An overgrown prompt dilutes the model’s attention and hides contradictions. Recognizing the symptom is the first step toward treating it.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Prompt entropy · one rule per incident · diluted attention · nobody dares delete anything.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🔁</span>
+<div><span class="font-medium">The consolidation round: every N rules</span><span class="text-neutral-500 text-sm ml-2">— a periodic ritual</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">A scheduled ritual: every N rules you add, stop and review everything at once—merge, remove, rewrite—instead of just piling on more.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Consolidating deliberately and periodically is what prevents decay. It’s maintenance, not emergency repair.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Periodic ritual · every N rules · refactor the prompt · maintenance, not panic.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🔎</span>
+<div><span class="font-medium">The 3 questions: the test for every rule</span><span class="text-neutral-500 text-sm ml-2">— is it already doing this? can you merge it? what test?</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The test applied to each rule: does the model already do this on its own? Can it be merged into a broader principle? What test would fail without it?</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The three questions turn "intuitive cleanup" into a defensible decision. Each rule either proves its value or goes.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Can you do it on your own yet? · can it be merged? · which test fails without it? · justifiable decision.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🥇</span>
+<div><span class="font-medium">The golden rule: why + a test that would fail</span><span class="text-neutral-500 text-sm ml-2">— nothing goes in or out without proof</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The consolidation constraint: every rule carries the reason it exists and a test that would fail without it. Without both, it does not deserve to stay.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s what protects you from accidentally removing something important—and from keeping something useless out of fear. Evidence decides, not guesswork.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Documented rationale · test that would fail · evidence for each rule · proof &gt; fear.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">📊</span>
+<div><span class="font-medium">The real Fable case: +56 lines, −7 blocks</span><span class="text-neutral-500 text-sm ml-2">— evolving ≠ growing</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The canonical example: the Opus 4.8 → Fable 5 evolution gained content (+56 lines) but shrank in structure (−7 blocks). It grew and slimmed down at the same time.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s living proof that “evolving ≠ growing.” A mature team adds what was missing and removes what training has already absorbed, in the same diff.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">+56 lines / −7 blocks · content goes up, structure goes down · balance &gt; volume · visible maturity.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">⏳</span>
+<div><span class="font-medium">When NOT to consolidate: too soon</span><span class="text-neutral-500 text-sm ml-2">— without data, don’t make things up</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The counterpoint: consolidating before you’ve seen the real behavior is premature optimization. Without enough cases, you merge rules you don’t yet understand.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Pruning too early is as dangerous as bloat: you could generalize the wrong principle. Wait for the data before merging.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Premature optimization · wait for the data · wrong principle · there’s a right time for maturity.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-2')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-2.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.3 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-3">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.3</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🛡️ Safety by principle, not mechanics</h3>
+<p class="text-neutral-400 text-sm">The labs’ most delicate lesson: in safety, what you write to protect can also teach people to attack. The solution is to state the principle, never the detection mechanics—and give the model a refusal trigger it can recognize through its own reasoning.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧒</span>
+<div><span class="font-medium">The child-safety lesson: stay at the level of the pattern</span><span class="text-neutral-500 text-sm ml-2">— don’t detail what it detects</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The Fable 5 case: the child safety policy stays at the level of principles and patterns, without detailing the signals detection uses.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Detailing detection mechanics in a prompt gives a map for how to get around them. The right level is the principle, not the procedure.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Principle-level · don't detail the signals · the pattern is enough · the prompt is readable by an attacker.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">⚖️</span>
+<div><span class="font-medium">Symmetry is dangerous</span><span class="text-neutral-500 text-sm ml-2">— what teaches also arms</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The central security risk: the knowledge that protects is symmetrical to the knowledge that attacks. Explaining how to detect is explaining how to evade.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Recognizing the symmetry is what makes you think twice before writing the mechanics. Defense and attack share the same information.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Knowledge symmetry · educating = arming · think of the hostile reader · two-edged information.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">📜</span>
+<div><span class="font-medium">State the principle, never the detection mechanism</span><span class="text-neutral-500 text-sm ml-2">— high-level guidance protects</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The practical rule: write the high-level value (“protect X”) and let the model derive how to apply it — without listing how to recognize each attempt.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The principle covers cases the list didn’t anticipate and doesn’t prescribe a method. It’s more robust and safer at the same time.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Principle &gt; mechanics · high level · derive the application · don’t hand over the method.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🚦</span>
+<div><span class="font-medium">The refusal trigger: reframing is the signal</span><span class="text-neutral-500 text-sm ml-2">— "if you find yourself reframing… REFUSE"</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">An introspective trigger: <span class="code-box">if you find yourself reframing…</span> then refuse. The warning sign is the model itself catching itself working around the rule.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Instead of a list of prohibitions that can be circumvented, the trigger uses the model's reasoning as a sensor—it detects evasion and stops.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Introspective trigger · reframing as a signal · REFUSE · reasoning is the sensor.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🧯</span>
+<div><span class="font-medium">Precaution after a refusal</span><span class="text-neutral-500 text-sm ml-2">— care doesn’t end at “no”</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The step after “no”: stay alert in later turns, because the request may come back in pieces or reframed to get around the refusal.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">A single refusal doesn't close the risk if the model "forgets" on the next turn. The precaution has to survive the refusal itself.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Post-refusal attention · split-up request · reframing in sequence · the risk persists.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">💬</span>
+<div><span class="font-medium">The refusal tone: conversational, without bullet points</span><span class="text-neutral-500 text-sm ml-2">— decline without sounding like a robot</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The form of the refusal: a conversational, human response—without dumping policy lists or lecturing, while preserving the dignity of the conversation.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">A cold, bureaucratic refusal alienates legitimate users and helps no one. The right tone refuses the request without punishing the person.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Conversational · no bullet points · no lecture · firm and human.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-3')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-3.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.4 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-4">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.4</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🪜 Priority and layers</h3>
+<p class="text-neutral-400 text-sm">When two instructions conflict, which one wins? And what is that <span class="code-box">&lt;system-reminder&gt;</span> that appears in the middle of the conversation? This module separates stable behavior (the prompt) from dynamic state (the layer injected by the harness) — and shows why this architecture scales over time.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🪜</span>
+<div><span class="font-medium">Priority hierarchy: who’s in charge when there’s a conflict</span><span class="text-neutral-500 text-sm ml-2">— the stated order</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The rule that establishes precedence among conflicting instructions — central policy above system, system above user, user above the default.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Without an explicit order, conflicting instructions leave behavior to chance. The hierarchy says in advance who wins.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Declared precedence · central policy at the top · resolve conflicts · nothing left to chance.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🔗</span>
+<div><span class="font-medium">The precedence chain, link by link</span><span class="text-neutral-500 text-sm ml-2">— security &gt; system &gt; user &gt; default</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The chain broken down link by link, using the real example of copyright precedence: from security at the top down to default behavior.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Seeing the entire chain shows where each instruction in your prompt fits — and why a “weak” rule can’t override a “strong” one.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Link by link · copyright precedence chain · nonnegotiable safety · each level in its place.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">📡</span>
+<div><span class="font-medium">System Reminder: the harness’s dynamic layer</span><span class="text-neutral-500 text-sm ml-2">— injected at runtime</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">O <span class="code-box">&lt;system-reminder&gt;</span>: a context layer injected by the harness during execution — the current state, not a fixed prompt rule.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s how the system pushes dynamic information (long conversations, rule reminders) without rewriting the stable prompt. Understanding this explains a lot of behavior.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm"><span class="code-box">&lt;system-reminder&gt;</span> · injected by the harness · current state · dynamic layer.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🚧</span>
+<div><span class="font-medium">Reminder ≠ user instruction: it's context, not an instruction</span><span class="text-neutral-500 text-sm ml-2">— "injected by the harness, not the user"</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The crucial distinction: the reminder is <span class="code-box">injected by the harness, not the user</span> — it’s context that guides you, not a user command that must be blindly obeyed.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Treating context as an instruction (or vice versa) breaks the hierarchy. The model needs to know the source so it can properly weigh what it reads.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Context ≠ instruction · origin matters · it’s not the user speaking · weigh it by its source.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🧱</span>
+<div><span class="font-medium">Stable behavior vs. dynamic state: why separate them</span><span class="text-neutral-500 text-sm ml-2">— fixed prompt, shifting context</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The division of responsibilities: the prompt holds the behavior that always applies; the reminder carries the state that changes from turn to turn.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Mixing the two bloats the prompt with ephemeral details. Keeping each layer in its place keeps the prompt stable and lean and the state up to date.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Stable vs. dynamic · each layer in its place · doesn’t bloat the prompt · separation of responsibilities.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🥇</span>
+<div><span class="font-medium">The golden rule: user &gt; memory</span><span class="text-neutral-500 text-sm ml-2">— the present beats what’s remembered</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The rule that resolves the clash between what the user asks for now and what memory/auto-memory saved earlier: the user’s current request takes precedence.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Memory that overrides the user creates a stubborn agent stuck on old preferences. What the user says now must take precedence over what’s remembered.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">User &gt; memory · the present wins · no stubbornness · old preferences don't hold you back.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-4')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-4.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.5 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-purple-500/30 mb-6 ring-1 ring-purple-500/20" id="modulo-3-5">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.5 <span class="ml-2 text-xs font-semibold bg-purple-500/20 border border-purple-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider align-middle">⭐ the heart</span></span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🧠 Distillation: recover the brain</h3>
+<p class="text-neutral-400 text-sm">The heart of the course. We lost Fable’s weights—but the logs remain. This module teaches you the method for recovering an agent’s “brain” from its own records: find the JSONL files, reduce the noise with a script, profile behavior with numbers, and synthesize a decision guide to point a new model toward.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧬</span>
+<div><span class="font-medium">The premise: without the weights, but with the logs</span><span class="text-neutral-500 text-sm ml-2">— the behavior was recorded</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The founding idea: you don’t have the model’s weights, but you do have the trace of what it did—and a good agent’s behavior is all there in those logs.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Reframes what it means to "recover" a model: it's not retraining it, but distilling the observable method from the trail it left behind.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">No weights, with logs · observable behavior · distill ≠ train · the trace is enough.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">📂</span>
+<div><span class="font-medium">Find the JSONL files — where the record lives</span><span class="text-neutral-500 text-sm ml-2">— locate the sessions</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The practical step: locate the files <span class="code-box">.jsonl</span> from a session where every agent turn is recorded—input, reasoning, action, and result.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Without knowing where the record lives, there’s no raw material. Finding the JSONL files is how you open the black box of behavior.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Files <span class="code-box">.jsonl</span> · recorded sessions · turn by turn · the raw material.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🧹</span>
+<div><span class="font-medium">Reduce the noise — the script, not the context</span><span class="text-neutral-500 text-sm ml-2">— process in Python, not in chat</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The key discipline: filter and summarize the logs with a Python script—never dump hundreds of raw turns into the model’s context window.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Putting raw logs in the context is expensive, slow, and blows past the limit. The script does the heavy lifting outside the model and delivers only the signal.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Script &gt; context · process outside the model · signal, not noise · don’t overflow the window.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🎯</span>
+<div><span class="font-medium">Filter by target agent</span><span class="text-neutral-500 text-sm ml-2">— isolate the brain you want</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The selection: among all turns, isolate only those from the agent whose behavior you want to distill — separating the target brain from the rest of the system.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Mixing different agents muddles the patterns and dilutes the profile. Filtering for the target is what focuses the distillation.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Agent-specific scope · isolate the target · don’t mix brains · focus on the profile.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">📈</span>
+<div><span class="font-medium">Profile the behavior — the numbers</span><span class="text-neutral-500 text-sm ml-2">— 97% reasoning · 84% before the 1st action</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Quantify the profile from the 429 turns: 97% with reasoning, 84% reasoning before the 1st action, 87% reevaluating, 23% with a real test.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Numbers turn impressions into a picture. They reveal what the agent really prioritizes—thinking a lot before acting, reevaluating almost every time.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">429 turns · 97% reasoning · 84% before acting · 87% re-evaluates · 23% real testing.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🧠</span>
+<div><span class="font-medium">Synthesize the guide—the decision loop, pointed</span><span class="text-neutral-500 text-sm ml-2">— from the profile to the guide, and to the new model</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The final step: turn the numerical profile into a decision guide—the distilled decision loop—and point a new model’s session to that guide.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">This is where the brain “comes back”: the observed method becomes a reusable instruction. You inherit the agent’s discipline without having its weights.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Profile → guide · the decision loop · point to the new model · the recovered brain.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-5')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-5.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.6 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-6">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.6</span>
+<span class="text-xs text-neutral-500">~40 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">⚙️ Willingness × hard guarantee</h3>
+<p class="text-neutral-400 text-sm">A behavior guide is just "best effort"—the model tries to follow it, but may fail. For what needs to be guaranteed, you don’t ask: you lock it down. This module separates willingness (soft) from hard guarantees—reasoning density via <span class="code-box">effortLevel</span>, a deterministic habit via hook — and shows where each rule lives.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🤲</span>
+<div><span class="font-medium">Why a behavior guide is only “best effort”</span><span class="text-neutral-500 text-sm ml-2">— the prompt suggests, it doesn’t guarantee</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The nature of the guide: behavioral instructions nudge the model in a direction, but don’t force it. It’s a disposition, not a guarantee.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Trusting a prompt to always get something right is a gamble. Knowing the guide's limits tells you when to move to a hard safeguard.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Best effort · disposition ≠ guarantee · the prompt nudges · know the limits.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🎚️</span>
+<div><span class="font-medium">Reasoning density = effortLevel, not the old token budget</span><span class="text-neutral-500 text-sm ml-2">— xhigh/max, not MAX_THINKING_TOKENS</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The right lever for “thinking more”: the <span class="code-box">effortLevel</span> (xhigh/max), which controls reasoning density — not the old <span class="code-box">MAX_THINKING_TOKENS</span>.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Asking the model to “think carefully” in the prompt is a request; raising effortLevel is a configuration change that actually affects how much the model reasons.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm"><span class="code-box">effortLevel</span> xhigh/max · reasoning density · config, not prompt · ≠ token budget.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">⚓</span>
+<div><span class="font-medium">Deterministic habit = the PostToolUse hook</span><span class="text-neutral-500 text-sm ml-2">— forces a test after editing</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The hard constraint: a hook <span class="code-box">PostToolUse</span> that runs the test automatically after each edit — the harness runs it, the model doesn’t “remember.”</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">What must always happen cannot depend on the model's disposition. The hook ensures the habit deterministically.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm"><span class="code-box">PostToolUse</span> · the harness enforces · deterministic · guaranteed habit.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🗂️</span>
+<div><span class="font-medium">Where the rule lives: CLAUDE.md vs auto-memory</span><span class="text-neutral-500 text-sm ml-2">— always loaded × relevance-gated</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The decision about where it goes: the <span class="code-box">CLAUDE.md</span> always loads (every session), while auto-memory is relevance-gated — it only comes in when the context calls for it.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Putting a critical rule only in auto-memory risks it not appearing when it matters. Where the rule lives determines whether it’s reliable.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm"><span class="code-box">CLAUDE.md</span> always loads · auto-memory is relevance-gated · where &gt; what · ensure presence.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">🎭</span>
+<div><span class="font-medium">Output styles are for tone and role—not agent discipline</span><span class="text-neutral-500 text-sm ml-2">— style ≠ behavior</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The right scope for output styles: they shape how the agent sounds and what role it plays—but they don’t enforce process discipline (testing, reassessing, verifying).</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Expecting agentic discipline from an output style means using the wrong tool. Tone is tone; operational behavior belongs somewhere else.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Tone and role · ≠ discipline · the right tool for the right purpose · style doesn't verify.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">🔗</span>
+<div><span class="font-medium">Combine the two: disposition (soft) + hard constraints = guarantee</span><span class="text-neutral-500 text-sm ml-2">— guidance nudges, the lock guarantees</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The takeaway: the disposition guide provides direction and good judgment; the hard constraints (hooks, effortLevel, where the rule lives) ensure what must not fail. Together, they form the system.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Prompts alone are fragile; constraints alone are rigid and blind. The combination produces an agent that is both flexible and reliable.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">The guide steers + guardrails ensure · soft + hard · flexible and reliable · the complete system.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-6')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-6.html">View Full</a>
+</div>
+</div>
+<!-- ====================== MÓDULO 3.7 ====================== -->
+<div class="bg-dark-800 rounded-xl border border-dark-600 mb-6" id="modulo-3-7">
+<div class="p-6 border-b border-dark-600">
+<div class="flex items-center justify-between mb-2">
+<span class="text-purple-400 font-bold">3.7</span>
+<span class="text-xs text-neutral-500">~50 min</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">🏁 Final project: your versioned system prompt</h3>
+<p class="text-neutral-400 text-sm">Time to bring it all together. You build your own system prompt—MVP, persona, loop, and safety—version it with diffs, write down the why and the test for each rule, draft your own disposition guide, and pair it with hard constraints. The deliverable is yours: a versioned prompt + guide, ready to evolve as the labs do.</p>
+</div>
+<div class="divide-y divide-dark-600">
+<!-- Tópico 1 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+<span class="text-lg">🧩</span>
+<div><span class="font-medium">Put it all together: PMV + persona + loop + security</span><span class="text-neutral-500 text-sm ml-2">— assemble the complete prompt</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Putting together the final prompt from the course components: the Minimum Viable Prompt, the four-axis persona, the operational Loop, and the safety blocks.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It's the integration of everything you've practiced—without repeating the mistake of bloating it. Each piece is included because your case calls for it, not "just in case."</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">PMV + persona + loop + safety · integrate without bloating · only what the use case calls for · complete prompt.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 2 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+<span class="text-lg">🗃️</span>
+<div><span class="font-medium">Versioning: save versions and compare diffs</span><span class="text-neutral-500 text-sm ml-2">— treat the prompt like code</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Treat the prompt as a versioned artifact: save each version and compare them with a diff, closing the loop you learned to read in 3.1.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Versioning makes evolution visible and reversible. You start reading your own diff — and applying to yourself the method you used in the labs.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Prompt as code · save versions · your own diff · visible and reversible evolution.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 3 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+<span class="text-lg">🧾</span>
+<div><span class="font-medium">Write the why and the test for each rule</span><span class="text-neutral-500 text-sm ml-2">— the rule that justifies itself</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Apply the golden rule from 3.2 to your prompt: every rule comes with why it exists and the test that would fail without it.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s what makes your prompt auditable and easy to prune in the future: you (or someone else) knows why each line is there and how to check whether it’s still useful.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Rationale for each rule · test that would fail · auditable prompt · can be pruned later.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 4 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+<span class="text-lg">🧠</span>
+<div><span class="font-medium">Build your disposition guide (your Fable Mindset)</span><span class="text-neutral-500 text-sm ml-2">— the decision loop, written down</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Draft your behavior guide — your "Fable Mindset" — distilling the decision loop you want the agent to follow, in the spirit of 3.5.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">The guide is the disposition that steers the agent in cases the rigid prompt doesn't cover. Writing it means capturing your method in reusable text.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Disposition guide · your Fable Mindset · written decision loop · reusable method.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 5 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+<span class="text-lg">⚙️</span>
+<div><span class="font-medium">Pair it with the guardrails (hooks + effortLevel + where the rule lives)</span><span class="text-neutral-500 text-sm ml-2">— layout + guarantee</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">Apply 3.6 to your project: pair the soft guide with hard safeguards — hooks for habits, effortLevel for reasoning, and a decision about where each rule belongs.</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">It’s what takes your prompt from “I hope it works” to “I guarantee what’s needed.” The combination closes the gap between intent and execution.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Hooks + effortLevel · where the rule lives · guide + guardrails · intent becomes execution.</p></div>
+</div>
+</div>
+</div>
+<!-- Tópico 6 -->
+<div class="topic-item">
+<button class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left" onclick="toggleTopic(this)">
+<span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+<span class="text-lg">✅</span>
+<div><span class="font-medium">Delivery checklist: the self-check before saying “ready”</span><span class="text-neutral-500 text-sm ml-2">— prove it’s complete</span></div>
+</button>
+<div class="topic-explanation px-6 pb-4">
+<div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+<div><span class="text-purple-400 font-semibold">What it is:</span> <p class="text-neutral-300 text-sm">The final self-check: a checklist that confirms the prompt, guide, tests, and safeguards are complete and consistent before declaring “ready.”</p></div>
+<div><span class="text-purple-400 font-semibold">Why learn:</span> <p class="text-neutral-300 text-sm">Close the course with the same rigor it teaches: nothing is "done" based on a feeling — it's done through verification, item by item.</p></div>
+<div><span class="text-purple-400 font-semibold">Key concepts:</span> <p class="text-neutral-300 text-sm">Delivery checklist · ready by verification · prompt + guide + tests + safeguards · final consistency.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+<button class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors" onclick="openModal('modal-3-7')">View in Modal</button>
+<a class="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors" href="modulo-3-7.html">View Full</a>
+</div>
+</div>
+<!-- NAVEGAÇÃO ENTRE TRILHAS -->
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-10 pt-8 border-t border-dark-600">
+<a class="group flex items-center space-x-3 px-5 py-3 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-xl transition-colors w-full sm:w-auto" href="../trilha2/index.html">
+<span class="text-blue-400 text-xl">←</span>
+<div>
+<div class="text-xs text-neutral-500">Back</div>
+<div class="font-semibold text-sm group-hover:text-blue-400 transition-colors">Track 2 — Practice</div>
+</div>
+</a>
+<a class="group flex items-center space-x-3 px-5 py-3 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-xl transition-colors w-full sm:w-auto sm:text-right" href="../../index.html">
+<div class="flex-1">
+<div class="text-xs text-neutral-500">Course start</div>
+<div class="font-semibold text-sm group-hover:text-purple-400 transition-colors">The AI's Hidden Manual</div>
+</div>
+<span class="text-purple-400 text-xl">→</span>
+</a>
+</div>
+</main>
+<!-- MODAIS (Sec 9.3) -->
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-1" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.1</span><span class="font-semibold">🔬 Reading evolution through diffs</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-1.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-2" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.2</span><span class="font-semibold">🗜️ Consolidation: slim down without losing behavior</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-2.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-3" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.3</span><span class="font-semibold">🛡️ Safety by principle, not mechanics</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-3.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-4" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.4</span><span class="font-semibold">🪜 Priority and layers</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-4.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-5" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.5</span><span class="font-semibold">🧠 Distillation: recover the brain</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-5.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-6" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.6</span><span class="font-semibold">⚙️ Willingness × hard guarantee</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-6.html"></iframe>
+</div>
+</div>
+<div class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" id="modal-3-7" onclick="if(event.target === this) closeModal()">
+<div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+<div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+<div class="flex items-center space-x-3"><span class="text-purple-400 font-bold">3.7</span><span class="font-semibold">🏁 Final project: your versioned system prompt</span></div>
+<button class="text-neutral-400 hover:text-white text-2xl leading-none" onclick="closeModal()">×</button>
+</div>
+<iframe class="flex-1 w-full rounded-b-xl" src="modulo-3-7.html"></iframe>
+</div>
+</div>
+<!-- FOOTER -->
+<footer class="border-t border-dark-600 mt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+<div class="text-sm text-neutral-500">
+<span class="text-purple-400 font-medium">The AI's Hidden Manual</span> · Track 3 · 2026
+        </div>
+<a class="text-sky-400 hover:text-sky-300 text-sm transition-colors" href="https://inema.club" target="_blank">INEMA.CLUB</a>
+</div>
+</div>
+</footer>
+<!-- SCRIPTS -->
+<script>
+    // Toggle de tópicos
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800');
+      if (moduleCard) {
+        moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => { if (exp !== explanation) exp.classList.remove('active'); });
+      }
+      explanation.classList.toggle('active');
+    }
+
+    // Modal
+    function openModal(modalId) {
+      const m = document.getElementById(modalId);
+      if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+    }
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+      document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>
