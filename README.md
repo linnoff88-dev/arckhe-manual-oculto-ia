@@ -8,9 +8,9 @@
 
 > Como instruir modelos como os laboratêÂ³rios fazem ê¢â¬â do fundamento ao cêÂ©rebro do Fable.
 
-Curso INEMA.CLUB sobre **system prompts** e **disciplina operacional de agentes**: o que faz uma IA de ponta funcionar bem, destilado de prompts reais (Anthropic, OpenAI, xAI, Cursor, Perplexityê¢â¬Â¦) e do mêÂ©todo de "recuperar o cêÂ©rebro" de um bom agente a partir dos logs.
+Curso ARCKHÉ AI sobre **system prompts** e **disciplina operacional de agentes**: o que faz uma IA de ponta funcionar bem, destilado de prompts reais (Anthropic, OpenAI, xAI, Cursor, Perplexityê¢â¬Â¦) e do mêÂ©todo de "recuperar o cêÂ©rebro" de um bom agente a partir dos logs.
 
-ê°Å¸ââ **Acesse:** https://inematds.github.io/manual-oculto-ia/
+ê°Å¸ââ **Acesse:** https://linnoff88-dev.github.io/arckhe-/
 
 ## Trilhas
 
@@ -33,7 +33,7 @@ PêÂ¡ginas self-contained (Tailwind via CDN). Sem build.
 
 ---
 
-Feito com [Claude Code](https://claude.com/claude-code) êÂ· [INEMA.CLUB](https://inema.club)
+Feito com [Claude Code](https://claude.com/claude-code) êÂ· [ARCKHÉ AI](https://ARCKHÉ AI)
 
 ---
 
