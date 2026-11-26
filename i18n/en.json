@@ -858,7 +858,7 @@
 "554f5e883a92c4b5": ": \"should this become noise or be consolidated?\" Reading diffs is the analysis; the round is the action that\n              produces the next diff—ideally, one that shrinks structurally.",
 "c7846bb1be31dcc2": ": \"I started from X\"",
 "17b69be9c58f563d": ": \"use the calculator when a calculation takes\n          more than one step\", \"use search when the user asks for something current\", \"use the file reader when you need the contents, not the name\".\n          The trigger answers the only question that matters when taking action:",
-"29a37adc995c54ae": ": \"use when {condição}\".",
+"29a37adc995c54ae": ": \"use when {condiçêo}\".",
 "d044603959699c1d": ": \"truth > flattery\"",
 "718694eebdd1d7b4": ": 14 changes, across four\n          types, in a single diff. Let’s use it as a lab.",
 "05dae249a178ea31": ": 14 passed, 0 failures.\"",
